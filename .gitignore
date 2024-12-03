@@ -168,3 +168,4 @@ log/log.txt
 test.py
 GUI/profile.json
 task/dg/awards/
+GUI/window_position.json
