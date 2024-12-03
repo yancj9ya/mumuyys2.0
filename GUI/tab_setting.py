@@ -28,7 +28,7 @@ class SettingTab(ctk.CTkFrame):
         )
         # add widgets to layout
         self.keep_level_check.grid(row=0, column=1, padx=10, pady=10)
-        self.ui_delay_slider.grid(row=0, column=0, rowspan=6, padx=10, pady=10, sticky="w")
+        self.ui_delay_slider.grid(row=0, column=0, rowspan=10, padx=10, pady=10, sticky="w")
         self.set_window_top_check.grid(row=1, column=1, padx=10, pady=10)
 
     def set_window_top(self, *args):

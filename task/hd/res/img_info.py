@@ -1,6 +1,6 @@
 sl_ui = ["task/hd/res/sl_ui.bmp", [313, 28, 929, 444], "sl_ui"]
 fight_ui = ["task/hd/res/fight_ui.bmp", [133, 17, 373, 58], "fight_ui"]
 damo_ui = ["task/hd/res/damo_ui.bmp", [562, 497, 685, 580], "damo_ui"]
-end_mark_ui = ["img/tp/end_mark_ui.bmp", [177, 637, 196, 677], "end_mark_ui"]
+end_mark_ui = ["task/hd/res/end_mark_ui.bmp", [177, 637, 196, 677], "end_mark_ui"]
 ready_ui = ["task/hd/res/ready_ui.bmp", [1132, 653, 1225, 710], "ready_ui"]
 end_999_hdyh_ui = ["task/hd/res/end_999_hdyh_ui.bmp", [322, 205, 615, 529], "end_999_hdyh_ui"]

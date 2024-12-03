@@ -58,7 +58,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.geometry("265x360")
-        self.title("My App")
+        self.title("OnmojyHelper")
         self.iconbitmap("icon.ico")
         self.resizable(False, False)
         self.config(bg="#f3f3f3")
