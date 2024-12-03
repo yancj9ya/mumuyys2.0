@@ -1,3 +1,5 @@
+# this file is the main file of the program
+
 from GUI import App
 from GUI import ToggleButton
 from PIGEON import Task
