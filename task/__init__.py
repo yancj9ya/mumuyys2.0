@@ -4,6 +4,7 @@ from task.ltp.ltp import Ltp
 from task.ql.ql import Ql
 from task.hd.hd import Hd
 from task.ts.ts import Ts
+from task.yh.yh import Yh
 
 import sys
 import os

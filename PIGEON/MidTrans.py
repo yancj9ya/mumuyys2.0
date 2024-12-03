@@ -1,6 +1,6 @@
 from PIGEON.log import Log
 from threading import Thread, Event
-from task import Tp, Dg, Ltp, Ql, Hd, Ts
+from task import Tp, Dg, Ltp, Ql, Hd, Ts, Yh
 
 from time import sleep
 
@@ -10,7 +10,7 @@ log = Log()
 class Task:
     TASK_PROCESS = "STOP"
     STOPSIGNAL = Event()
-    F_MAP = {"tp_btn": Tp, "dg_btn": Dg, "ltp_btn": Ltp, "ql_btn": Ql, "hd_btn": Hd, "ts_btn": Ts}
+    F_MAP = {"tp_btn": Tp, "dg_btn": Dg, "ltp_btn": Ltp, "ql_btn": Ql, "hd_btn": Hd, "ts_btn": Ts, "yh_btn": Yh}
 
     @classmethod
     def execute_task(cls, **kwargs):
