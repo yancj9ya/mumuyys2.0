@@ -57,8 +57,9 @@ class log_area(ctk.CTkTextbox):
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.geometry("265x360")
-        self.title("OnmojyHelper")
+        x, y = self.get_window_position()
+        self.geometry(f"265x360+{x}+{y}")
+        self.title("八尺琼勾玉")
         self.iconbitmap("GUI/icon.ico")
         self.resizable(False, False)
         self.config(bg="#f3f3f3")
@@ -84,7 +85,8 @@ class App(ctk.CTk):
     def save_profile(self):
         with open("GUI/profile.json", "w") as f:
             f.write(json.dumps({k: v.get() for k, v in ToggleButton.values.items()}))
-        pass
+        with open("GUI/window_position.json", "w") as f:
+            f.write(json.dumps({"x": self.winfo_x(), "y": self.winfo_y()}))
         self.destroy()
 
     def load_profile(self):
@@ -93,6 +95,14 @@ class App(ctk.CTk):
         for k, v in profile.items():
             ToggleButton.values[k].set(v)
         pass
+
+    def get_window_position(self):
+        try:
+            with open("GUI/window_position.json", "r") as f:
+                position = json.loads(f.read())
+            return position["x"], position["y"]
+        except FileNotFoundError:
+            return 200, 200
 
 
 if __name__ == "__main__":

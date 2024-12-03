@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from GUI.togglebuton import ToggleButton
+import os
 
 
 class DgTab(ctk.CTkFrame):
@@ -29,4 +30,12 @@ class DgTab(ctk.CTkFrame):
         self.dg_btn.grid(row=1, column=2, padx=5, pady=5, sticky="ew")
 
     def open_awards_folder_func(self):
-        pass
+        folder_path = r"D:\\python\\mumuyys2.0\\task\dg\\awards"  # 请根据实际情况修改路径
+        try:
+            if os.path.exists(folder_path):
+                os.startfile(folder_path)  # 打开文件夹
+            else:
+                raise FileNotFoundError("文件夹不存在。")
+        except Exception as e:
+            print(e)
+            pass

@@ -1,6 +1,6 @@
 from PIGEON.log import Log
 from threading import Thread, Event
-from task import Tp, Dg, Ltp, Ql, Hd, Ts, Yh
+from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh
 
 from time import sleep
 
@@ -31,6 +31,8 @@ class Task:
                 return
             # 执行任务
             Thread(target=cls.start_task, kwargs={"task": task, "task_parms": task_parms, "STOPSIGNAL": cls.STOPSIGNAL}).start()
+            # 创建协助自动接受进程
+            Thread(target=Xz.start_deamon, kwargs={"STOPSIGNAL": cls.STOPSIGNAL}).start()
 
     @classmethod
     def start_task(cls, task=None, task_parms=None, STOPSIGNAL=None, **kwargs):

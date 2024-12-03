@@ -5,6 +5,8 @@ from task.ql.ql import Ql
 from task.hd.hd import Hd
 from task.ts.ts import Ts
 from task.yh.yh import Yh
+from task.xz.xz import Xz
+
 
 import sys
 import os
