@@ -59,7 +59,7 @@ class App(ctk.CTk):
         super().__init__()
         self.geometry("265x360")
         self.title("OnmojyHelper")
-        self.iconbitmap("icon.ico")
+        self.iconbitmap("GUI/icon.ico")
         self.resizable(False, False)
         self.config(bg="#f3f3f3")
         self.wm_attributes("-topmost", 1)  # 窗口置顶
