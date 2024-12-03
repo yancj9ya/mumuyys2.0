@@ -1,0 +1,7 @@
+main_ui = ["task/ltp/res/main_ui.bmp", [44, 611, 144, 700], "main_ui"]
+fight_ui = ["task/ltp/res/fight_ui.bmp", [11, 4, 231, 69], "fight_ui"]
+damo_ui = ["task/ltp/res/damo_ui.bmp", [562, 497, 685, 580], "damo_ui"]
+end_mark_ui = ["task/ltp/res/end_mark_ui.bmp", [66, 603, 500, 706], "end_mark_ui"]
+fail_ui = ["task/ltp/res/fail_ui.bmp", [413, 133, 527, 236], "fail_ui"]
+jg_btn = ["task/ltp/res/jg_btn.bmp", [587, 339, 1068, 558], "jg_btn"]
+ltp_end_ui = ["task/ltp/res/ltp_end_ui.bmp", [629, 126, 739, 260], "ltp_end_ui"]

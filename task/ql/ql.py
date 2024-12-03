@@ -1,0 +1,87 @@
+from task.based.Mytool.Click import Click
+from task.based.Mytool.imageRec import ImageRec
+from task.based.Mytool.Ocr import Ocr
+from task.based.Mytool.Counter import Counter
+from task.ql.res.img_info import *
+from time import sleep, time, strftime, localtime
+from PIGEON.log import log
+
+
+class Ql(Click, ImageRec):
+    def __init__(self, **kwargs):
+        Click.__init__(self)
+        ImageRec.__init__(self)
+        self.uilist = [
+            fight_ui,
+            ql_sb_ui,
+            damo_ui,
+            btn_tz_ui,
+            ql_main_ui,
+            ql_cg_ui,
+            ql_cg_t_ui,
+            ql_sb_ui,
+        ]
+        self.ui_delay = 0.5
+        self.running = kwargs.get("STOPSIGNAL", True)
+        self.cg_counter = Counter()
+        self.times_counter = Counter()
+        self.times = 0
+        self.call_fire_times = 0
+
+    def call_fire(self):
+        if not self.match_img(ql_main_ui):
+            return
+        else:
+            for call_times in range(5):
+                log.insert("5.0", f"@第{call_times+1}次召唤 ")
+                self.area_click([1171, 475, 1201, 504])
+                sleep(0.5)
+                if call_times == 0:
+                    self.area_click([933, 279, 1044, 405])
+                self.area_click([1149, 611, 1219, 658])
+                sleep(1)
+            self.call_fire_times += 5
+        pass
+
+    def main_ui(self):
+        if res := self.match_img(ql_fire):
+            self.area_click(res)
+        else:
+            log.insert("5.0", f"契灵未找到，开始召唤 ")
+            self.call_fire()
+            log.insert("5.0", f"召唤完成，共召唤{self.call_fire_times}次 ")
+
+    def run(self):
+        sleep(self.ui_delay)
+        match_result = self.match_ui(self.uilist, accuracy=0.9)
+        log.insert("4.0", f"@匹配结果:{match_result} ")
+        match match_result:
+            case "fight_ui":
+                sleep(1)
+            case "damo_ui" | "ql_sb_ui":
+                self.area_click([990, 462, 1125, 520])
+            case "ql_main_ui":
+                self.main_ui()
+            case "btn_tz_ui":
+                if res := self.match_img(btn_tz_ui):
+                    self.area_click(res)
+                    self.times_counter.increment()
+                    log.insert("3.0", f"@第{self.times_counter.count:^3d}次挑战 ")
+            case "ql_cg_ui" | "ql_cg_t_ui":
+                self.cg_counter.increment()
+                # log.info(f'@捕获成功次数:{self.cg_counter.count}，概率：{self.cg_counter.count/self.times_counter.count*100:.2f}')
+                self.area_click([646, 194, 724, 288])
+            case _:
+                pass
+        pass
+
+    def loop(self):
+        while self.running.is_set() and self.times_counter.count < self.times:
+            self.run()
+            log.insert("2.0", f"@进度:{self.times_counter.count/self.times*100:.1f}%|成功次数:{self.cg_counter.count}|概率{self.cg_counter.count/(self.times_counter.count+1)*100:.2f}%")
+        pass
+
+    def set_parms(self, **kwargs):
+        self.times = int(kwargs.get("times", 0))
+        self.ui_delay = float(kwargs.get("ui_delay", 0.5))
+        pass

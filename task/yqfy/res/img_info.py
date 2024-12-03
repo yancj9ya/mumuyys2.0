@@ -1,0 +1,7 @@
+damo_ui = ["img/yqfy/damo_ui.bmp", [585, 471, 685, 595], "damo_ui"]
+sl_ui = ["img/yqfy/sl_ui.bmp", [433, 89, 525, 175], "sl_ui"]
+home_ui = ["img/yqfy/home_ui.bmp", [453, 626, 482, 675], "home_ui"]
+yqfy_ui = ["img/yqfy/yqfy_ui.bmp", [413, 130, 535, 170], "yqfy_ui"]
+in_queue_ui = ["img/yqfy/in_queue_ui.bmp", [342, 22, 380, 75], "in_queue_ui"]
+access_ui = ["img/yqfy/access_ui.bmp", [112, 227, 170, 286], "access_ui"]
+in_fight_ui = ["img/yqfy/in_fight_ui.bmp", [228, 11, 269, 50], "in_fight_ui"]

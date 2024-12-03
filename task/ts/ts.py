@@ -1,0 +1,138 @@
+from task.based.Mytool.Click import Click
+from task.based.Mytool.imageRec import ImageRec
+from task.based.Mytool.Ocr import Ocr
+from task.based.Mytool.Counter import Counter
+from task.ts.res.img_info import *
+from time import sleep, time, strftime, localtime
+from PIGEON.log import log
+from task.based.switchui.SwitchUI import SwitchUI
+from task.tp.tp import Tp
+from random import choices
+
+
+class Ts(Click, ImageRec):
+    def __init__(self, **values):
+        Click.__init__(self)
+        ImageRec.__init__(self)
+        self.monster_counter = Counter()
+        self.tp_ticket_count = Counter()
+        self.uilist = [
+            ts_main_ui,
+            ts_tz_ui,
+            ts_cm_ui,
+            damo_ui,
+            ts_end_mark_ui,
+        ]
+        self.ui_delay = 0.5
+        self.reward_dict = {}
+        self.last_monster = None
+        self.running = values.get("STOPSIGNAL", True)
+        self.tp_ticket_limit = 27
+        self.monster_limit = 200
+        self.switch_ui = SwitchUI()
+
+    def exit_once(self):
+        self.area_click([34, 42, 69, 81])  # 点击退出按钮
+        sleep(0.8)
+        self.area_click([718, 389, 823, 415])  # 点击确认退出按钮
+
+    def find_m(self):
+        if res := self.match_img(ts_cm_normal_btn, accuracy=0.8):
+            self.monster_counter.increment()
+            log.info(f"@monster_counter:{self.monster_counter.count}")
+            self.area_click(res)  # 找到普通怪
+            self.last_monster = "normal"
+            return
+        elif res := self.match_img(ts_cm_boss_btn):
+            self.monster_counter.increment()
+            log.info(f"@monster_counter[boss]:{self.monster_counter.count}")
+            self.area_click(res)  # 找到BOSS怪
+            self.last_monster = "boss"
+            return
+        elif self.last_monster == "boss":
+            self.exit_once()  # 结束战斗
+            log.info(f'{"*"*20}Quit')
+        elif self.last_monster == "normal":
+            log.debug(f"@No found，head toward")
+            match choices(["slide", "click"], weights=[0.8, 0.2], k=1)[0]:
+                case "slide":
+                    log.info(f"@slide to right")
+                    self.slide([1162, 146, 1226, 203], [231, 133, 301, 199])
+                case "click":
+                    log.info(f"@click walk to right")
+                    self.area_click([920, 498, 1251, 579])  # 找不到怪，向前走
+                    sleep(1.5)  # 等待1.5秒
+
+    def reward_confirm(self):
+        if res := self.stat_reward("task/ts/res/reward", [256, 156, 1100, 449]):
+            for reward in res.keys():
+                # log.info(reward)
+                if reward not in self.reward_dict:
+                    self.reward_dict[reward] = 1
+                else:
+                    self.reward_dict[reward] += 1
+            log.info(f"*" * 16)
+            for key, value in self.reward_dict.items():
+                log.info(f"*{key:^10}: {value:^2}*")
+            log.info(f"*" * 16)
+            if "tp_ticket" in res.keys():
+                self.tp_ticket_count.count += 1
+                log.info(f"@tp_ticket_count:{self.tp_ticket_count.count}")
+
+    def run(self):
+        sleep(self.ui_delay)
+        ui_serch_result = self.match_ui(self.uilist)
+        log.debug(ui_serch_result)
+        match ui_serch_result:
+            case "ts_main_ui":
+                self.area_click([1081, 504, 1208, 572])
+            case "ts_tz_ui":
+                self.area_click(ts_tz_ui[1])
+                self.last_monster = None
+            case "ts_cm_ui":
+                self.find_m()
+            case "ts_end_mark_ui":
+                self.area_click([990, 462, 1125, 520])
+            case "damo_ui":
+                self.reward_confirm()
+                self.area_click([990, 462, 1125, 520])
+                sleep(0.5)
+                self.area_click([990, 462, 1125, 520])
+                sleep(0.5)
+            case _:
+                sleep(1)
+
+    def loop(self):
+        print(f'ts_loop start at {strftime("%Y-%m-%d %H:%M:%S", localtime())}')
+        current_task = "TP"
+        while all([self.monster_counter.count < self.monster_limit, self.running.is_set()]):
+            print(f"current_task:{current_task}")
+            match current_task:
+                case "TP":
+                    if self.switch_ui.switch_to("tp_main_ui"):  # 切换到突破主界面
+                        self.tp.loop()  # 进入TP界面
+                        self.tp_ticket_count.reset()  # 重置TP票数
+                        current_task = "TS"
+                case "TS":
+                    if self.switch_ui.switch_to("ts_main_ui"):  # 切换到探索主界面
+                        while all([self.tp_ticket_count.count < self.tp_ticket_limit, self.monster_counter.count < self.monster_limit, self.running.is_set()]):
+                            self.run()
+                        current_task = "TP"
+
+    def set_parms(self, **values):
+        self.ui_delay = values.get("ui_delay", 0.5)
+        if values.get("with_tp", True):
+            self.tp_ticket_limit = values.get("tp_ticket_limit", 27)
+        else:
+            self.tp_ticket_limit = 100000
+        self.monster_limit = values.get("monster_limit", 200)
+
+        # create tp instance
+        self.tp = Tp(
+            STOPSIGNAL=self.running,
+        )
+        self.tp.set_parms(
+            ui_delay=values.get("ui_delay", 0.5),
+        )
+
+        pass

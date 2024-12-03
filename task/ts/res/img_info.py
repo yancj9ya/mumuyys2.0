@@ -1,0 +1,13 @@
+# -*- coding: utf-8 -*-
+damo_ui = ["task/ts/res/damo_ui.bmp", [562, 497, 685, 580], "damo_ui"]
+ts_main_ui = ["task/ts/res/ts_main_ui.bmp", [1133, 119, 1180, 172], "ts_main_ui"]
+ts_tz_ui = ["task/ts/res/ts_tz_ui.bmp", [879, 508, 1012, 570], "ts_tz_ui"]
+ts_cm_ui = ["task/ts/res/ts_cm_ui.bmp", [6, 530, 73, 615], "ts_cm_ui"]
+ts_end_mark_ui = ["task/ts/res/ts_end_mark_ui.bmp", [67, 649, 94, 672], "ts_end_mark_ui"]
+ts_cm_normal_btn = [
+    "task/ts/res/ts_cm_normal_btn.bmp",
+    [114, 66, 1257, 624],
+    "ts_cm_normal_btn",
+]
+ts_cm_boss_btn = ["task/ts/res/ts_cm_boss_btn.bmp", [114, 66, 1257, 624], "ts_cm_boss_btn"]
+ts_end_box_ui = ["task/ts/res/ts_end_box_ui.bmp", [333, 272, 923, 581], "ts_end_box_ui"]
