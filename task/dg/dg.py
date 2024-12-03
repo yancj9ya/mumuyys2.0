@@ -42,7 +42,7 @@ class Dg(Click, ImageRec):
         当前系数{dg_xs:.2f}， 
         当前人数{dg_rs}大于{pre_rs + add_rs}
             """
-            log.insert("4.0", f"进攻道馆：系数{dg_xs:.2f}，人数{dg_rs}")
+            log.insert("3.0", f"进攻道馆：系数{dg_xs:.2f}，人数{dg_rs}")
             if self.window:
                 self.window["attack_dg_info"].update(attack_info)
 
@@ -54,7 +54,7 @@ class Dg(Click, ImageRec):
     def dg_end(self):
         c = 0
         if self.DG_COUNT > 0:
-            log.insert("5.0", f"道馆进攻结束,wait for 60s")
+            log.info(f"道馆进攻结束,wait for 60s")
             self.counter.add_record("last")
             self.counter.reset()
             while self.running.is_set():
@@ -64,7 +64,7 @@ class Dg(Click, ImageRec):
                 sleep(1.5)
         elif self.DG_COUNT == 0:
             self.DG_SWITCH = False
-            log.insert("3.0", f"道馆结束，共进攻：\n{self.counter.get_record('last')}+{self.counter.count}={self.counter.count+self.counter.get_record('last')  if self.counter.get_record('last') else self.counter.count}次")
+            log.info(f"道馆结束，共进攻：{self.counter.get_record('last')}+{self.counter.count}={self.counter.count+self.counter.get_record('last')  if self.counter.get_record('last') else self.counter.count}次")
 
     def chose_dg(self):
         try:
@@ -83,8 +83,8 @@ class Dg(Click, ImageRec):
                     return
             else:
                 return
-            log.insert("5.0", f"道馆可进攻次数：{self.DG_COUNT}")
-            log.insert("5.0", f"道馆SWITCH：{self.DG_SWITCH}")
+            log.info(f"道馆可进攻次数：{self.DG_COUNT}")
+            log.info(f"道馆SWITCH：{self.DG_SWITCH}")
             # while self.DG_SWITCH and not self.running.is_set():
             for i in range(3):
                 if not self.running.is_set():
@@ -116,9 +116,9 @@ class Dg(Click, ImageRec):
                             continue
                         dg_rs = int("".join([char for char in dg_rs_result[0] if char.isdigit()]))  # 改为列表推导式取出数字
                         dg_xs = (dg_sj_num / dg_rs) if dg_rs != 0 else 10  # 计算系数
-                        log.insert("5.0", f"{str(dg_sj_num):>3}万，{dg_rs:>4}人，系数：{dg_xs:.2f}")
+                        log.info(f"{str(dg_sj_num):>3}万，{dg_rs:>4}人，系数：{dg_xs:.2f}")
                         if self.decide_attack_or_not(dg_xs, dg_rs):
-                            # log.info(f'系数{dg_xs:.2f}，人数{dg_rs}符合要求，开始挑战')
+                            log.insert("5.1", f"系数{dg_xs:.2f}，人数{dg_rs}符合要求，开始挑战")
                             self.area_click(
                                 [
                                     left_area[0] + 312,
@@ -134,16 +134,16 @@ class Dg(Click, ImageRec):
                             self.DG_TIME = None
                             return
                 self.mouse_scroll(("down", 9), 1158, 310)
-            log.insert("5.0", "未能找到合适的系数道馆，刷新重找")
+            log.info("未能找到合适的系数道馆，刷新重找")
             self.area_click([1129, 613, 1193, 678])
             sleep(1)
             self.area_click([686, 403, 796, 443])
             sleep(1)
         except Exception as e:
-            log.insert("5.0", f"chose_dg()函数出错了：{e}，traceback:{traceback.format_exc()}")
+            log.info(f"chose_dg()函数出错了：{e}，traceback:{traceback.format_exc()}")
 
     def giveup(self):
-        log.insert("5.0", f"放弃馆主\n该次共进攻次数：{self.counter.count}")
+        log.info(f"放弃馆主,该次共进攻次数：{self.counter.count}")
         sleep(3)
         self.area_click([63, 607, 124, 673])  # 放弃突破按钮
         sleep(1)
@@ -160,7 +160,7 @@ class Dg(Click, ImageRec):
 
     def dg_ready_ui(self):
         if not self.DG_TIME:
-            log.insert("5.0", f"wait for start {'.'*(int(time())%5)}")
+            log.insert("4.1", f"wait for start {'.'*(int(time())%5)}")
             sleep(0.5)
         elif self.match_img(dg_end_ui):
             sleep(1)
@@ -170,7 +170,7 @@ class Dg(Click, ImageRec):
             # todo: 增加判断是挑战按钮还是观战按钮
             if self.match_img(tiaozhan):
                 self.area_click([1128, 562, 1228, 623])
-                log.insert("5.0", ">>>开始挑战again")
+                log.info(">>>开始挑战again")
                 sleep(2)  # 等待动画
         else:
             sleep(1)
@@ -185,11 +185,11 @@ class Dg(Click, ImageRec):
 
     def dgsign(self):
         if self.match_img(fight_ui):
-            log.insert("5.0", ">>>战斗已开始，开始标记")
+            log.info(">>>战斗已开始，开始标记")
             self.click(612, 560)  # 先标记神乐
             sleep(0.8)
             self.click(240, 489)  # 再标记输出防止意外取消标记
-            log.insert("5.0", ">>>标记完成")
+            log.info(">>>标记完成")
 
         pass
 
@@ -198,26 +198,26 @@ class Dg(Click, ImageRec):
             self.DG_TIME = time()
             # 是否重置进攻次数计数器
 
-            log.insert("5.0", strftime("Start_TIME:%H:%M:%S", localtime(self.DG_TIME)))
+            log.insert("2.1", strftime(" Start_TIME:%H:%M:%S", localtime(self.DG_TIME)))
             sleep(2)
 
         if self.match_img(dg_btn_ready):
             # sleep(0.5)
             self.area_click([1142, 553, 1221, 618], double_click=True)  # 点击准备按钮
             self.counter.increment()
-            log.insert("2.0", f"*正在第{[f'{self.counter.get_record('last')}+' if self.counter.get_record('last')  else ''][0]}{self.counter.count}次进攻道馆*")
+            log.insert("4.1", f" * 正在第{[f'{self.counter.get_record('last')}+' if self.counter.get_record('last')  else ''][0]}{self.counter.count}次进攻道馆*")
             sleep(1)
 
             if not self.img_dgsign(dg_sign):
-                log.insert("5.0", ">>>未在准备后识别标记")
+                log.info(">>>未在准备后识别标记")
                 if self.match_img(dg_btn_ready) == None:
-                    log.insert("5.0", ">>>开始执行dgsign()")
+                    log.info(">>>开始执行dgsign()")
                     self.dgsign()  # 如果没识别到标记，则执行标记函数
                 return
         elif self.match_img(damo_ui):
             sleep(1)
             self.screenshot(self.child_handle, [218, 132, 1233, 617], save_img=True)
-            log.insert("5.0", "结算界面：已经截图\n返回准备界面")
+            log.info("结算界面：已经截图,返回准备界面")
             sleep(0.5)
             self.area_click([990, 462, 1125, 520])
             return
@@ -228,7 +228,7 @@ class Dg(Click, ImageRec):
         elif self.match_img(dg_fail_ui) != None:  # 战斗失败，返回准备界面
             sleep(2)
             self.screenshot(self.child_handle, [218, 132, 1233, 617], save_img=True)
-            log.insert("5.0", "进攻失败，返回准备界面")
+            log.info("进攻失败，返回准备界面")
             sleep(0.5)
             self.area_click([990, 462, 1125, 520])
             return
@@ -237,7 +237,7 @@ class Dg(Click, ImageRec):
     def run(self):
         sleep(self.main_ui_sleep)
         match_result = self.match_ui(self.uilist)
-        log.insert("3.0", f"MATCHED UI:{match_result}")
+        log.insert("3.1", f" MATCHED UI:{match_result}")
         match match_result:
             case "ready_ui":
                 self.dg_ready_ui()
@@ -250,8 +250,8 @@ class Dg(Click, ImageRec):
         pass
 
     def loop(self):
-        log.clear()
-        log.insert("1.0", f"____道馆进攻程序开始____")
+        # log.clear()
+        log.insert("2.1", f"{"道馆进攻程序开始":^27}")
         while self.DG_SWITCH:
             if not self.running.is_set():
                 break
@@ -263,4 +263,4 @@ class Dg(Click, ImageRec):
         self.main_ui_sleep = kwargs.get("main_ui_sleep", 0.5)
         self.dg_rs = int(kwargs.get("dg_rs", 70))
         self.dg_xs = kwargs.get("dg_xs", "2:5")
-        log.insert("5.0", f"set dg_rs:{self.dg_rs},dg_xs:{self.dg_xs}")
+        log.info(f"set dg_rs:{self.dg_rs},dg_xs:{self.dg_xs}")

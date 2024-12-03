@@ -39,13 +39,13 @@ class Ts(Click, ImageRec):
     def find_m(self):
         if res := self.match_img(ts_cm_normal_btn, accuracy=0.8):
             self.monster_counter.increment()
-            log.info(f"@monster_counter:{self.monster_counter.count}")
+            log.insert("3.1", f" monster_counter:{self.monster_counter.count}")
             self.area_click(res)  # 找到普通怪
             self.last_monster = "normal"
             return
         elif res := self.match_img(ts_cm_boss_btn):
             self.monster_counter.increment()
-            log.info(f"@monster_counter[boss]:{self.monster_counter.count}")
+            log.insert("3.1", f" monster_counter[boss]:{self.monster_counter.count}")
             self.area_click(res)  # 找到BOSS怪
             self.last_monster = "boss"
             return
@@ -64,6 +64,8 @@ class Ts(Click, ImageRec):
                     sleep(1.5)  # 等待1.5秒
 
     def reward_confirm(self):
+        k_to_t = {"blue_t": "蓝票", "m_hj": "中", "s_hj": "小", "tp_ticket": "突破卷"}
+        award_str = " "
         if res := self.stat_reward("task/ts/res/reward", [256, 156, 1100, 449]):
             for reward in res.keys():
                 # log.info(reward)
@@ -74,15 +76,17 @@ class Ts(Click, ImageRec):
             log.info(f"*" * 16)
             for key, value in self.reward_dict.items():
                 log.info(f"*{key:^10}: {value:^2}*")
+                award_str += f"{k_to_t[key]}x{value} "
             log.info(f"*" * 16)
+            log.insert("4.1", f"{award_str}")
             if "tp_ticket" in res.keys():
                 self.tp_ticket_count.count += 1
-                log.info(f"@tp_ticket_count:{self.tp_ticket_count.count}")
+                log.insert("5.1", f" tp_ticket_count:{self.tp_ticket_count.count}")
 
     def run(self):
         sleep(self.ui_delay)
         ui_serch_result = self.match_ui(self.uilist)
-        log.debug(ui_serch_result)
+        log.insert("2.1", f" Matched ui:{ui_serch_result}")
         match ui_serch_result:
             case "ts_main_ui":
                 self.area_click([1081, 504, 1208, 572])
@@ -110,6 +114,7 @@ class Ts(Click, ImageRec):
             match current_task:
                 case "TP":
                     if self.switch_ui.switch_to("tp_main_ui"):  # 切换到突破主界面
+                        log.insert("3.1", f"{'突破进行中...':^27}")
                         self.tp.loop()  # 进入TP界面
                         self.tp_ticket_count.reset()  # 重置TP票数
                         current_task = "TS"

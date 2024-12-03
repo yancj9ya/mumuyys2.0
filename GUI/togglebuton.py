@@ -41,7 +41,9 @@ class ToggleButton(ctk.CTkButton):
             command=self.toggle,
             width=68,
             height=20,
-            corner_radius=2,
+            corner_radius=1,
+            border_width=1,
+            border_color="#d5d283",
             **kwargs,
         )
 

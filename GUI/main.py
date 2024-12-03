@@ -1,3 +1,8 @@
+if __name__ == "__main__":
+    import sys
+
+    sys.path.append(r"D:\\python\\mumuyys2.0")
+# this file is used to run the GUI program
 import customtkinter as ctk
 import json
 from GUI.togglebuton import ToggleButton
@@ -14,6 +19,9 @@ class MyTabView(ctk.CTkTabview):
         self.grid_rowconfigure(0, weight=1)  # configure grid system
         self.grid_columnconfigure(0, weight=1)
         self.configure(bg_color="#f3f3f3")
+        self.configure(border_width=1)
+        # self.configure(fg_color="grey")
+        self.anchor("n")
 
         # create tabs
         self.add("常用")
@@ -24,21 +32,19 @@ class MyTabView(ctk.CTkTabview):
         self.add("log")
 
         # create widgets on tabs
-        self.maintab = MainTab(self.tab("常用"), width=240, height=360, fg_color="#f3f3f3")
-        self.settingtab = SettingTab(
-            self.tab("设置"),
+        self.maintab = MainTab(
+            self.tab("常用"),
             width=240,
             height=360,
+        )
+        self.settingtab = SettingTab(
+            self.tab("设置"),
         )
         self.dgtab = DgTab(
             self.tab("道馆"),
-            width=240,
-            height=360,
         )
         self.tstab = TsTab(
             self.tab("绘卷"),
-            width=240,
-            height=360,
         )
 
         # add widgets on tabs
@@ -51,6 +57,8 @@ class MyTabView(ctk.CTkTabview):
 class log_area(ctk.CTkTextbox):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        self.tag_config("blue_text", foreground="#87CEFA")  # 蓝色文本标签
+        self.tag_config("green_text", foreground="green")  # 绿色文本标签
         self.configure(fg_color="#000000", text_color="green", font=("微软雅黑", 12))
 
 
@@ -69,7 +77,7 @@ class App(ctk.CTk):
         self.tab_view = MyTabView(master=self, width=255, height=50, anchor="nw", command=self.tab_changed)
         self.tab_view.pack(side="top", fill="y")
 
-        self.log_area = log_area(master=self, width=255, height=80, bg_color="#f3f3f3")
+        self.log_area = log_area(master=self, width=255, height=180, bg_color="#f3f3f3")
         self.log_area.pack(side="bottom", fill="y", expand=True)
 
         self.load_profile()  # 加载配置文件

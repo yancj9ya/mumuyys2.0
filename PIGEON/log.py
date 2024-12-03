@@ -52,23 +52,21 @@ class Log:
     def emit(self, message):
         # 输出日志信息
         if self.log_emit:
-            self.log_emit.insert(
-                "end",
-                message + "\n",
-            )
-            self.log_emit.yview_moveto(1)
+            # self.log_emit.yview_moveto(1)
+            self.log_emit.insert("7.0", message + "\n", tags="green_text")
+            self.log_emit.yview_moveto(0)
         else:
             print(message)
 
-    def insert(self, cursor="end", msg="default message"):
+    def insert(self, cursor="end", msg="default message", tags=None):
         # 获取当前时间
-        now = datetime.now().strftime("%H:%M:%S")
+        # now = datetime.now().strftime("%H:%M:%S")
         if msg and cursor:
             if self.log_emit.get(cursor, str(float(cursor) + 1)) == "\n":  # 判断是空行
-                self.log_emit.insert(cursor, f"[{now}]:{msg}\n")  # 直接插入日志信息
+                self.log_emit.insert(cursor, f"{msg}\n$", tags=tags)  # 直接插入日志信息
             else:  # 非空行 # 先删除该行，再插入
                 self.log_emit.delete(cursor, str(float(cursor) + 1))
-                self.log_emit.insert(cursor, f"[{now}]:{msg}\n")  # 插入日志信息
+                self.log_emit.insert(cursor, f"{msg}\n$", tags=tags)  # 插入日志信息
             self.log_emit.yview_moveto(0)
 
     def clear(self):
