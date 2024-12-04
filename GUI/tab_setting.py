@@ -17,7 +17,7 @@ class SettingTab(ctk.CTkFrame):
         # create widgets
         self.keep_level_check = ctk.CTkSwitch(self, text="突破保级", variable=self.keep_level_var, onvalue=True, offvalue=False)
         self.set_window_top_check = ctk.CTkSwitch(self, text="置顶窗口", variable=self.set_window_top_var, onvalue=1, offvalue=0, command=self.set_window_top)
-        self.ui_delay_combox = ctk.CTkComboBox(self, values=["0.2", "0.5", "0.7"], justify="center", variable=self.ui_delay_var, width=15, height=20, command=self.ui_delay_slider_value)
+        self.ui_delay_combox = ctk.CTkComboBox(self, values=["0.2", "0.5", "0.7"], justify="center", variable=self.ui_delay_var, width=10, height=20, command=self.ui_delay_slider_value)
         self.ui_delay_combox.set("0.5")
         self.ui_delay_slider = ctk.CTkSlider(
             self,
@@ -25,15 +25,15 @@ class SettingTab(ctk.CTkFrame):
             to=1,
             number_of_steps=20,
             orientation="horizontal",
-            width=150,
+            width=120,
             command=self.ui_delay_slider_value,
         )
 
         # add widgets to layout
         self.ui_delay_combox.grid(row=0, column=0, columnspan=2, padx=0, pady=0, sticky="ew")
-        self.keep_level_check.grid(row=1, column=1, padx=0, pady=0)
+        self.keep_level_check.grid(row=1, column=1, padx=0, pady=2)
         self.ui_delay_slider.grid(row=0, column=2, columnspan=3, padx=0, pady=0, sticky="w")
-        self.set_window_top_check.grid(row=1, column=2, padx=0, pady=0)
+        self.set_window_top_check.grid(row=1, column=2, padx=0, pady=2)
 
     def set_window_top(self, *args):
         # print(args)

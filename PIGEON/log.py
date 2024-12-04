@@ -64,11 +64,12 @@ class Log:
         line, column = int(cursor.split(".")[0]), int(cursor.split(".")[1])
         # 格式化日志信息
         if msg and cursor:
-            if self.log_emit.get(f"{line}.0", f"{line+1}.0") == "":  # 判断是空行
+            line_text = self.log_emit.get(f"{line}.0", f"{line+1}.0")
+            re_index = line_text.find("\n")
+            if re_index == -1:  # 空行
                 self.log_emit.insert(f"{line}.0", f"\n", tags=tags)  # 插入换行符
             else:  # 非空行 # 先删除该行，再插入
-                self.log_emit.delete(f"{line}.0", f"{line+1}.0")
-                self.log_emit.insert(f"{line}.0", f"\n", tags=tags)  # 插入换行符
+                self.log_emit.delete(f"{line}.0", f"{line}.{re_index}")  # 不删除换行符，避免影响光标位置
             self.log_emit.insert(f"{line}.{column}", f"{msg}", tags=tags)  # 插入日志信息
             self.log_emit.yview_moveto(0)
 

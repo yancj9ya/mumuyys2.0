@@ -65,18 +65,18 @@ class App(ctk.CTk):
         self.wm_attributes("-topmost", 1)  # 窗口置顶
         self.protocol("WM_DELETE_WINDOW", self.save_profile)  # 关闭窗口时执行save_profile函数
 
-        self.tab_view = MyTabView(master=self, width=255, height=50, anchor="nw", command=self.tab_changed)
-        self.tab_view.pack(side="top", fill="y")
+        self.tab_view = MyTabView(master=self, width=255, height=150, anchor="nw", command=self.tab_changed)
+        self.tab_view.pack(side="top")
 
-        self.log_area = log_area(master=self, width=255, height=180, bg_color="#f3f3f3")
-        self.log_area.pack(side="bottom", fill="y", expand=True)
+        self.log_area = log_area(master=self, width=255, bg_color="#f3f3f3")
+        self.log_area.pack(side="bottom", fill="y", pady=2, expand=True)
 
         self.load_profile()  # 加载配置文件
 
     def tab_changed(self):
         tab_name = self.tab_view.get()
         # print(tab_name)
-        if tab_name in ["其他", "设置"]:
+        if tab_name in ["其他", "设置", "log"]:
             self.log_area.forget()
         else:
             self.log_area.pack(side="bottom", fill="y", expand=True)
