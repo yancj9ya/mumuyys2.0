@@ -37,17 +37,17 @@ class Ts(Click, ImageRec):
         self.area_click([718, 389, 823, 415])  # 点击确认退出按钮
 
     def find_m(self):
-        if res := self.match_img(ts_cm_normal_btn, accuracy=0.8):
-            self.monster_counter.increment()
-            log.insert("3.1", f" monster_counter:{self.monster_counter.count}")
-            self.area_click(res)  # 找到普通怪
-            self.last_monster = "normal"
-            return
-        elif res := self.match_img(ts_cm_boss_btn):
+        if res := self.match_img(ts_cm_boss_btn):
             self.monster_counter.increment()
             log.insert("3.1", f" monster_counter[boss]:{self.monster_counter.count}")
             self.area_click(res)  # 找到BOSS怪
             self.last_monster = "boss"
+            return
+        elif res := self.match_img(ts_cm_normal_btn, accuracy=0.8):
+            self.monster_counter.increment()
+            log.insert("3.1", f" monster_counter:{self.monster_counter.count}")
+            self.area_click(res)  # 找到普通怪
+            self.last_monster = "normal"
             return
         elif self.last_monster == "boss":
             self.exit_once()  # 结束战斗
@@ -64,7 +64,7 @@ class Ts(Click, ImageRec):
                     sleep(1.5)  # 等待1.5秒
 
     def reward_confirm(self):
-        k_to_t = {"blue_t": "蓝票", "m_hj": "中", "s_hj": "小", "tp_ticket": "突破卷"}
+        k_to_t = {"blue_t": "蓝票", "m_hj": "中", "s_hj": "小", "b_hj": "大", "tp_ticket": "突破卷"}
         award_str = " "
         if res := self.stat_reward("task/ts/res/reward", [256, 156, 1100, 449]):
             for reward in res.keys():
@@ -113,13 +113,15 @@ class Ts(Click, ImageRec):
             print(f"current_task:{current_task}")
             match current_task:
                 case "TP":
+                    log.info(f"开始突破...")
                     if self.switch_ui.switch_to("tp_main_ui"):  # 切换到突破主界面
-                        log.insert("3.1", f"{'突破进行中...':^27}")
+                        log.insert("3.1", f"{' 突破进行中...':<27}")
                         self.tp.loop()  # 进入TP界面
                         self.tp_ticket_count.reset()  # 重置TP票数
                         current_task = "TS"
                 case "TS":
-                    if self.switch_ui.switch_to("ts_main_ui"):  # 切换到探索主界面
+                    if self.switch_ui.switch_to("ts_main_ui"):
+                        log.info(f"开始探索...")  # 切换到探索主界面
                         while all([self.tp_ticket_count.count < self.tp_ticket_limit, self.monster_counter.count < self.monster_limit, self.running.is_set()]):
                             self.run()
                         current_task = "TP"
@@ -139,5 +141,6 @@ class Ts(Click, ImageRec):
         self.tp.set_parms(
             ui_delay=values.get("ui_delay", 0.5),
         )
+        self.tp.stat_reward = self.reward_confirm
 
         pass

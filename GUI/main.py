@@ -20,6 +20,7 @@ class MyTabView(ctk.CTkTabview):
         self.grid_columnconfigure(0, weight=1)
         self.configure(bg_color="#f3f3f3")
         self.configure(border_width=1)
+        self.corner_radius = 1
         # self.configure(fg_color="grey")
         self.anchor("n")
 
@@ -32,20 +33,10 @@ class MyTabView(ctk.CTkTabview):
         self.add("log")
 
         # create widgets on tabs
-        self.maintab = MainTab(
-            self.tab("常用"),
-            width=240,
-            height=360,
-        )
-        self.settingtab = SettingTab(
-            self.tab("设置"),
-        )
-        self.dgtab = DgTab(
-            self.tab("道馆"),
-        )
-        self.tstab = TsTab(
-            self.tab("绘卷"),
-        )
+        self.maintab = MainTab(self.tab("常用"))
+        self.settingtab = SettingTab(self.tab("设置"))
+        self.dgtab = DgTab(self.tab("道馆"))
+        self.tstab = TsTab(self.tab("绘卷"))
 
         # add widgets on tabs
         self.maintab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")

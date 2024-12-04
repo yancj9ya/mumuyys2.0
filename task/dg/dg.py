@@ -130,7 +130,7 @@ class Dg(Click, ImageRec):
                             sleep(2)
                             self.area_click([705, 409, 815, 447])  # 确定挑战
                             sleep(2)
-                            self.DG_COUNT -= 1
+
                             self.DG_TIME = None
                             return
                 self.mouse_scroll(("down", 9), 1158, 310)
@@ -153,6 +153,7 @@ class Dg(Click, ImageRec):
             sleep(1)
             if self.match_img(dg_zaiz_ui):
                 self.area_click(dg_zaiz_ui[1])
+        self.DG_COUNT -= 1
         self.dg_end()
         sleep(1)
 

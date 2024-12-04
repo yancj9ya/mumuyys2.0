@@ -36,7 +36,7 @@ class Task:
 
     @classmethod
     def start_task(cls, task=None, task_parms=None, STOPSIGNAL=None, **kwargs):
-        log.insert("1.0", f"{'='*11}status{'='*11}\n$\n$\n$\n$\n{'='*11}Log{'='*12}", tags="blue_text")
+        log.insert("1.0", f"{'━'*13}status{'━'*14}\n\n\n\n\n{'━'*14}Log{'━'*15}", tags="blue_text")
         # 创建task任务实例
         task_instance = cls.F_MAP.get(task.name)(STOPSIGNAL=STOPSIGNAL, **kwargs)
         # 设置参数

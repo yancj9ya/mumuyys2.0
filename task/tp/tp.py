@@ -108,16 +108,21 @@ class Tp(Click, ImageRec):
         self.area_click([686, 410, 828, 452])
         sleep(1)
 
+    def stat_award(self):
+        """重写"""
+        pass
+
     def run(self):
         sleep(self.ui_delay)
         match_result = self.match_ui(self.uilist)
-        log.debug(f"match_result:{match_result}")
+        log.insert("2.1", f"Matched UI:{match_result}")
         match match_result:
             case "fight_ui":
                 sleep(1)
             case "tp_main_ui":
                 self.tp_main_ui()
             case "damo_ui":
+                self.stat_reward()
                 self.counter.increment()
                 log.info(f"第{self.counter.count}次突破进攻Done！")
                 self.area_click(damo_ui[1])
@@ -142,8 +147,9 @@ class Tp(Click, ImageRec):
             if not self.running.is_set():
                 break
             self.run()
-            log.info(f"突破进度 {self.counter.count}/{times}")
+            log.insert("5.1", f"突破进度 {self.counter.count}/{times}")
         log.info("突破进攻结束")
+        self.counter.reset()
 
     def set_parms(self, **kwargs):
         self.keep_57_flag = kwargs.get("tp_keep_level", True)

@@ -23,22 +23,27 @@ class Hd(Click, ImageRec):
     def find_btn_tz(self):
         if btn_res := self.find_duo_img("task/hd/res/btn", [672, 266, 1260, 701], return_only_one=True):
             self.BTN_TZ = btn_res[0:2] + ["btn_tz"]
-            log.insert("5.0", f"找到按钮：{btn_res}")
+            log.info(f"找到按钮：{btn_res}")
             self.uilist.append(self.BTN_TZ)
-            log.insert("5.0", f"按钮添加到ui列表：{self.BTN_TZ}")
+            log.info(f"按钮添加到ui列表：{self.BTN_TZ}")
             match btn_res[2]:
                 case "btn_yyh":
+                    log.insert("5.1", f"识别模式：业原火")
                     if ocr_res := Ocr.ocr([754, 23, 809, 60]):
                         if ocr_res[1] > 0.9:
                             self.times = int(ocr_res[0])
-                            log.insert("5.0", f"挑战次数为{self.times}")
+                            log.info(f"挑战次数为{self.times}")
 
                 case "btn_mw":
+                    log.insert("5.1", f"识别模式：秘闻挑战")
                     self.times = 11
+                case "btn_yl":
+                    log.insert("5.1", f"识别模式：御灵挑战")
                 case _:
+                    log.insert("5.1", f"识别模式：版本活动")
                     pass
         else:
-            log.insert("2.0", "未找到按钮")
+            log.info("未找到按钮")
 
     @property
     def random_delay(self):
@@ -53,7 +58,7 @@ class Hd(Click, ImageRec):
 
     def random_duo_area_click(self, rect_list, weight_list, click_twice=False):
         if len(rect_list) != len(weight_list):
-            log.insert("5.0", "rect_list与weight_list长度不一致")
+            log.info("rect_list与weight_list长度不一致")
             return
         click_area = choices(rect_list, weight_list)[0]
         if click_twice:
@@ -75,7 +80,7 @@ class Hd(Click, ImageRec):
             self.find_btn_tz()
         sleep(self.ui_delay + self.random_delay)
         match_res = self.match_ui(self.uilist)
-        log.insert("4.0", f"匹配ui结果：{match_res}")
+        log.insert("2.1", f"Matched UI: {match_res}")
         match match_res:
             case "fight_ui":
                 sleep(1)
@@ -92,7 +97,7 @@ class Hd(Click, ImageRec):
             case "btn_tz":
                 self.area_click(self.BTN_TZ[1])
                 self.hd_counter.increment()
-                log.insert("3.0", f"开始第{self.hd_counter.count}次挑战")
+                log.insert("3.1", f"开始第{self.hd_counter.count}次挑战")
             case "end_999_hdyh_ui":
                 sleep(self.random_delay)
                 rect_list = [
@@ -108,7 +113,7 @@ class Hd(Click, ImageRec):
     def loop(self):
         while self.hd_counter.count < self.times and self.running.is_set():
             self.run()
-            log.insert("2.0", f"进度: {self.hd_counter.count}/{self.times}")
+            log.insert("4.1", f"进度: {self.hd_counter.count}/{self.times}")
         pass
 
     def set_parms(self, **kwargs):

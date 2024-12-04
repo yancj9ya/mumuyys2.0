@@ -71,7 +71,7 @@ class SwitchUI:
         while self.find_current_ui() != target_ui:
             start_ui = self.find_current_ui()  # 获取当前的ui位置
             path = nx.shortest_path(G, start_ui, target_ui)  # 获得当前ui到目标ui的最短路径
-            # log.info(f'[{start_ui}]->[{target_ui}] \nby path:{path}')
+            log.info(f"[{start_ui}]->[{target_ui}] by path:{path}")
             # 根据最短路径和uimap循环执行操作直到到达最终的目标ui
             for page, next_page in zip(path, path[1:]):
                 if page in ui_map:
