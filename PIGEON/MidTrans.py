@@ -21,14 +21,16 @@ class Task:
         # 执行停止任务逻辑
         if task.cget("text") == "STOP":
             cls.STOPSIGNAL.clear()
-            log.info(f"Task stop signal received")
+            log.debug(f"Task stop signal received")
             return
         else:
+            if cls.TASK_PROCESS == "RUNNING":
+                log.error(f"Task already running")
+                task.toogle_change()
+                return
             log.info(f"Task {task.cget('text')} started")
             cls.STOPSIGNAL.set()
-            if cls.TASK_PROCESS == "RUNNING":
-                log.info(f"Task already running")
-                return
+
             # 执行任务
             Thread(target=cls.start_task, kwargs={"task": task, "task_parms": task_parms, "STOPSIGNAL": cls.STOPSIGNAL}).start()
             # 创建协助自动接受进程
