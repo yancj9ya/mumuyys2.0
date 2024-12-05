@@ -63,7 +63,8 @@ class ImageRec:
                     # 匹配到返回匹配的UI名称
                     return img_match[2]
                 elif max_val > min_accuracy:
-                    log.debug(f"模板<{img_match[2]}> 匹配度不高，但仍然是<{max_val:.2f}>")
+                    # log.debug(f"模板<{img_match[2]}> 匹配度不高，但仍然是<{max_val:.2f}>")
+                    pass
 
             return None
         except Exception as e:

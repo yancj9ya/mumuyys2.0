@@ -10,6 +10,7 @@ class Xz:
     running = None
     eye = ImageRec()
     hand = Click()
+    count = 0
 
     @classmethod
     def invite_deamon(cls):
@@ -24,7 +25,10 @@ class Xz:
                         log.info("确认协助邀请")
                         cls.hand.area_click(res)
                         log.info("接受协助邀请")
-            log.info("协助邀请守护进程结束")
+                        cls.count += 1
+            log.info(f"协助邀请守护进程结束,共接受邀请{cls.count}次")
+            cls.count = 0
+
         except Exception as e:
             log.error(f"协助邀请守护进程异常:{e}")
 

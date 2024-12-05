@@ -1,6 +1,9 @@
 from task.based.Mytool.windows import Windows
 from task.based.Mytool.Somenewidea import newidea
 from task.based.Mytool.bezier import BezierTrajectory
+
+# from task.based.Mytool.random_coord import BezierTrajectory
+from task.based.Mytool.random_coord import RandomCoord
 from time import sleep
 from random import randint
 from ctypes import windll
@@ -25,8 +28,9 @@ class Click(Windows):
         # self.mouse_move(x, y)
 
     def area_click(self, area: list | tuple, press_time=0.2, double_click=False) -> None:
-        rand_x = randint(area[0], area[2])
-        rand_y = randint(area[1], area[3])
+        # rand_x = randint(area[0], area[2])
+        # rand_y = randint(area[1], area[3])
+        rand_x, rand_y = RandomCoord(area)
         if double_click:
             self.click(rand_x, rand_y, press_time)
             sleep(0.1)
