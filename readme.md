@@ -2,7 +2,7 @@
 ----
 1. 下载并安装python>=3.10版本
 2. git clone https://github.com/mumuyu666/mumuyys2.0.git
-  'git clone https://github.com/mumuyu666/mumuyys2.0.git'
+  ```git clone https://github.com/mumuyu666/mumuyys2.0.git```
 3. 在代码目录下打开cmd
 4. 输入'pip install -r requirements.txt'安装依赖包
 5. 输入'python app.py'运行程序
