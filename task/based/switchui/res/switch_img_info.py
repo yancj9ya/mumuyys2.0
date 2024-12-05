@@ -1,6 +1,8 @@
 tp_end_mark_ui = ["task/based/switchui/res/end_mark_ui.bmp", [177, 637, 196, 677], "tp_end_mark_ui"]
+tp_main_damo = ["task/based/switchui/res/tp_main_damo.bmp", [560, 475, 662, 551], "tp_main_damo"]
 tp_main_ui = ["task/based/switchui/res/tp_main_ui.bmp", [40, 446, 112, 497], "tp_main_ui"]
 damo_ui = ["task/based/switchui/res/damo_ui.bmp", [562, 497, 685, 580], "damo_ui"]
+
 
 ts_main_ui = ["task/based/switchui/res/ts_main_ui.bmp", [1133, 119, 1180, 172], "ts_main_ui"]
 ts_tz_ui = ["task/based/switchui/res/ts_tz_ui.bmp", [879, 508, 1012, 570], "ts_tz_ui"]

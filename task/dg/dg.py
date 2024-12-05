@@ -24,7 +24,6 @@ class Dg(Click, ImageRec):
         self.dg_rs = 70
         self.dg_xs = "2:5"
         self.running = kwargs.get("STOPSIGNAL", True)
-        self.window = None
 
     def decide_attack_or_not(self, dg_xs: float, dg_rs: int) -> bool:
         # 获取预设的系数和最小人数限制
@@ -35,17 +34,7 @@ class Dg(Click, ImageRec):
         add_rs = int((dg_xs - 4.0) * 60) if dg_xs >= 4.0 else 0  # and dg_rs >= 100
         # 判断系数是否在预设范围且人数符合条件，符合则返回True，否则返回False
         if all([pre_xs_min <= dg_xs <= pre_xs_max, pre_rs + add_rs <= dg_rs, dg_rs <= 150]):
-            attack_info = f""">符合要求<
-        预设系数{pre_xs_min}~{pre_xs_max}， 
-        预设人数{pre_rs}， 
-        增量人数{add_rs}，
-        当前系数{dg_xs:.2f}， 
-        当前人数{dg_rs}大于{pre_rs + add_rs}
-            """
             log.insert("3.0", f"进攻道馆：系数{dg_xs:.2f}，人数{dg_rs}")
-            if self.window:
-                self.window["attack_dg_info"].update(attack_info)
-
             return True
         else:
             return False
@@ -64,7 +53,7 @@ class Dg(Click, ImageRec):
                 sleep(1.5)
         elif self.DG_COUNT == 0:
             self.DG_SWITCH = False
-            log.info(f"道馆结束，共进攻：{self.counter.get_record('last')}+{self.counter.count}={self.counter.count+self.counter.get_record('last')  if self.counter.get_record('last') else self.counter.count}次")
+            log.insert("4.0", f"道馆结束，共进攻：{self.counter.get_record('last')}+{self.counter.count}={self.counter.count+self.counter.get_record('last')  if self.counter.get_record('last') else self.counter.count}次")
 
     def chose_dg(self):
         try:
@@ -116,7 +105,7 @@ class Dg(Click, ImageRec):
                             continue
                         dg_rs = int("".join([char for char in dg_rs_result[0] if char.isdigit()]))  # 改为列表推导式取出数字
                         dg_xs = (dg_sj_num / dg_rs) if dg_rs != 0 else 10  # 计算系数
-                        log.info(f"{str(dg_sj_num):>3}万，{dg_rs:>4}人，系数：{dg_xs:.2f}")
+                        log.info(f"{str(dg_sj_num):<3}万，{str(dg_rs):>4}人，系数：{dg_xs:.2f}")
                         if self.decide_attack_or_not(dg_xs, dg_rs):
                             log.insert("5.1", f"系数{dg_xs:.2f}，人数{dg_rs}符合要求，开始挑战")
                             self.area_click(
@@ -140,7 +129,7 @@ class Dg(Click, ImageRec):
             self.area_click([686, 403, 796, 443])
             sleep(1)
         except Exception as e:
-            log.info(f"chose_dg()函数出错了：{e}，traceback:{traceback.format_exc()}")
+            log.error(f"chose_dg()函数出错了：{e}，traceback:{traceback.format_exc()}")
 
     def giveup(self):
         log.info(f"放弃馆主,该次共进攻次数：{self.counter.count}")
@@ -238,7 +227,7 @@ class Dg(Click, ImageRec):
     def run(self):
         sleep(self.main_ui_sleep)
         match_result = self.match_ui(self.uilist)
-        log.insert("3.1", f" MATCHED UI:{match_result}")
+        log.insert("2.1", f"Matched UI:{match_result}")
         match match_result:
             case "ready_ui":
                 self.dg_ready_ui()
@@ -252,11 +241,10 @@ class Dg(Click, ImageRec):
 
     def loop(self):
         # log.clear()
-        log.insert("2.1", f"{"道馆进攻程序开始":^27}")
+        log.info(f"{"道馆进攻程序开始":^27}")
         while self.DG_SWITCH:
             if not self.running.is_set():
                 break
-            # kw['window']['dg_progress'].update(value=f'开始进攻道馆第{dg.counter.count}次')
             self.run()
 
     def set_parms(self, **kwargs):

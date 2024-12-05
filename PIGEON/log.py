@@ -27,10 +27,19 @@ class Log:
                 if msg := self.filiter(message):  # 过滤日志信息
                     fmt_msg = self.format(msg, level)  # 格式化日志信息
                     if fmt_msg:
-                        self.emit(fmt_msg)  # 输出日志信息
-
+                        self.emit(fmt_msg, tag="info")  # 输出日志信息
                 else:
                     return
+            case "ERROR":
+                if msg := self.filiter(message):  # 过滤日志信息
+                    fmt_msg = self.format(msg, level)  # 格式化日志信息
+                    if fmt_msg:
+                        self.emit(fmt_msg, tag="error")  # 输出日志信息
+            case "DEBUG":
+                if msg := self.filiter(message):  # 过滤日志信息
+                    fmt_msg = self.format(msg, level)  # 格式化日志信息
+                    if fmt_msg:
+                        self.emit(fmt_msg, tag="debug")  # 输出日志信息
             case _:
                 pass
 
@@ -46,19 +55,27 @@ class Log:
         # 获取当前时间
         now = datetime.now().strftime("%H:%M:%S")
         # 格式化日志信息
+        match level:
+            case "INFO":
+                msg = {"time": f"| {now} | ", "content_info": f"{message}\n"}  # "tag":"content"
+            case "ERROR":
+                msg = {"time": f"| {now} | ", "content_error": f"{message}\n"}  # "tag":"content"
+            case "DEBUG":
+                msg = {"time": f"| {now} | ", "content_debug": f"{message}\n"}  # "tag":"content"
+        return msg
 
-        return f"[{now}]:{message}"
-
-    def emit(self, message):
+    def emit(self, message, tag=None):
         # 输出日志信息
         if self.log_emit:
-            # self.log_emit.yview_moveto(1)
-            self.log_emit.insert("7.0", message + "\n", tags="green_text")
+            index = 0
+            for _tag, content in message.items():
+                self.log_emit.insert(f"7.{index}", f"{content}", tags=_tag)
+                index = len(content)
             self.log_emit.yview_moveto(0)
         else:
             print(message)
 
-    def insert(self, cursor="end", msg="default message", tags=None):
+    def insert(self, cursor="end", msg="default message", tags="board"):
         # 获取当前时间
         # now = datetime.now().strftime("%H:%M:%S")
         line, column = int(cursor.split(".")[0]), int(cursor.split(".")[1])

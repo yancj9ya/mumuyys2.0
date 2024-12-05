@@ -1,1 +1,1 @@
-{"times": "200", "tp_keep_level": true, "ui_delay": 0.5, "set_window_top": 1, "dg_xs": "1:5", "dg_rs": 80, "tp_ticket_limit": 10, "monster_limit": 500, "with_tp": true}
+{"times": "100", "tp_keep_level": true, "ui_delay": 0.5, "set_window_top": 1, "dg_xs": "1:5", "dg_rs": 80, "tp_ticket_limit": 10, "monster_limit": 500, "with_tp": true}

@@ -19,7 +19,7 @@ class DgTab(ctk.CTkFrame):
         self.xs_input = ctk.CTkEntry(self, textvariable=self.dg_xs, width=50, justify="center")
         self.rs_input = ctk.CTkEntry(self, textvariable=self.dg_rs, width=50, justify="center")
         self.open_awards_folder = ctk.CTkButton(self, width=70, text="统计文件夹", command=self.open_awards_folder_func)
-        self.dg_btn = ToggleButton(self, text_off="开始道馆", name="dg_btn")
+        self.dg_btn = ToggleButton(self, text_off="开始道馆", name="道馆")
 
         # add widgets to layout
         self.xs.grid(row=0, column=0, padx=0, pady=5)

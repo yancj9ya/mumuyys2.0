@@ -17,9 +17,9 @@ class Tp(Click, ImageRec):
         self.uilist = [fight_ui, damo_ui, tp_main_ui, end_mark_ui, fail_ui]
         self.keep_57_flag = False
         self.ocr = Ocr()
-        self.counter = Counter()
-        self.quit_count = Counter()
-        self.fight_again_counter = Counter()
+        self.counter = Counter("tp")
+        self.quit_count = Counter("tp_quit_count")
+        self.fight_again_counter = Counter("tp_fight_again_count")
         self.running = kwargs.get("STOPSIGNAL", None)
         self.ui_delay = 0.5
         self.tp_jg_area = [
@@ -38,7 +38,7 @@ class Tp(Click, ImageRec):
     def quit_to_keep(self, area):
 
         log.info(f"start quit_to_keep on 57")
-        self.quit_count.count = 0
+        self.quit_count.reset()
         while True:
             if not self.running.is_set():
                 return

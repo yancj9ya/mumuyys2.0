@@ -1,16 +1,16 @@
-from PIGEON.log import Log
+from PIGEON.log import log
 from threading import Thread, Event
 from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh
-
+from win11toast import toast
 from time import sleep
 
-log = Log()
+# log = Log()
 
 
 class Task:
     TASK_PROCESS = "STOP"
     STOPSIGNAL = Event()
-    F_MAP = {"tp_btn": Tp, "dg_btn": Dg, "ltp_btn": Ltp, "ql_btn": Ql, "hd_btn": Hd, "ts_btn": Ts, "yh_btn": Yh}
+    F_MAP = {"结界突破": Tp, "道馆": Dg, "寮突破": Ltp, "契灵": Ql, "智能": Hd, "绘卷": Ts, "御魂": Yh}
 
     @classmethod
     def execute_task(cls, **kwargs):
@@ -36,7 +36,9 @@ class Task:
 
     @classmethod
     def start_task(cls, task=None, task_parms=None, STOPSIGNAL=None, **kwargs):
-        log.insert("1.0", f"{'━'*13}status{'━'*14}\n\n\n\n\n{'━'*14}Log{'━'*15}", tags="blue_text")
+        log.clear()
+        log.insert("1.0", f"{'━'*14}统计{'━'*14}\n\n\n\n\n{'━'*14}日志{'━'*14}\n", tags="sep")
+        log.info(f"ui_delay : {task_parms.get('ui_delay'):.3f} seconds")
         # 创建task任务实例
         task_instance = cls.F_MAP.get(task.name)(STOPSIGNAL=STOPSIGNAL, **kwargs)
         # 设置参数
@@ -54,4 +56,7 @@ class Task:
     @classmethod
     def task_finished(cls, **kwargs):
         log.info(f"Task {kwargs.get('Task').name} toggled")
+        log.error(f"test error message")
+        log.debug(f"test debug message")
         kwargs.get("Task").toggle_change()
+        toast(f"{kwargs.get('Task').name}", f"任务已完成")

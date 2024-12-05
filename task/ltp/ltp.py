@@ -25,7 +25,7 @@ class Ltp(Click, ImageRec):
             self.area_click(res)
             self.counter.increment()
             self.fight_again_counter.reset()  # 挑战成功，重置挑战次数
-            log.insert("2.0", f"开始第{self.counter.count}次寮突破")
+            log.insert("3.0", f"开始第{self.counter.count}次寮突破")
             return
         elif self.match_img(ltp_end_ui):
             self.times = 0
@@ -43,7 +43,7 @@ class Ltp(Click, ImageRec):
         self.fight_again_counter.increment()
         if self.fight_again_counter.count > 5:
             self.running.clear()
-            log.insert("4.0", f"已经连续{self.fight_again_counter.count}次挑战失败，请求人为介入")
+            log.info(f"已经连续{self.fight_again_counter.count}次挑战失败，请求人为介入")
             return
         self.area_click([828, 489, 899, 540])
         sleep(0.5)
@@ -55,7 +55,7 @@ class Ltp(Click, ImageRec):
         sleep(self.ui_delay)
         match_result = self.match_ui(self.uilist, accuracy=0.9)
 
-        log.insert("3.0", f"MATCHED UI:{match_result}")
+        log.insert("2.0", f"Matched UI:{match_result}")
         match match_result:
             # case 'jg_btn':
             #     self.area_click(self.match_img([jg_btn[0],[587,339,1068,558],'jg_btn']))
@@ -78,6 +78,7 @@ class Ltp(Click, ImageRec):
         pass
 
     def loop(self):
+        log.insert("5.0", "$开始寮突破")
         while self.times:
             if not self.running.is_set():
                 break

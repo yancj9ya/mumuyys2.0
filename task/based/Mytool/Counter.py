@@ -7,8 +7,9 @@ log = Log()
 class Counter:
     COUNTER_RECORD = {}
 
-    def __init__(self):
+    def __init__(self, name=None):
         try:
+            self.name = name
             self.count = 0
             self.start_time = time.time() - 5
         except Exception as e:
@@ -30,7 +31,7 @@ class Counter:
         try:
             self.count = 0
             self.start_time = time.time() - 5
-            log.debug("Counter Reset")
+            log.debug(f"Counter {self.name if self.name else ''} Reset")
         except Exception as e:
             log.error(f"Reset Error: {e}")
 

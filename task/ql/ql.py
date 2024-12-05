@@ -33,7 +33,7 @@ class Ql(Click, ImageRec):
             return
         else:
             for call_times in range(5):
-                log.insert("5.0", f"@第{call_times+1}次召唤 ")
+                log.debug(f"@第{call_times+1}次召唤 ")
                 self.area_click([1171, 475, 1201, 504])
                 sleep(0.5)
                 if call_times == 0:
@@ -47,14 +47,14 @@ class Ql(Click, ImageRec):
         if res := self.match_img(ql_fire):
             self.area_click(res)
         else:
-            log.insert("5.0", f"契灵未找到，开始召唤 ")
+            log.debug(f"契灵未找到，开始召唤 ")
             self.call_fire()
-            log.insert("5.0", f"召唤完成，共召唤{self.call_fire_times}次 ")
+            log.debug(f"召唤完成，共召唤{self.call_fire_times}次 ")
 
     def run(self):
         sleep(self.ui_delay)
         match_result = self.match_ui(self.uilist, accuracy=0.9)
-        log.insert("4.0", f"@匹配结果:{match_result} ")
+        log.insert("2.1", f"@匹配结果:{match_result} ")
         match match_result:
             case "fight_ui":
                 sleep(1)
@@ -66,7 +66,7 @@ class Ql(Click, ImageRec):
                 if res := self.match_img(btn_tz_ui):
                     self.area_click(res)
                     self.times_counter.increment()
-                    log.insert("3.0", f"@第{self.times_counter.count:^3d}次挑战 ")
+                    log.insert("3.1", f"@第{self.times_counter.count:^3d}次挑战 ")
             case "ql_cg_ui" | "ql_cg_t_ui":
                 self.cg_counter.increment()
                 # log.info(f'@捕获成功次数:{self.cg_counter.count}，概率：{self.cg_counter.count/self.times_counter.count*100:.2f}')
@@ -78,7 +78,8 @@ class Ql(Click, ImageRec):
     def loop(self):
         while self.running.is_set() and self.times_counter.count < self.times:
             self.run()
-            log.insert("2.0", f"@进度:{self.times_counter.count/self.times*100:.1f}%|成功次数:{self.cg_counter.count}|概率{self.cg_counter.count/(self.times_counter.count+1)*100:.2f}%")
+            log.insert("4.1", f"@进度:{self.times_counter.count/self.times*100:.1f}%")
+            log.insert("5.1", f"@捕获次数:{self.cg_counter.count} ，捕获概率:{self.cg_counter.count/(self.times_counter.count+1)*100:.2f}%")
         pass
 
     def set_parms(self, **kwargs):

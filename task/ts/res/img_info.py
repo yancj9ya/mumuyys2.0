@@ -7,3 +7,4 @@ ts_end_mark_ui = ["task/ts/res/ts_end_mark_ui.bmp", [67, 649, 94, 672], "ts_end_
 ts_cm_normal_btn = ["task/ts/res/ts_cm_normal_btn.bmp", [114, 66, 1257, 624], "ts_cm_normal_btn"]
 ts_cm_boss_btn = ["task/ts/res/ts_cm_boss_btn.bmp", [114, 66, 1257, 624], "ts_cm_boss_btn"]
 ts_end_box_ui = ["task/ts/res/ts_end_box_ui.bmp", [333, 272, 923, 581], "ts_end_box_ui"]
+ts_main_box = ["task/ts/res/ts_main_box.bmp", [7, 149, 138, 534], "ts_main_box"]

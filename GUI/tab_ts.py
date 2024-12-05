@@ -13,12 +13,16 @@ class TsTab(ctk.CTkFrame):
         # 绑定变量到ToggleButton类
         ToggleButton.values.update({"tp_ticket_limit": self.tp_ticket_limit, "monster_limit": self.monster_limit, "with_tp": self.with_tp})
         # Create widgets
+        # 突破上限
         self.tp_ticket_limit_label = ctk.CTkLabel(self, text="TP Ticket Limit:")
-        self.tp_ticket_limit_entry = ctk.CTkEntry(self, textvariable=self.tp_ticket_limit, width=50)
+        self.tp_ticket_limit_entry = ctk.CTkEntry(self, textvariable=self.tp_ticket_limit, width=50, justify="center")
+        # 怪物上限
         self.monster_limit_label = ctk.CTkLabel(self, text="Monster Limit:")
-        self.monster_limit_entry = ctk.CTkEntry(self, textvariable=self.monster_limit, width=50)
+        self.monster_limit_entry = ctk.CTkEntry(self, textvariable=self.monster_limit, width=50, justify="center")
+        # 开启突破开关
         self.with_tp_switch = ctk.CTkSwitch(self, text="开启突破", variable=self.with_tp)
-        self.start_ts_button = ToggleButton(self, text_off="开始探索", name="ts_btn")
+        # 开始探索按钮
+        self.start_ts_button = ToggleButton(self, text_off="开始探索", name="绘卷")
         # Add widgets to layout
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)

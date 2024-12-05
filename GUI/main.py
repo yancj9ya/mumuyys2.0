@@ -48,9 +48,13 @@ class MyTabView(ctk.CTkTabview):
 class log_area(ctk.CTkTextbox):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        self.tag_config("blue_text", foreground="#87CEFA")  # 蓝色文本标签
-        self.tag_config("green_text", foreground="green")  # 绿色文本标签
-        self.configure(fg_color="#000000", text_color="green", font=("微软雅黑", 12))
+        self.tag_config("sep", foreground="#14bacc")  # 分割线标签
+        self.tag_config("board", foreground="#87CEFA")  # 蓝色文本标签
+        self.tag_config("content_info", foreground="#48BB31")  # 绿色文本标签
+        self.tag_config("content_error", foreground="#FF0006")  # 红色文本标签
+        self.tag_config("content_debug", foreground="#FFA500")  # 黄色文本标签
+        self.tag_config("time", foreground="grey")  # 时间文本标签
+        self.configure(fg_color="black", text_color="green", font=("微软雅黑", 12))
 
 
 class App(ctk.CTk):

@@ -25,7 +25,7 @@ class Hd(Click, ImageRec):
             self.BTN_TZ = btn_res[0:2] + ["btn_tz"]
             log.info(f"找到按钮：{btn_res}")
             self.uilist.append(self.BTN_TZ)
-            log.info(f"按钮添加到ui列表：{self.BTN_TZ}")
+            log.debug(f"按钮添加到ui列表：{self.BTN_TZ}")
             match btn_res[2]:
                 case "btn_yyh":
                     log.insert("5.1", f"识别模式：业原火")
@@ -43,7 +43,7 @@ class Hd(Click, ImageRec):
                     log.insert("5.1", f"识别模式：版本活动")
                     pass
         else:
-            log.info("未找到按钮")
+            log.error("未找到按钮")
 
     @property
     def random_delay(self):
@@ -58,7 +58,7 @@ class Hd(Click, ImageRec):
 
     def random_duo_area_click(self, rect_list, weight_list, click_twice=False):
         if len(rect_list) != len(weight_list):
-            log.info("rect_list与weight_list长度不一致")
+            log.error("rect_list与weight_list长度不一致")
             return
         click_area = choices(rect_list, weight_list)[0]
         if click_twice:

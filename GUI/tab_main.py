@@ -15,12 +15,12 @@ class MainTab(ctk.CTkFrame):
 
         # add widgets here
         # buttons
-        self.yh_btn = ToggleButton(self, text_off="御魂", name="yh_btn")
-        self.ql_btn = ToggleButton(self, text_off="契灵", name="ql_btn")
-        self.hd_btn = ToggleButton(self, text_off="智能", name="hd_btn")
-        self.tp_btn = ToggleButton(self, text_off="结界突破", name="tp_btn")
-        self.ltp_btn = ToggleButton(self, text_off="寮突破", name="ltp_btn")
-        self.dg_btn = ToggleButton(self, text_off="道馆", name="dg_btn")
+        self.yh_btn = ToggleButton(self, text_off="御魂", name="御魂")
+        self.ql_btn = ToggleButton(self, text_off="契灵", name="契灵")
+        self.hd_btn = ToggleButton(self, text_off="智能", name="智能")
+        self.tp_btn = ToggleButton(self, text_off="结界突破", name="结界突破")
+        self.ltp_btn = ToggleButton(self, text_off="寮突破", name="寮突破")
+        self.dg_btn = ToggleButton(self, text_off="道馆", name="道馆")
         # text
         self.text_times = ctk.CTkLabel(self, text="执行次数:", font=("微软雅黑", 14))
         # combobox

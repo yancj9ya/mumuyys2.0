@@ -14,9 +14,10 @@ class Ts(Click, ImageRec):
     def __init__(self, **values):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.monster_counter = Counter()
-        self.tp_ticket_count = Counter()
+        self.monster_counter = Counter(name="monster")
+        self.tp_ticket_count = Counter(name="tp_ticket")
         self.uilist = [
+            ts_main_box,
             ts_main_ui,
             ts_tz_ui,
             ts_cm_ui,
@@ -29,7 +30,7 @@ class Ts(Click, ImageRec):
         self.running = values.get("STOPSIGNAL", True)
         self.tp_ticket_limit = 27
         self.monster_limit = 200
-        self.switch_ui = SwitchUI()
+        self.switch_ui = SwitchUI(self.running)
 
     def exit_once(self):
         self.area_click([34, 42, 69, 81])  # 点击退出按钮
@@ -88,6 +89,10 @@ class Ts(Click, ImageRec):
         ui_serch_result = self.match_ui(self.uilist)
         log.insert("2.1", f" Matched ui:{ui_serch_result}")
         match ui_serch_result:
+            case "ts_main_box":
+                self.switch_ui.switch_to("ts_main_ui")  # 先切换到探索主界面
+                if box_cor := self.match_img(ts_main_box):
+                    self.area_click(box_cor)  # 点击box
             case "ts_main_ui":
                 self.area_click([1081, 504, 1208, 572])
             case "ts_tz_ui":
@@ -108,29 +113,31 @@ class Ts(Click, ImageRec):
 
     def loop(self):
         print(f'ts_loop start at {strftime("%Y-%m-%d %H:%M:%S", localtime())}')
-        current_task = "TP"
+        # current_task = "TP"
         while all([self.monster_counter.count < self.monster_limit, self.running.is_set()]):
-            print(f"current_task:{current_task}")
-            match current_task:
+            print(f"current_task:{self.current_task}")
+            match self.current_task:
                 case "TP":
                     log.info(f"开始突破...")
                     if self.switch_ui.switch_to("tp_main_ui"):  # 切换到突破主界面
                         log.insert("3.1", f"{' 突破进行中...':<27}")
                         self.tp.loop()  # 进入TP界面
                         self.tp_ticket_count.reset()  # 重置TP票数
-                        current_task = "TS"
+                        self.current_task = "TS"
                 case "TS":
                     if self.switch_ui.switch_to("ts_main_ui"):
                         log.info(f"开始探索...")  # 切换到探索主界面
                         while all([self.tp_ticket_count.count < self.tp_ticket_limit, self.monster_counter.count < self.monster_limit, self.running.is_set()]):
                             self.run()
-                        current_task = "TP"
+                        self.current_task = "TP"
 
     def set_parms(self, **values):
         self.ui_delay = values.get("ui_delay", 0.5)
         if values.get("with_tp", True):
+            self.current_task = "TP"
             self.tp_ticket_limit = values.get("tp_ticket_limit", 27)
         else:
+            self.current_task = "TS"
             self.tp_ticket_limit = 100000
         self.monster_limit = values.get("monster_limit", 200)
 
