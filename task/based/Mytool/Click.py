@@ -16,7 +16,7 @@ class Click(Windows):
     def __init__(self):
         super().__init__()
 
-    def click(self, x, y, press_time=0.2) -> None:
+    def click(self, x, y, press_time=0.2, animation_time=0.05) -> None:
         x, y = int(x), int(y)  # 缩放坐标
         # self.notifyparent(x, y)#通知父类
         # self.mouseactivate()
@@ -24,19 +24,20 @@ class Click(Windows):
         self.left_down(x, y)
         sleep(press_time)
         self.left_up(x, y)
+        sleep(animation_time)
         # self.setcursor()
         # self.mouse_move(x, y)
 
-    def area_click(self, area: list | tuple, press_time=0.2, double_click=False) -> None:
+    def area_click(self, area: list | tuple, press_time=0.2, double_click=False, double_click_time=0.1, animation_time=0.05) -> None:
         # rand_x = randint(area[0], area[2])
         # rand_y = randint(area[1], area[3])
         rand_x, rand_y = RandomCoord(area)
         if double_click:
-            self.click(rand_x, rand_y, press_time)
-            sleep(0.1)
-            self.click(rand_x, rand_y, press_time)
+            self.click(rand_x, rand_y, press_time, animation_time)
+            sleep(double_click_time)
+            self.click(rand_x, rand_y, press_time, animation_time)
         else:
-            self.click(rand_x, rand_y, press_time)
+            self.click(rand_x, rand_y, press_time, animation_time)
 
     def mouse_scroll(self, d_t: tuple[str, int], x: int, y: int) -> None:
         rect = self.get_window_rect()

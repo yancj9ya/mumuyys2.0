@@ -1,5 +1,23 @@
 # 为中间层写一个日志系统
-from datetime import datetime, date, time
+from datetime import datetime, timedelta
+import os
+import inspect
+
+
+class inspect_infomation:
+    @staticmethod
+    def get_more_info():
+        # 获取调用栈
+        stack = inspect.stack()
+        # 获取帧信息
+        pre_frame = stack[2]
+        # 获取调用信息
+        code = pre_frame.frame.f_code
+        function_name = code.co_name  # 当前函数名
+        file_name = code.co_filename.split("\\")[-1]  # 当前文件名
+        line_number = pre_frame.lineno  # 当前行号
+
+        return file_name, function_name, line_number
 
 
 class Log:
@@ -11,15 +29,19 @@ class Log:
 
     def info(self, message):
         self.handler(message, "INFO")
+        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info())
 
     def error(self, message):
         self.handler(message, "ERROR")
+        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info())
 
     def debug(self, message):
         self.handler(message, "DEBUG")
+        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info())
 
     def warning(self, message):
         self.handler(message, "WARNING")
+        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info())
 
     def handler(self, message, level):
         match level:
@@ -89,9 +111,70 @@ class Log:
                 self.log_emit.delete(f"{line}.0", f"{line}.{re_index}")  # 不删除换行符，避免影响光标位置
             self.log_emit.insert(f"{line}.{column}", f"{msg}", tags=tags)  # 插入日志信息
             self.log_emit.yview_moveto(0)
+        Log_to_file.logtToFile(msg, more_info=inspect_infomation.get_more_info())
 
     def clear(self):
         self.log_emit.delete("1.0", "end")  # 清空日志信息
+
+    def __del__(self):
+        Log_to_file.rename_file_if_older_than_one_day("log/log.txt")
+
+
+class Log_to_file:
+    is_open = True
+    last_log_message = None
+
+    @classmethod
+    def _fmt(cls, message, more_info: tuple = None):
+        # 获取当前时间
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # 格式化日志信息
+        message = message.replace("\n", " ")  # 去掉换行符
+        if not cls.last_log_message:
+            cls.write_to_file(f"\n{"━"*60}{now}{'━'*60}\n")
+            cls.last_log_message = message
+        elif message == cls.last_log_message:
+            return None
+        else:
+            cls.last_log_message = message
+
+        # 格式化日志信息
+        msg = f"{now}|{more_info[0]:^15}|{more_info[1]:^13}|{more_info[2]:<3}: {message}\n"
+        return msg
+
+    @classmethod
+    def logtToFile(cls, message: str, more_info: tuple = None):
+        if msg := cls._fmt(message, more_info):
+            cls.write_to_file(msg)
+        else:
+            return
+
+    @classmethod
+    def write_to_file(cls, message: str):
+        if cls.is_open:
+            with open("log/log.txt", "a", encoding="utf-8") as f:
+                f.write(message)
+        else:
+            pass
+            # print(f"日志文件已关闭，无法写入日志：{message}")
+
+    @classmethod
+    def rename_file_if_older_than_one_day(file_path):
+        # 获取文件的创建时间
+        creation_time = os.path.getctime(file_path)
+        creation_date = datetime.fromtimestamp(creation_time)
+
+        # 获取当前时间
+        current_time = datetime.now()
+
+        # 计算文件创建时间是否超过1天
+        if current_time - creation_date > timedelta(days=1):
+            # 生成新的文件名
+            new_file_name = creation_date.strftime("%Y-%m-%d %H:%M:%S") + "_" + os.path.basename(file_path)
+            new_file_path = os.path.join(os.path.dirname(file_path), new_file_name)
+
+            # 重命名文件
+            os.rename(file_path, new_file_path)
 
 
 log = Log()

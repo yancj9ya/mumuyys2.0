@@ -6,6 +6,7 @@ from time import sleep
 from PIGEON.log import log
 from task.based.Mytool.Counter import Counter
 from random import choices
+from time import time
 
 
 class Ltp(Click, ImageRec):
@@ -13,12 +14,13 @@ class Ltp(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [fight_ui, main_ui, end_mark_ui, damo_ui, fail_ui]
+        self.uilist = [fight_ui, main_ui, damo_ui, end_mark_ui, fail_ui]
         self.ui_delay = 0.5
         self.running = kwargs.get("STOPSIGNAL", None)
         self.times = 1
         self.counter = Counter()
         self.fight_again_counter = Counter()
+        self.reward_dict = {}
 
     def get_in_fight(self):
         if res := self.match_img(jg_btn):
@@ -57,16 +59,12 @@ class Ltp(Click, ImageRec):
 
         log.insert("2.0", f"Matched UI:{match_result}")
         match match_result:
-            # case 'jg_btn':
-            #     self.area_click(self.match_img([jg_btn[0],[587,339,1068,558],'jg_btn']))
-            #     #log.debug(f'jg_btn at:{jg_btn_result}')
-            #     self.counter.increment()
-            #     log.info(f'开始第{self.counter.count}次寮突破')
             case "main_ui":
                 self.get_in_fight()
             case "end_mark_ui":
-                self.area_click([733, 336, 1198, 644], press_time=0.02, double_click=True)  # double click
+                self.area_click([733, 336, 1198, 644], press_time=0.02)  # double click
             case "damo_ui":
+                self.reward_confirm()
                 self.area_click([733, 336, 1198, 644], press_time=0.02, double_click=True)
             case "fight_ui":
                 sleep(1)
@@ -76,6 +74,29 @@ class Ltp(Click, ImageRec):
             case _:
                 pass
         pass
+
+    def reward_confirm(self):
+        if not hasattr(self, "time_reward"):
+            self.time_reward = time()
+            log.debug(f"time_reward set")
+        elif time() - self.time_reward > 5:
+            self.time_reward = time()
+            k_to_t = {"blue_t": "蓝票", "m_hj": "中", "s_hj": "小", "b_hj": "大", "jjk": "结界卡"}
+            award_str = " "
+            sleep(0.5)
+            if res := self.stat_reward("task/ltp/res/reward", [156, 132, 1099, 553]):
+                for reward in res.keys():
+                    # log.info(reward)
+                    if reward not in self.reward_dict:
+                        self.reward_dict[reward] = 1
+                    else:
+                        self.reward_dict[reward] += 1
+                log.info(f"*" * 16)
+                for key, value in self.reward_dict.items():
+                    log.info(f" {key:^10}: {value:^2}")
+                    award_str += f"{k_to_t[key]}x{value} "
+                log.info(f"*" * 16)
+                log.insert("4.0", f"{award_str}")
 
     def loop(self):
         log.insert("5.0", "$开始寮突破")

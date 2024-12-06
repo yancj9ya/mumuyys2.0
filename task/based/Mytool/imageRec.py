@@ -183,7 +183,7 @@ class ImageRec:
                     e_X = w + s_X
                     e_Y = h + s_Y
                     if return_only_one:
-                        return [img, [s_X, s_Y, e_X, e_Y], img.stem]
+                        return [str(img), [s_X, s_Y, e_X, e_Y], img.stem]
                     return_dict[img.stem] = [s_X, s_Y, e_X, e_Y]
             if return_dict:
                 return return_dict

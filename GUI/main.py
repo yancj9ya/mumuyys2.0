@@ -10,6 +10,7 @@ from GUI.tab_main import MainTab
 from GUI.tab_setting import SettingTab
 from GUI.tab_dg import DgTab
 from GUI.tab_ts import TsTab
+from GUI.tab_log import LogTab
 
 
 # from PIGEON import Task
@@ -37,12 +38,14 @@ class MyTabView(ctk.CTkTabview):
         self.settingtab = SettingTab(self.tab("设置"))
         self.dgtab = DgTab(self.tab("道馆"))
         self.tstab = TsTab(self.tab("绘卷"))
+        self.logtab = LogTab(self.tab("log"))
 
         # add widgets on tabs
         self.maintab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
         self.settingtab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
         self.dgtab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
         self.tstab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
+        self.logtab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
 
 
 class log_area(ctk.CTkTextbox):

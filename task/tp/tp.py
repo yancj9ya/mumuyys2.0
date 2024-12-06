@@ -78,7 +78,7 @@ class Tp(Click, ImageRec):
                     if len(res) == 8:
                         self.quit_to_keep(area)
                         return  # 直接返回uimatch，避免战斗的点击标记
-                self.area_click(area)
+                self.area_click(area, press_time=0.1)
                 sleep(0.7)
                 # 根据区域缩小进攻按钮的寻找范围，像素位移(249,262)
                 if jg := self.match_img(

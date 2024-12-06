@@ -65,8 +65,10 @@ class Ts(Click, ImageRec):
                     sleep(1.5)  # 等待1.5秒
 
     def reward_confirm(self):
+
         k_to_t = {"blue_t": "蓝票", "m_hj": "中", "s_hj": "小", "b_hj": "大", "tp_ticket": "突破卷"}
         award_str = " "
+        # sleep(0.5)
         if res := self.stat_reward("task/ts/res/reward", [256, 156, 1100, 449]):
             for reward in res.keys():
                 # log.info(reward)
@@ -103,11 +105,12 @@ class Ts(Click, ImageRec):
             case "ts_end_mark_ui":
                 self.area_click([990, 462, 1125, 520])
             case "damo_ui":
+                sleep(0.5)
                 self.reward_confirm()
                 self.area_click([990, 462, 1125, 520])
                 sleep(0.5)
                 self.area_click([990, 462, 1125, 520])
-                sleep(0.5)
+
             case _:
                 sleep(1)
 

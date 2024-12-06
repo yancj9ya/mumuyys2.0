@@ -18,6 +18,7 @@ class Hd(Click, ImageRec):
         self.uilist = [fight_ui, damo_ui, end_mark_ui, sl_ui, end_999_hdyh_ui, ready_ui]
         self.running = kwargs.get("STOPSIGNAL", True)
         self.times = 0
+        self.reward_dict = {}
 
     # 寻找按钮并且识别次数
     def find_btn_tz(self):
@@ -85,8 +86,10 @@ class Hd(Click, ImageRec):
             case "fight_ui":
                 sleep(1)
             case "damo_ui":
+                self.reward_confirm()
                 self.random_probability_delay(0.03)  # 在100次里面随机3次范围在2-4的长时延迟
-                self.area_click([990, 462, 1125, 520])
+                self.area_click([990, 462, 1125, 520], double_click=True, double_click_time=0.2)
+                # sleep(1.5)
             case "sl_ui":
                 self.random_probability_delay(0.03)
                 rect_list = [(816, 282, 1236, 672), (490, 601, 766, 683)]
@@ -97,7 +100,7 @@ class Hd(Click, ImageRec):
             case "btn_tz":
                 self.area_click(self.BTN_TZ[1])
                 self.hd_counter.increment()
-                log.insert("3.1", f"开始第{self.hd_counter.count}次挑战")
+                # log.insert("3.1", f"开始第{self.hd_counter.count}次挑战")
             case "end_999_hdyh_ui":
                 sleep(self.random_delay)
                 rect_list = [
@@ -109,6 +112,29 @@ class Hd(Click, ImageRec):
                 self.random_duo_area_click(rect_list, weight_list, click_twice=True)
             case "ready_ui":
                 self.area_click([1134, 551, 1227, 621])
+
+    def reward_confirm(self):
+        if not hasattr(self, "time_reward"):
+            self.time_reward = time()
+            log.debug(f"time_reward set")
+        elif time() - self.time_reward > 5:
+            self.time_reward = time()
+            k_to_t = {"blue_t": "蓝票", "m_hj": "中", "s_hj": "小", "b_hj": "大", "tp_ticket": "突破卷"}
+            award_str = " "
+            sleep(0.5)
+            if res := self.stat_reward("task/ts/res/reward", [156, 132, 1099, 553]):
+                for reward in res.keys():
+                    # log.info(reward)
+                    if reward not in self.reward_dict:
+                        self.reward_dict[reward] = 1
+                    else:
+                        self.reward_dict[reward] += 1
+                log.info(f"*" * 16)
+                for key, value in self.reward_dict.items():
+                    log.info(f" {key:^10}: {value:^2}")
+                    award_str += f"{k_to_t[key]}x{value} "
+                log.info(f"*" * 16)
+                log.insert("3.1", f"{award_str}")
 
     def loop(self):
         while self.hd_counter.count < self.times and self.running.is_set():
