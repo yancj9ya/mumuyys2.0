@@ -139,7 +139,7 @@ class Log_to_file:
             cls.last_log_message = message
 
         # 格式化日志信息
-        msg = f"{now}|{more_info[0]:^15}|{more_info[1]:^13}|{more_info[2]:<3}: {message}\n"
+        msg = f">{now}|{more_info[0]:^15}|{more_info[1]:^15}|{more_info[2]:<3}|: {message}\n"
         return msg
 
     @classmethod
