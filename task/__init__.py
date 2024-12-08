@@ -6,6 +6,7 @@ from task.hd.hd import Hd
 from task.ts.ts import Ts
 from task.yh.yh import Yh
 from task.xz.xz import Xz
+from task.areademon.areademon import Ad
 
 
 import sys

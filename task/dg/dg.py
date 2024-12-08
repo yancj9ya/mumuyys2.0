@@ -241,7 +241,7 @@ class Dg(Click, ImageRec):
 
     def loop(self):
         # log.clear()
-        log.info(f"{"道馆进攻程序开始":^27}")
+        log.info(f"{'道馆进攻程序开始':^27}")
         while self.DG_SWITCH:
             if not self.running.is_set():
                 break

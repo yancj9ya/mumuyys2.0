@@ -1,0 +1,8 @@
+rrr=['D:/python/mumuyys2.0/DevTool/imgtest\rrr.bmp', [798, 239, 911, 337], 'rrr']
+rrr=['D:/python/mumuyys2.0/DevTool/imgtest\rrr.bmp', [798, 239, 911, 337], 'rrr']
+dd=['DevTool\imgtest\dd.bmp', [834, 290, 1023, 429], 'dd']
+nnn=['DevTool\imgtest/nnn.bmp', [917, 301, 1145, 487], 'nnn']
+nnn=['DevTool\imgtest/nnn.bmp', [917, 301, 1145, 487], 'nnn']
+nnn=['DevTool\imgtest/nnn.bmp', [548, 70, 750, 108], 'nnn']
+opop=['DevTool/imgtest/opop.bmp', [909, 274, 1075, 390], 'opop']
+battle=['DevTool/imgtest/battle.bmp', [1084, 109, 1222, 252], 'battle']

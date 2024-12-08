@@ -122,7 +122,7 @@ class Tp(Click, ImageRec):
             case "tp_main_ui":
                 self.tp_main_ui()
             case "damo_ui":
-                self.stat_reward()
+                self.stat_award()
                 self.counter.increment()
                 log.info(f"第{self.counter.count}次突破进攻Done！")
                 self.area_click(damo_ui[1])

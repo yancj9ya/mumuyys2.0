@@ -151,6 +151,6 @@ class Ts(Click, ImageRec):
         self.tp.set_parms(
             ui_delay=values.get("ui_delay", 0.5),
         )
-        self.tp.stat_reward = self.reward_confirm
+        self.tp.stat_award = self.reward_confirm
 
         pass

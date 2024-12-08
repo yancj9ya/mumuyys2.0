@@ -1,6 +1,7 @@
 import networkx as nx
 from time import sleep
 from task.based.switchui.res.switch_img_info import *
+from task.based.switchui.res.page_switch_coord import *
 from task.based.Mytool.Click import Click
 from task.based.Mytool.imageRec import ImageRec
 from PIGEON.log import log
@@ -10,35 +11,49 @@ from PIGEON.log import log
 G = nx.Graph()
 for img_ui in ui_list_keys:
     G.add_node(img_ui)
-G.add_edge("tp_main_damo", "tp_main_ui", weight=1)
-G.add_edge("tp_main_ui", "ts_main_ui", weight=1)
-G.add_edge("tp_end_mark_ui", "tp_main_ui", weight=1)
-G.add_edge("ts_main_ui", "ts_tz_ui", weight=1)
-G.add_edge("ts_tz_ui", "ts_cm_ui", weight=1)
-G.add_edge("ts_cm_ui", "ts_tz_ui", weight=2)
-G.add_edge("ts_end_mark_ui", "ts_cm_ui", weight=1)
+G.add_edge("tp_main_damo", "tp_main_ui", weight=1)  # 突破达摩到突破主界面
+G.add_edge("tp_main_ui", "ts_main_ui", weight=1)  # 突破主界面到探索界面
+G.add_edge("tp_end_mark_ui", "tp_main_ui", weight=1)  # 突破结束到突破主界面
+G.add_edge("ts_main_ui", "ts_tz_ui", weight=1)  # 探索界面到探索挑战界面
+G.add_edge("ts_tz_ui", "ts_cm_ui", weight=1)  # 探索挑战界面到副本困28界面
+G.add_edge("ts_cm_ui", "ts_tz_ui", weight=2)  # 副本困28界面到探索挑战界面
+G.add_edge("ts_end_mark_ui", "ts_cm_ui", weight=1)  # 探索结束到副本困28界面
+G.add_edge("home_page_fold", "home_page_unfold", weight=1)
+G.add_edge("home_page_unfold", "ts_main_ui", weight=1)  # home到突破主界面
+G.add_edge("ts_main_ui", "area_demon_ui", weight=1)  # 探索界面到地鬼界面
+
 # 根据最短路径具体需要实施的每一步切换的点击操作的坐标
 ui_map = {
     "tp_main_ui": {
-        "ts_main_ui": (1189, 117, 1220, 150),
+        "ts_main_ui": tp_main_TO_ts_main,
     },
     "ts_main_ui": {
-        "ts_tz_ui": (1092, 514, 1204, 563),
-        "tp_main_ui": (258, 645, 299, 676),
+        "ts_tz_ui": ts_cm_TO_ts_tz,
+        "tp_main_ui": ts_main_TO_tp_main,
+        "area_demon_ui": ts_main_TO_area_demon,
     },
     "ts_tz_ui": {
-        "ts_cm_ui": (895, 516, 990, 558),
-        "ts_main_ui": (1027, 133, 1069, 171),
+        "ts_cm_ui": ts_tz_TO_ts_cm,
+        "ts_main_ui": ts_tz_TO_ts_main,
     },
-    "ts_cm_ui": {"ts_tz_ui": [(34, 42, 69, 81), (718, 389, 823, 415)]},
+    "ts_cm_ui": {"ts_tz_ui": ts_cm_TO_ts_tz},
     "tp_end_mark_ui": {
-        "tp_main_ui": (990, 462, 1125, 520),
+        "tp_main_ui": tp_end_mark_TO_tp_main,
     },
     "ts_end_mark_ui": {
-        "ts_cm_ui": (990, 462, 1125, 520),
+        "ts_cm_ui": ts_end_mark_TO_ts_cm,
     },
     "tp_main_damo": {
-        "tp_main_ui": (560, 475, 662, 551),
+        "tp_main_ui": tp_damo_TO_tp_main,
+    },
+    "home_page_unfold": {
+        "ts_main_ui": home_page_unfold_TO_ts_main,
+    },
+    "home_page_fold": {
+        "home_page_unfold": home_page_fold_TO_home_page_unfold,
+    },
+    "area_demon_ui": {
+        "ts_main_ui": area_demon_TO_ts_main,
     },
 }
 
@@ -94,13 +109,18 @@ class SwitchUI:
                     # 执行坐标
                     if step is None:
                         raise Exception(f"Can't find step from {s_page} to {next_page}")
-                    if type(step[0]) == tuple:
+                    if type(step) == list:
                         for p in step:
                             self.click.area_click(p)
                             sleep(0.8)
-                    else:
+                    elif type(step) == tuple:
                         self.click.area_click(step)
-                        sleep(1)
+                    elif type(step) == str:
+                        if res := self.imageRec.match_img(ui_list[step], accuracy=0.7):
+                            self.click.area_click(res)
+                    else:
+                        raise Exception(f"Invalid step type: {type(step)}")
+                    sleep(1)
                     # 检测是否已经位于目标page:next_page
                     if self.find_current_ui() == next_page:
                         # 如果已经位于目标page:next_page，则继续循环执行
@@ -115,23 +135,7 @@ class SwitchUI:
                 else:
                     log.info(f"Switch to {target_ui} success")
                     return True  # 切换成功，返回True
-            #     for page, next_page in zip(path, path[1:]):
-            #         if page in ui_map:
-            #             for ui, pos in ui_map[page].items():
-            #                 if ui == next_page:
-            #                     # log.info(f"[{page}]->[{next_page}]")
-            #                     # 如果切换ui需要多次点击，则为tuple构成的 list
-            #                     # 如果只需要单击一次，则为单个tuple
-            #                     if type(pos[0]) == tuple:
-            #                         for p in pos:
-            #                             self.click.area_click(p)
-            #                             sleep(0.8)
-            #                     else:
-            #                         self.click.area_click(pos)
-            #                     sleep(1)
-            #         else:
-            #             log.info(f"{page} not in ui_map")
-            # return True  # 切换成功，返回True
+
         except Exception as e:
             log.error(f"@SwitchUI: {e}")
 
@@ -141,6 +145,9 @@ class SwitchUI:
 
 
 if __name__ == "__main__":
-    pass
-    # nx.draw(G, with_labels=True, node_color="lightblue", node_size=700, font_weight="bold")
-    # plt.show()
+    import os
+
+    os.path.append("D:\python\mumuyys2.0\\")
+
+    swtich = SwitchUI()
+    swtich.switch_to("ts_main_ui")

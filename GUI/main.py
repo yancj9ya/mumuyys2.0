@@ -58,6 +58,22 @@ class log_area(ctk.CTkTextbox):
         self.tag_config("content_debug", foreground="#FFA500")  # 黄色文本标签
         self.tag_config("time", foreground="grey")  # 时间文本标签
         self.configure(fg_color="black", text_color="green", font=("微软雅黑", 12))
+        self.Stop_auto_scroll = True
+        self.bind("Enter", self.mouse_in_log_area)
+        self.bind("Leave", self.mouse_out_log_area)
+
+    def mouse_in_log_area(self, event):
+        self.Stop_auto_scroll = True
+        print(f"{event}, mouse in log area")
+
+    def mouse_out_log_area(self, event):
+        self.Stop_auto_scroll = False
+        print(f"{event}, mouse out log area")
+
+    def yview_moveto(self, fraction):
+        if self.Stop_auto_scroll:
+            return
+        return super().yview_moveto(fraction)
 
 
 class App(ctk.CTk):

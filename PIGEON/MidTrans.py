@@ -1,6 +1,6 @@
 from PIGEON.log import log
 from threading import Thread, Event
-from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh
+from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad
 from win11toast import toast
 from time import sleep
 
@@ -10,7 +10,7 @@ from time import sleep
 class Task:
     TASK_PROCESS = "STOP"
     STOPSIGNAL = Event()
-    F_MAP = {"结界突破": Tp, "道馆": Dg, "寮突破": Ltp, "契灵": Ql, "智能": Hd, "绘卷": Ts, "御魂": Yh}
+    F_MAP = {"结界突破": Tp, "地鬼": Ad, "寮突破": Ltp, "契灵": Ql, "智能": Hd, "绘卷": Ts, "御魂": Yh, "道馆": Dg}
 
     @classmethod
     def execute_task(cls, **kwargs):
@@ -26,7 +26,7 @@ class Task:
         else:
             if cls.TASK_PROCESS == "RUNNING":
                 log.error(f"Task already running")
-                task.toogle_change()
+                task.toggle_change()
                 return
             log.info(f"Task {task.cget('text')} started")
             cls.STOPSIGNAL.set()
@@ -44,7 +44,7 @@ class Task:
         # 创建task任务实例
         task_instance = cls.F_MAP.get(task.name)(STOPSIGNAL=STOPSIGNAL, **kwargs)
         # 设置参数
-        print(f"Setting task parameters {task_parms}")
+        log.file(f"Setting task parameters {task_parms}")
         task_instance.set_parms(**task_parms)
         # 启动任务线程
         cls.TASK_PROCESS = "RUNNING"

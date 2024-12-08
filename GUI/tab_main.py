@@ -20,7 +20,7 @@ class MainTab(ctk.CTkFrame):
         self.hd_btn = ToggleButton(self, text_off="智能", name="智能")
         self.tp_btn = ToggleButton(self, text_off="结界突破", name="结界突破")
         self.ltp_btn = ToggleButton(self, text_off="寮突破", name="寮突破")
-        self.dg_btn = ToggleButton(self, text_off="道馆", name="道馆")
+        self.dg_btn = ToggleButton(self, text_off="地域鬼王", name="地鬼")
         # text
         self.text_times = ctk.CTkLabel(self, text="执行次数:", font=("微软雅黑", 14))
         # combobox

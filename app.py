@@ -2,8 +2,8 @@
 
 from GUI import App
 from GUI import ToggleButton
-from PIGEON import Task
-from PIGEON import Log
+from PIGEON.MidTrans import Task
+from PIGEON.log import Log
 
 
 if __name__ == "__main__":

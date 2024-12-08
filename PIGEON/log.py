@@ -116,6 +116,9 @@ class Log:
     def clear(self):
         self.log_emit.delete("1.0", "end")  # 清空日志信息
 
+    def file(self, message):
+        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info())
+
     def __del__(self):
         Log_to_file.rename_file_if_older_than_one_day("log/log.txt")
 
@@ -158,7 +161,7 @@ class Log_to_file:
             pass
             # print(f"日志文件已关闭，无法写入日志：{message}")
 
-    @classmethod
+    @staticmethod
     def rename_file_if_older_than_one_day(file_path):
         # 获取文件的创建时间
         creation_time = os.path.getctime(file_path)

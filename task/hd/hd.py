@@ -40,6 +40,7 @@ class Hd(Click, ImageRec):
                     self.times = 11
                 case "btn_yl":
                     log.insert("5.1", f"识别模式：御灵挑战")
+                    self.need_stat_reward = True
                 case _:
                     log.insert("5.1", f"识别模式：版本活动")
                     pass
@@ -114,6 +115,9 @@ class Hd(Click, ImageRec):
                 self.area_click([1134, 551, 1227, 621])
 
     def reward_confirm(self):
+        if not hasattr(self, "need_stat_reward"):
+            log.insert("3.1", f"$ui_delay: {self.ui_delay}")
+            return
         if not hasattr(self, "time_reward"):
             self.time_reward = time()
             log.debug(f"time_reward set")
@@ -143,6 +147,7 @@ class Hd(Click, ImageRec):
         pass
 
     def set_parms(self, **kwargs):
-        self.ui_delay = int(kwargs.get("ui_delay", 0.5))
+        self.ui_delay = kwargs.get("ui_delay", 0.5)
         self.times = int(kwargs.get("times", 0))
+        log.info(f"设置参数：ui_delay={self.ui_delay}, times={self.times}")
         pass
