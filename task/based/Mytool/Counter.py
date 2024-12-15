@@ -15,6 +15,18 @@ class Counter:
         except Exception as e:
             log.error(f"Initialization Error: {e}")
 
+    def compare(self, compare_num):
+        """
+        Compare the current count with the given number.
+        If the current count is less than the given number, return True."""
+        try:
+            if self.count >= compare_num:
+                return True
+            else:
+                return False
+        except Exception as e:
+            log.error(f"Compare Error: {e}")
+
     def increment(self, interval=4):
         try:
             current_time = time.time()

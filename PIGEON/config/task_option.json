@@ -1,0 +1,55 @@
+{
+    "道馆": {
+        "task_id": "道馆",
+        "start_ui": "dg_chose_page",
+        "end_ui": "dg_chose_page",
+        "ui_delay": "0.5",
+        "change_soul": "1,1",
+        "dg_xs": "1:5",
+        "dg_rs": "50",
+        "run_time": "00:00-23:59"
+    },
+    "契灵": {
+        "task_id": "契灵",
+        "times": "2",
+        "start_ui": "ql_page",
+        "end_ui": "ql_page",
+        "ui_delay": "0.5",
+        "change_soul": "1,3",
+        "run_time": "00:01-23:59"
+    },
+    "寮突破": {
+        "task_id": "寮突破",
+        "start_ui": "ltp_page",
+        "end_ui": "ltp_page",
+        "ui_delay": "0.5",
+        "change_soul": "1,2",
+        "run_time": "21:00-6:00"
+    },
+    "结界突破": {
+        "task_id": "结界突破",
+        "start_ui": "tp_main_ui",
+        "end_ui": "tp_main_ui",
+        "ui_delay": 0.5,
+        "change_soul": "1,2",
+        "run_time": "00:00-23:59"
+    },
+    "地域鬼王": {
+        "task_id": "地域鬼王",
+        "start_ui": "area_demon_ui",
+        "end_ui": "area_demon_ui",
+        "ui_delay": "0.5",
+        "change_soul": "false",
+        "run_time": "06:00-23:59"
+    },
+    "结界寄养": {
+        "task_id": "结界寄养",
+        "start_ui": "ward_page",
+        "end_ui": "ward_page",
+        "ui_delay": "0.5",
+        "change_soul": "false",
+        "run_time": "right now",
+        "repeat": "true",
+        "next_time": "2024-12-15 18:24:45"
+    }
+}

@@ -127,11 +127,11 @@ class DevTool(ctk.CTk):
 
     def in_canvas(self, event):
         self.mouse_is_in_canvas = True
-        print("鼠标进入画布")
+        # print("鼠标进入画布")
 
     def out_canvas(self, event):
         self.mouse_is_in_canvas = False
-        print("鼠标离开画布")
+        # print("鼠标离开画布")
 
     def on_click(self, event):
         if self.mouse_is_in_canvas:

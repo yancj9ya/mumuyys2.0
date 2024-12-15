@@ -11,6 +11,8 @@ from GUI.tab_setting import SettingTab
 from GUI.tab_dg import DgTab
 from GUI.tab_ts import TsTab
 from GUI.tab_log import LogTab
+from GUI.tab_pretask import PreTaskTab
+from PIGEON.config import setting, windows_position, Config
 
 
 # from PIGEON import Task
@@ -29,7 +31,7 @@ class MyTabView(ctk.CTkTabview):
         self.add("常用")
         self.add("道馆")
         self.add("绘卷")
-        self.add("其他")
+        self.add("调度器")
         self.add("设置")
         self.add("log")
 
@@ -39,6 +41,7 @@ class MyTabView(ctk.CTkTabview):
         self.dgtab = DgTab(self.tab("道馆"))
         self.tstab = TsTab(self.tab("绘卷"))
         self.logtab = LogTab(self.tab("log"))
+        self.pretasktab = PreTaskTab(self.tab("调度器"))
 
         # add widgets on tabs
         self.maintab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
@@ -46,6 +49,7 @@ class MyTabView(ctk.CTkTabview):
         self.dgtab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
         self.tstab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
         self.logtab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
+        self.pretasktab.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
 
 
 class log_area(ctk.CTkTextbox):
@@ -58,17 +62,17 @@ class log_area(ctk.CTkTextbox):
         self.tag_config("content_debug", foreground="#FFA500")  # 黄色文本标签
         self.tag_config("time", foreground="grey")  # 时间文本标签
         self.configure(fg_color="black", text_color="green", font=("微软雅黑", 12))
-        self.Stop_auto_scroll = True
-        self.bind("Enter", self.mouse_in_log_area)
-        self.bind("Leave", self.mouse_out_log_area)
+        self.Stop_auto_scroll = False
+        self.bind("<Enter>", self.mouse_in_log_area)
+        self.bind("<Leave>", self.mouse_out_log_area)
 
     def mouse_in_log_area(self, event):
         self.Stop_auto_scroll = True
-        print(f"{event}, mouse in log area")
+        # print(f"{event}, mouse in log area")
 
     def mouse_out_log_area(self, event):
         self.Stop_auto_scroll = False
-        print(f"{event}, mouse out log area")
+        # print(f"{event}, mouse out log area")
 
     def yview_moveto(self, fraction):
         if self.Stop_auto_scroll:
@@ -91,7 +95,7 @@ class App(ctk.CTk):
         self.tab_view = MyTabView(master=self, width=255, height=150, anchor="nw", command=self.tab_changed)
         self.tab_view.pack(side="top")
 
-        self.log_area = log_area(master=self, width=255, bg_color="#f3f3f3")
+        self.log_area = log_area(master=self, width=260, bg_color="#f3f3f3")
         self.log_area.pack(side="bottom", fill="y", pady=2, expand=True)
 
         self.load_profile()  # 加载配置文件
@@ -99,30 +103,34 @@ class App(ctk.CTk):
     def tab_changed(self):
         tab_name = self.tab_view.get()
         # print(tab_name)
-        if tab_name in ["其他", "设置", "log"]:
+        if tab_name in ["调度器", "设置", "log"]:
             self.log_area.forget()
         else:
             self.log_area.pack(side="bottom", fill="y", expand=True)
 
     def save_profile(self):
-        with open("GUI/profile.json", "w") as f:
-            f.write(json.dumps({k: v.get() for k, v in ToggleButton.values.items()}))
-        with open("GUI/window_position.json", "w") as f:
-            f.write(json.dumps({"x": self.winfo_x(), "y": self.winfo_y()}))
+        try:
+            for key, value in ToggleButton.values.items():
+                setting[key] = value.get()
+        except:
+
+            pass
+        try:
+            windows_position["x"] = self.winfo_x()
+            windows_position["y"] = self.winfo_y()
+        except:
+            pass
+        Config.save_all_config()
         self.destroy()
 
     def load_profile(self):
-        with open("GUI/profile.json", "r") as f:
-            profile = json.loads(f.read())
-        for k, v in profile.items():
+        for k, v in setting:
             ToggleButton.values[k].set(v)
         pass
 
     def get_window_position(self):
         try:
-            with open("GUI/window_position.json", "r") as f:
-                position = json.loads(f.read())
-            return position["x"], position["y"]
+            return windows_position["x"], windows_position["y"]
         except FileNotFoundError:
             return 200, 200
 

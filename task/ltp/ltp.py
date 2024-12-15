@@ -101,12 +101,21 @@ class Ltp(Click, ImageRec):
     def loop(self):
         log.insert("5.0", "$开始寮突破")
         while self.times:
-            if not self.running.is_set():
-                break
-            self.run()
+            match self.running.state:
+                case "RUNNING":
+                    self.run()
+                case "STOP":
+                    self.task_switch = False
+                    log.insert("2.3", f"@任务已停止 ")
+                    return
+                case "WAIT":
+                    sleep(1)
+                    continue
+                case _:
+                    pass
         pass
 
     def set_parms(self, **kwargs):
-        self.ui_delay = kwargs.get("ui_delay", 0.5)
+        self.ui_delay = float(kwargs.get("ui_delay", 0.5))
 
         pass

@@ -4,6 +4,7 @@ from task.based.Mytool.Ocr import Ocr
 from task.based.Mytool.Counter import Counter
 from task.hd.res.img_info import *
 from time import sleep, time, strftime, localtime
+from datetime import datetime
 from PIGEON.log import log
 from random import choices, uniform
 
@@ -19,6 +20,7 @@ class Hd(Click, ImageRec):
         self.running = kwargs.get("STOPSIGNAL", True)
         self.times = 0
         self.reward_dict = {}
+        self.task_switch = True
 
     # 寻找按钮并且识别次数
     def find_btn_tz(self):
@@ -37,7 +39,7 @@ class Hd(Click, ImageRec):
 
                 case "btn_mw":
                     log.insert("5.1", f"识别模式：秘闻挑战")
-                    self.times = 11
+
                 case "btn_yl":
                     log.insert("5.1", f"识别模式：御灵挑战")
                     self.need_stat_reward = True
@@ -99,7 +101,12 @@ class Hd(Click, ImageRec):
             case "end_mark_ui":
                 self.area_click([990, 462, 1125, 520])
             case "btn_tz":
+                if self.hd_counter.compare(self.times):
+                    log.info(f"挑战次数达到{self.times}，退出循环")
+                    self.task_switch = False
+                    return
                 self.area_click(self.BTN_TZ[1])
+                sleep(1.5)
                 self.hd_counter.increment()
                 # log.insert("3.1", f"开始第{self.hd_counter.count}次挑战")
             case "end_999_hdyh_ui":
@@ -141,9 +148,21 @@ class Hd(Click, ImageRec):
                 log.insert("3.1", f"{award_str}")
 
     def loop(self):
-        while self.hd_counter.count < self.times and self.running.is_set():
-            self.run()
-            log.insert("4.1", f"进度: {self.hd_counter.count}/{self.times}")
+        while self.task_switch:
+            match self.running.state:
+                case "RUNNING":
+                    self.run()
+                    log.insert("4.1", f"进度: {self.hd_counter.count}/{self.times}")
+                case "STOP":
+                    self.task_switch = False
+                    log.insert("2.3", f"@任务已停止 ")
+                    return
+                case "WAIT":
+                    sleep(1)
+                    continue
+                case _:
+                    pass
+
         pass
 
     def set_parms(self, **kwargs):

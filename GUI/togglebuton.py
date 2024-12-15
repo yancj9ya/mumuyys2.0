@@ -1,8 +1,10 @@
 import customtkinter as ctk
 
+# from PIGEON.scheduler import scheduler
+
 
 class ToggleButton(ctk.CTkButton):
-    toggle_command = None  # 状态切换时的回调函数（可选）
+    toggle_command = None
     values = {}
 
     def __init__(
@@ -55,7 +57,7 @@ class ToggleButton(ctk.CTkButton):
         # 如果提供了回调函数，则在切换时调用
         # print(f"toggle button {self.name} to {self.is_on} and {self.commands}")
         if self.commands:
-            self.commands(event=self, values=self.values)
+            self.commands(self)
         self.toggle_change()
         # 更新按钮的文字和背景颜色
 

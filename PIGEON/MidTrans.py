@@ -3,13 +3,14 @@ from threading import Thread, Event
 from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad
 from win11toast import toast
 from time import sleep
+from PIGEON.event import MyEvent
 
 # log = Log()
 
 
 class Task:
     TASK_PROCESS = "STOP"
-    STOPSIGNAL = Event()
+    task_signal = MyEvent("task_control")
     F_MAP = {"结界突破": Tp, "地鬼": Ad, "寮突破": Ltp, "契灵": Ql, "智能": Hd, "绘卷": Ts, "御魂": Yh, "道馆": Dg}
 
     @classmethod
@@ -20,7 +21,7 @@ class Task:
         task_parms = {k: v.get() for k, v in kwargs.get("values").items() if v is not None}
         # 执行停止任务逻辑
         if task.cget("text") == "STOP":
-            cls.STOPSIGNAL.clear()
+            cls.task_signal.stop()
             log.debug(f"Task stop signal received")
             return
         else:
@@ -29,12 +30,12 @@ class Task:
                 task.toggle_change()
                 return
             log.info(f"Task {task.cget('text')} started")
-            cls.STOPSIGNAL.set()
+            cls.task_signal.start()
 
             # 执行任务
-            Thread(target=cls.start_task, kwargs={"task": task, "task_parms": task_parms, "STOPSIGNAL": cls.STOPSIGNAL}).start()
+            Thread(target=cls.start_task, kwargs={"task": task, "task_parms": task_parms, "STOPSIGNAL": cls.task_signal}).start()
             # 创建协助自动接受进程
-            Thread(target=Xz.start_deamon, kwargs={"STOPSIGNAL": cls.STOPSIGNAL}).start()
+            Thread(target=Xz.start_deamon, kwargs={"STOPSIGNAL": cls.task_signal}).start()
 
     @classmethod
     def start_task(cls, task=None, task_parms=None, STOPSIGNAL=None, **kwargs):
@@ -53,12 +54,12 @@ class Task:
         cls.TASK_PROCESS = "STOP"
         if STOPSIGNAL.is_set():
             cls.task_finished(Task=task)
-            STOPSIGNAL.clear()
+            STOPSIGNAL.stop()
 
     @classmethod
     def task_finished(cls, **kwargs):
         log.info(f"Task {kwargs.get('Task').name} toggled")
-        log.error(f"test error message")
-        log.debug(f"test debug message")
+        # log.error(f"test error message")
+        # log.debug(f"test debug message")
         kwargs.get("Task").toggle_change()
         toast(f"{kwargs.get('Task').name}", f"任务已完成")

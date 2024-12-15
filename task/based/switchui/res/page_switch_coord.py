@@ -5,6 +5,7 @@ tp_main_TO_ts_main = (1189, 117, 1220, 150)
 ts_main_TO_tp_main = (258, 645, 299, 676)
 ts_main_TO_ts_tz = (1092, 514, 1204, 563)
 ts_main_TO_area_demon = (650, 641, 697, 689)
+ts_main_TO_home_page_unfold = (50, 43, 75, 75)
 
 ts_tz_TO_ts_main = (1027, 133, 1069, 171)
 ts_tz_TO_ts_cm = (895, 516, 990, 558)
@@ -23,3 +24,30 @@ home_page_fold_TO_home_page_unfold = (1217, 610, 1242, 674)
 # 2024/12/8
 
 area_demon_TO_ts_main = (58, 40, 94, 83)
+
+# 2024/12/9
+home_page_unfold_TO_yyl_page = (562, 617, 604, 660)
+
+yyl_page_TO_shenshe_page = (884, 640, 919, 671)
+yyl_page_TO_home_page_unfold = (41, 26, 74, 58)
+
+shenshe_page_TO_dg_chose_page = (484, 209, 551, 286)
+shenshe_page_TO_yyl_page = (50, 43, 75, 75)
+
+dg_chose_page_TO_shenshe_page = (50, 43, 75, 75)  # 左上角的返回按钮
+
+soul_content_page_TO_home_page_unfold = (28, 29, 62, 64)
+
+home_page_unfold_TO_soul_content_page = (1119, 620, 1161, 662)
+
+tp_main_TO_ltp_page = (1212, 365, 1255, 465)
+
+ltp_page_TO_tp_main = (1218, 252, 1252, 327)
+
+# 2024/12/10
+ts_main_TO_ql_page = (1053, 641, 1093, 689)
+
+ql_page_TO_ts_main = (40, 27, 69, 59)
+# 2024/12/12
+yyl_page_TO_ward_page = (1077, 632, 1124, 675)
+ward_page_TO_yyl_page = (28, 26, 59, 63)

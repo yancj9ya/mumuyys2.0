@@ -12,12 +12,23 @@ ts_cm_ui = ["task/based/switchui/res/ts_cm_ui.bmp", [798, 645, 833, 686], "ts_cm
 ts_end_mark_ui = ["task/based/switchui/res/ts_end_mark_ui.bmp", [67, 649, 94, 672], "ts_end_mark_ui"]
 
 # 2024/12/8 add
-area_damon_ui = ["task/based/switchui/res/area_damon_ui.bmp", [49, 369, 84, 434], "area_damon_ui"]
+area_demon_ui = ["task/based/switchui/res/area_demon_ui.bmp", [49, 369, 84, 434], "area_demon_ui"]
 
-step_ts = ["task/based/switchui/res/step_ts.bmp", (293, 136, 1039, 231), "step_ts"]
+# 2024/12/9 add
+yyl_page = ["task/based/switchui/res/yyl_page.bmp", [879, 633, 922, 682], "yyl_page"]
+shenshe_page = ["task/based/switchui/res/shenshe_page.bmp", [216, 216, 288, 286], "shenshe_page"]
+dg_chose_page = ["task/based/switchui/res/dg_chose_page.bmp", [146, 613, 194, 661], "dg_chose_page"]
+soul_content_page = ["task/based/switchui/res/soul_content_page.bmp", [133, 25, 162, 60], "soul_content_page"]
+ltp_page = ["task/based/switchui/res/ltp_page.bmp", [69, 635, 117, 674], "ltp_page"]
+
+# 2024/12/10 add
+ql_page = ["task/based/switchui/res/ql_page.bmp", [107, 22, 173, 62], "ql_page"]
+ward_page = ["task/based/switchui/res/ward_page.bmp", (183, 343, 371, 584), "ward_page"]
 
 ui_list = locals()
 ui_list_keys = list(ui_list.keys())[8:]
+# 识图点击部分
+step_ts = ["task/based/switchui/res/step_ts.bmp", (293, 136, 1039, 231), "step_ts"]
 
 
 if __name__ == "__main__":

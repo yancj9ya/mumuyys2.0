@@ -9,9 +9,10 @@ import time
 import numpy as np
 import cv2
 from ctypes import windll
-from PIGEON.log import Log
+from PIGEON.log import log
+from functools import cached_property
 
-log = Log()
+
 # from Mytool.nemu.mumuScreencap import MuMuScreenCap
 
 WM_LBUTTONDOWN = 0x0201
@@ -30,37 +31,50 @@ SendMessage = windll.user32.SendMessageW
 
 FindWindow = win32gui.FindWindow
 FindWindowEx = win32gui.FindWindowEx
+IsWindow = win32gui.IsWindow
 
 
 class Windows:
     LOCK = False  # 主要是为了截图互斥，防止竞争设备上下文导致的错误
+
     # mumu_sc = MuMuScreenCap(
     #     0, "H:\MuMuPlayer-12.0-1", displayId=0
     # )  # mumu自身的ipc截图方式，创建链接木木模拟器的实例
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, "_instance"):
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self):
         # windows截图的方式,必须获取窗口句柄handle
-        self.par_handle = self.get_handle("MuMu模拟器12")
-        self.child_handle = self.get_handleEx(self.par_handle, "MuMuPlayer")
+        # log.debug("初始化Windows类")
+        # log.debug(f"获取窗口句柄:{self.handle}")
+        # log.debug(f"id:{id(self)}")
 
         pass
 
-    @classmethod
-    def get_handle(cls, title: str) -> int:
-        return win32gui.FindWindow(None, title)
+    def del_cache(self):
+        if "par_handle" in self.__dict__:
+            del self.__dict__["par_handle"]
+        if "handle" in self.__dict__:
+            del self.__dict__["handle"]
+        log.debug("删除句柄缓存")
 
-    @classmethod
-    def get_handleEx(cls, par_handle: int, title: str) -> int:
-        return win32gui.FindWindowEx(par_handle, None, None, title)
+    @cached_property
+    def par_handle(self) -> int:
+        return win32gui.FindWindow(None, "MuMu模拟器12")
 
-    @classmethod
-    def screenshot(cls, hwnd: int, area: list, save_img=False, method="win_shot") -> np.ndarray:
+    @cached_property
+    def handle(self) -> int:
+        return win32gui.FindWindowEx(self.par_handle, None, None, "MuMuPlayer")
+
+    def screenshot(self, area: list, save_img=False, method="win_shot", debug=False) -> np.ndarray:
         match method:
             case "win_shot":
-                while cls.LOCK:  # locked
+                while Windows.LOCK:  # locked
                     time.sleep(0.01)  # wait for release lock
                 else:
-                    cls.LOCK = True  # set lock
+                    Windows.LOCK = True  # set lock
 
                     hwindc = None
                     srcdc = None
@@ -73,7 +87,7 @@ class Windows:
                         w, h = area[2] - area[0], area[3] - area[1]
 
                         # 获取窗口设备上下文
-                        hwindc = win32gui.GetWindowDC(hwnd)
+                        hwindc = win32gui.GetWindowDC(self.handle)
                         srcdc = win32ui.CreateDCFromHandle(hwindc)
                         memdc = srcdc.CreateCompatibleDC()
                         bmp = win32ui.CreateBitmap()
@@ -87,9 +101,18 @@ class Windows:
                         signedIntsArray = bmp.GetBitmapBits(True)
                         img = np.frombuffer(signedIntsArray, dtype="uint8").reshape(h, w, 4)
                         img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+                        if debug:
+                            cv2.imshow("截图", img)
+                            cv2.waitKey(0)
 
                     except Exception as e:
                         log.error(f"截图失败，错误信息: {e}")
+                        if win32gui.IsWindow(self.handle):
+                            log.error(f"窗口句柄: {self.handle} 仍然有效")
+                        else:
+                            log.error(f"窗口句柄: {self.handle} 已失效")
+                            self.del_cache()
+
                         return None
 
                     finally:
@@ -99,18 +122,19 @@ class Windows:
                         if memdc:
                             memdc.DeleteDC()
                         if hwindc:
-                            win32gui.ReleaseDC(hwnd, hwindc)
+                            win32gui.ReleaseDC(self.handle, hwindc)
                         if bmp:
                             win32gui.DeleteObject(bmp.GetHandle())
-                        if cls.LOCK:
-                            cls.LOCK = False  # release lock
+                        if Windows.LOCK:
+                            Windows.LOCK = False  # release lock
             case "nemu_ipc":
-                try:
-                    whole_img = cls.mumu_sc.screencap_raw()
-                    img = whole_img[area[1] : area[3], area[0] : area[2]]
-                except Exception as e:
-                    log.error(f"截图失败，错误信息: {e}")
-                    return None
+                # try:
+                #     whole_img = self.mumu_sc.screencap_raw()
+                #     img = whole_img[area[1] : area[3], area[0] : area[2]]
+                # except Exception as e:
+                #     log.error(f"截图失败，错误信息: {e}")
+                #     return None
+                pass
 
         # 保存图像或返回处理后的图像
         if save_img:
@@ -132,52 +156,52 @@ class Windows:
         msg = WM_MOUSEMOVE
         wparam = MK_LBUTTON
         Lparam = y << 16 | x
-        PostMessage(self.child_handle, msg, wparam, Lparam)
+        PostMessage(self.handle, msg, wparam, Lparam)
 
     def mouseactivate(self):
         msg = WM_MOUSEACTIVATE
         wparam = self.par_handle
         Lparam = WM_LBUTTONDOWN << 16 | HTCLIENT
-        SendMessage(self.child_handle, msg, wparam, Lparam)
+        SendMessage(self.handle, msg, wparam, Lparam)
 
     def setcursor(self):
         msg = WM_SERCURSOR
-        wparam = self.child_handle
+        wparam = self.handle
         Lparam = WM_LBUTTONDOWN << 16 | HTCLIENT
-        SendMessage(self.child_handle, msg, wparam, Lparam)
+        SendMessage(self.handle, msg, wparam, Lparam)
 
     def left_down(self, x, y):
         msg = WM_LBUTTONDOWN
         wparam = MK_LBUTTON
         Lparam = y << 16 | x
-        PostMessage(self.child_handle, msg, wparam, Lparam)
+        PostMessage(self.handle, msg, wparam, Lparam)
 
     def left_up(self, x, y):
         msg = WM_LBUTTONUP
         wparam = 0
         Lparam = y << 16 | x
-        PostMessage(self.child_handle, msg, wparam, Lparam)
+        PostMessage(self.handle, msg, wparam, Lparam)
 
     def wheel_scroll(self, delta, x, y):
         msg = WM_MOUSEWHEEL
         wparam = delta << 16
         Lparam = y << 16 | x
-        PostMessage(self.child_handle, msg, wparam, Lparam)
+        PostMessage(self.handle, msg, wparam, Lparam)
 
     def get_window_rect(self) -> list:
-        return win32gui.GetWindowRect(self.child_handle)
+        return win32gui.GetWindowRect(self.handle)
 
     def x_button_down(self, x, y):
         msg = WM_XBUTTONDOWN
         wparam = MK_XBUTTON1
         Lparam = y << 16 | x
-        PostMessage(self.child_handle, msg, wparam, Lparam)
+        PostMessage(self.handle, msg, wparam, Lparam)
 
     def x_button_up(self, x, y):
         msg = WM_XBUTTONUP
         wparam = MK_XBUTTON1
         Lparam = y << 16 | x
-        PostMessage(self.child_handle, msg, wparam, Lparam)
+        PostMessage(self.handle, msg, wparam, Lparam)
 
 
 if __name__ == "__main__":
@@ -186,8 +210,8 @@ if __name__ == "__main__":
     sys.path.append("your_path_to_Mytool")
 
     w = Windows()
-    print(f"窗口句柄:parent_handle={w.par_handle}, child_handle= {w.child_handle}\n")
+    print(f"窗口句柄:parent_handle={w.par_handle}, handle= {w.handle}\n")
     # 分身N1
     par_handle = w.get_handle("#N1 阴阳师 - MuMu模拟器12")
-    child_handle = w.get_handleEx(par_handle, "MuMuPlayer")
-    print(f"分身N1的窗口句柄: par={par_handle}, child={child_handle}")
+    handle = w.get_handleEx(par_handle, "MuMuPlayer")
+    print(f"分身N1的窗口句柄: par={par_handle}, child={handle}")

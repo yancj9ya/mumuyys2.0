@@ -10,31 +10,21 @@ log = Log()
 
 
 class ImageRec:
-    # stuck_ui_list=[]
-    # stuck_ui_ignore_list=['fight_ui']
-    # stuck_ui_max_time=6
-    def __init__(self):
-        self.par_handle = Windows().get_handle("MuMu模拟器12")
-        self.child_handle = Windows().get_handleEx(self.par_handle, "MuMuPlayer")
+    # def __new__(cls, *args, **kwargs):
+    #     if not hasattr(cls, "_instance"):
+    #         cls._instance = super().__new__(cls)
+    #     return cls._instance
 
-    # def is_stuck(self, current_ui:str)->bool:
-    #     if current_ui in self.stuck_ui_ignore_list:return False
-    #     match self.stuck_ui_list:
-    #         case []:self.stuck_ui_list.append(current_ui)
-    #         case x if x[-1]!=current_ui:
-    #             self.stuck_ui_list.clear()
-    #             self.append(current_ui)
-    #         case x if x[-1]==current_ui:
-    #             self.stuck_ui_list.append(current_ui)
-    #             if len(self.stuck_ui_list)>=self.stuck_ui_max_time:return True
-    #     pass
+    def __init__(self):
+        self.win = Windows()
+
     def match_ui(self, img: list, accuracy=0.8, min_accuracy=0.7) -> str:
         try:
             # 获取屏幕当前的完整截图并转为灰度图
-            full_scr_image = cv2.cvtColor(
-                Windows.screenshot(self.child_handle, [0, 0, 1280, 720]),
-                cv2.COLOR_BGR2GRAY,
-            )
+            shot_img = self.win.screenshot([0, 0, 1280, 720])
+            if shot_img is None:
+                raise Exception("截图失败,返回的图像为空")
+            full_scr_image = cv2.cvtColor(shot_img, cv2.COLOR_BGR2GRAY)
             # log.debug(f"full_scr_image shape: {full_scr_image.shape}")
 
             # 遍历模板列表
@@ -89,7 +79,7 @@ class ImageRec:
                 min(img[1][2] + 5, 1280),
                 min(img[1][3] + 5, 720),
             ]
-            ShotImage = Windows.screenshot(self.child_handle, match_area)
+            ShotImage = self.win.screenshot(match_area)
             if ShotImage is not None:
                 ShotImage = cv2.cvtColor(ShotImage, cv2.COLOR_BGR2GRAY)
             else:
@@ -122,7 +112,7 @@ class ImageRec:
         try:
             if matched_img := self.match_img(img, accuracy=accuracy):
 
-                shot_color_img = cv2.cvtColor(Windows.screenshot(self.child_handle, img[1]), cv2.COLOR_BGRA2BGR)
+                shot_color_img = cv2.cvtColor(self.win.screenshot(img[1]), cv2.COLOR_BGRA2BGR)
                 template_color_img = cv2.imread(img[0], cv2.IMREAD_COLOR)
                 color_simi = np.mean((shot_color_img - template_color_img) ** 2)
                 log.debug(f"颜色相似度: {color_simi:.2f}")
@@ -139,7 +129,7 @@ class ImageRec:
         return_list = []
         temp_list = []
         try:
-            f_shot_img = Windows.screenshot(self.child_handle, img[1])
+            f_shot_img = self.win.screenshot(img[1])
             shot_img = cv2.cvtColor(f_shot_img, cv2.COLOR_BGRA2GRAY)
             template = cv2.imread(img[0], cv2.IMREAD_GRAYSCALE)
             Res = cv2.matchTemplate(shot_img, template, cv2.TM_CCOEFF_NORMED)
@@ -165,12 +155,12 @@ class ImageRec:
             print(f"match_duo_img 发生错误: {e}")
             return None
 
-    def find_duo_img(self, img_dir: str, match_area: list, accuracy=0.8, return_only_one=False) -> dict | list:  # 查找目录下所有图片，返回符合条件的图片坐标
+    def find_duo_img(self, img_dir: str, match_area: list | tuple, accuracy=0.8, return_only_one=False) -> dict | list:  # 查找目录下所有图片，返回符合条件的图片坐标
         return_dict = {}
         try:
             path = pathlib.Path(img_dir)
             img_list = [img_file for img_file in path.glob("*") if img_file.is_file()]
-            ShotImage = cv2.cvtColor(Windows.screenshot(self.child_handle, match_area), cv2.COLOR_BGRA2GRAY)
+            ShotImage = cv2.cvtColor(self.win.screenshot(match_area), cv2.COLOR_BGRA2GRAY)
             for img in img_list:
                 # print(img)
                 template = cv2.imread(str(img), cv2.IMREAD_GRAYSCALE)

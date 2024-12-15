@@ -27,6 +27,7 @@ class Ql(Click, ImageRec):
         self.times_counter = Counter()
         self.times = 0
         self.call_fire_times = 0
+        self.task_switch = True
 
     def call_fire(self):
         if not self.match_img(ql_main_ui):
@@ -64,7 +65,12 @@ class Ql(Click, ImageRec):
                 self.main_ui()
             case "btn_tz_ui":
                 if res := self.match_img(btn_tz_ui):
+                    if self.times_counter.compare(self.times):
+                        self.task_switch = False
+                        log.insert("2.2", f"@挑战次数已达{self.times}次，退出任务 ")
+                        return
                     self.area_click(res)
+                    sleep(1)
                     self.times_counter.increment()
                     log.insert("3.1", f"@第{self.times_counter.count:^3d}次挑战 ")
             case "ql_cg_ui" | "ql_cg_t_ui":
@@ -76,10 +82,21 @@ class Ql(Click, ImageRec):
         pass
 
     def loop(self):
-        while self.running.is_set() and self.times_counter.count < self.times:
-            self.run()
-            log.insert("4.1", f"@进度:{self.times_counter.count/self.times*100:.1f}%")
-            log.insert("5.1", f"@捕获次数:{self.cg_counter.count} ，捕获概率:{self.cg_counter.count/(self.times_counter.count+1)*100:.2f}%")
+        while self.task_switch:
+            match self.running.state:
+                case "RUNNING":
+                    self.run()
+                    log.insert("4.1", f"@进度:{self.times_counter.count/self.times*100:.1f}%")
+                    log.insert("5.1", f"@捕获次数:{self.cg_counter.count} ，捕获概率:{self.cg_counter.count/(self.times_counter.count+1)*100:.2f}%")
+                case "STOP":
+                    self.task_switch = False
+                    log.insert("2.3", f"@任务已停止 ")
+                    return
+                case "WAIT":
+                    sleep(1)
+                    continue
+                case _:
+                    pass
         pass
 
     def set_parms(self, **kwargs):

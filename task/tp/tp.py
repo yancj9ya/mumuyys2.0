@@ -144,12 +144,20 @@ class Tp(Click, ImageRec):
             else:
                 times = 0
         while self.counter.count < times:
-            if not self.running.is_set():
-                break
-            self.run()
-            log.insert("5.1", f"突破进度 {self.counter.count}/{times}")
-        log.info("突破进攻结束")
-        self.counter.reset()
+            print(f"state:{self.running.state}")
+            match self.running.state:
+                case "RUNNING":
+                    self.run()
+                    log.insert("5.1", f"突破进度 {self.counter.count}/{times}")
+                case "STOP":
+                    log.insert("2.3", f"@任务已停止 ")
+                    self.counter.reset()
+                    return
+                case "WAIT":
+                    sleep(1)
+                    continue
+                case _:
+                    pass
 
     def set_parms(self, **kwargs):
         self.keep_57_flag = kwargs.get("tp_keep_level", True)

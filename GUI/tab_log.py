@@ -26,7 +26,7 @@ class LogTab(ctk.CTkFrame):
         pass
 
     def open_log_file_func(self):
-        file_path = r"D:\\python\\mumuyys2.0\\log\\log.txt"  # 请根据实际情况修改路径
+        file_path = r"log\\log.txt"  # 请根据实际情况修改路径
         try:
             if os.path.exists(file_path):
                 os.startfile(file_path)  # 打开文件夹

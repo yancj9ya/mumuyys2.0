@@ -25,23 +25,24 @@ class Log:
     last_log = None
 
     def __init__(self):
+        Log_to_file.rename_file_if_older_than_one_day("log/log.txt")
         pass
 
     def info(self, message):
         self.handler(message, "INFO")
-        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info())
+        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info(), level="INFO")
 
     def error(self, message):
         self.handler(message, "ERROR")
-        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info())
+        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info(), level="ERROR")
 
     def debug(self, message):
         self.handler(message, "DEBUG")
-        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info())
+        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info(), level="DEBUG")
 
     def warning(self, message):
         self.handler(message, "WARNING")
-        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info())
+        Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info(), level="WARNING")
 
     def handler(self, message, level):
         match level:
@@ -102,6 +103,9 @@ class Log:
         # now = datetime.now().strftime("%H:%M:%S")
         line, column = int(cursor.split(".")[0]), int(cursor.split(".")[1])
         # 格式化日志信息
+        if self.log_emit is None:
+            print(f"{msg}")
+            return
         if msg and cursor:
             line_text = self.log_emit.get(f"{line}.0", f"{line+1}.0")
             re_index = line_text.find("\n")
@@ -119,16 +123,13 @@ class Log:
     def file(self, message):
         Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info())
 
-    def __del__(self):
-        Log_to_file.rename_file_if_older_than_one_day("log/log.txt")
-
 
 class Log_to_file:
     is_open = True
     last_log_message = None
 
     @classmethod
-    def _fmt(cls, message, more_info: tuple = None):
+    def _fmt(cls, message, more_info: tuple = None, level: str = "INFO"):
         # 获取当前时间
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         # 格式化日志信息
@@ -142,12 +143,12 @@ class Log_to_file:
             cls.last_log_message = message
 
         # 格式化日志信息
-        msg = f">{now}|{more_info[0]:^15}|{more_info[1]:^15}|{more_info[2]:<3}|: {message}\n"
+        msg = f">{now}|{more_info[0]:^15}|{more_info[1]:^15}|{more_info[2]:<3}|{level:^8}|: {message}\n"
         return msg
 
     @classmethod
-    def logtToFile(cls, message: str, more_info: tuple = None):
-        if msg := cls._fmt(message, more_info):
+    def logtToFile(cls, message: str, more_info: tuple = None, level: str = "INFO"):
+        if msg := cls._fmt(message, more_info, level):
             cls.write_to_file(msg)
         else:
             return
@@ -163,18 +164,24 @@ class Log_to_file:
 
     @staticmethod
     def rename_file_if_older_than_one_day(file_path):
+        if not os.path.exists(file_path):
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(f"This is a log file auto created by PIGEON at {datetime.now()}\n")
+            return
         # 获取文件的创建时间
-        creation_time = os.path.getctime(file_path)
+        creation_time = os.path.getmtime(file_path)
         creation_date = datetime.fromtimestamp(creation_time)
 
         # 获取当前时间
-        current_time = datetime.now()
+        current_time = datetime.now().date()
+        six_am_today = datetime.combine(current_time, datetime.strptime("06:00:00", "%H:%M:%S").time())
 
-        # 计算文件创建时间是否超过1天
-        if current_time - creation_date > timedelta(days=1):
+        # 计算文件创建时间是否于今日凌晨6点之前更改
+        # print(f"文件创建时间：{creation_date}，当前时间：{current_time}，6点前：{six_am_today}")
+        if creation_date < six_am_today and datetime.now() > six_am_today:
             # 生成新的文件名
-            new_file_name = creation_date.strftime("%Y-%m-%d %H:%M:%S") + "_" + os.path.basename(file_path)
-            new_file_path = os.path.join(os.path.dirname(file_path), new_file_name)
+            new_file_name = datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt"
+            new_file_path = os.path.join(os.path.dirname(file_path), new_file_name).replace("\\", "/")
 
             # 重命名文件
             os.rename(file_path, new_file_path)

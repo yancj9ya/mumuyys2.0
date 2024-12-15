@@ -65,5 +65,5 @@ class Ad(ImageRec, Click):
         pass
 
     def set_parms(self, **values):
-        self.ui_delay = values.get("ui_delay", 0.5)
+        self.ui_delay = float(values.get("ui_delay", 0.5))
         pass

@@ -15,7 +15,7 @@ class Dg(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [dg_ready_ui, dg_fight_ui, dg_chose_ui]
+        self.uilist = [dg_ready_ui, damo_ui, dg_fight_ui, dg_chose_ui]
         self.main_ui_sleep = 0.5
         self.DG_TIME = None
         self.DG_SWITCH = True
@@ -206,7 +206,7 @@ class Dg(Click, ImageRec):
                 return
         elif self.match_img(damo_ui):
             sleep(1)
-            self.screenshot(self.child_handle, [218, 132, 1233, 617], save_img=True)
+            self.win.screenshot([218, 132, 1233, 617], save_img=True)
             log.info("结算界面：已经截图,返回准备界面")
             sleep(0.5)
             self.area_click([990, 462, 1125, 520])
@@ -217,7 +217,7 @@ class Dg(Click, ImageRec):
             return
         elif self.match_img(dg_fail_ui) != None:  # 战斗失败，返回准备界面
             sleep(2)
-            self.screenshot(self.child_handle, [218, 132, 1233, 617], save_img=True)
+            self.win.screenshot([218, 132, 1233, 617], save_img=True)
             log.info("进攻失败，返回准备界面")
             sleep(0.5)
             self.area_click([990, 462, 1125, 520])
@@ -235,6 +235,13 @@ class Dg(Click, ImageRec):
                 self.dg_fight_ui()
             case "chose_ui":
                 self.chose_dg()
+            case "damo_ui":
+                sleep(1)
+                self.win.screenshot([218, 132, 1233, 617], save_img=True)
+                log.info("结算界面：已经截图,返回准备界面")
+                sleep(0.5)
+                self.area_click([990, 462, 1125, 520])
+                return
             case _:
                 pass
         pass
@@ -243,9 +250,16 @@ class Dg(Click, ImageRec):
         # log.clear()
         log.info(f"{'道馆进攻程序开始':^27}")
         while self.DG_SWITCH:
-            if not self.running.is_set():
-                break
-            self.run()
+            match self.running.state:
+                case "RUNNING":
+                    self.run()
+                case "STOP":
+                    return
+                case "WAIT":
+                    sleep(1)
+                    continue
+                case _:
+                    pass
 
     def set_parms(self, **kwargs):
 
