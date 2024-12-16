@@ -61,6 +61,8 @@ class Jy(Click, ImageRec):
                 if temp_num:
                     if temp_num == 76 or (hasattr(self, "finally_number") and temp_num == self.finally_number):
                         self.get_in_to_jy()
+                        self.finally_number = temp_num
+                        self.next_time = "06:00:00"
                         return "success"
                     temp_num_list.append(temp_num)
                     log.info(f"Found JJ number: {temp_num}")
@@ -122,6 +124,7 @@ class Jy(Click, ImageRec):
                 sleep(1)
             if self.match_img(self_ward):
                 self.next_time = "06:00:00"
+                log.info(f"confirm_jy_success,Next time: {self.next_time}")
                 break
         sleep(1)
 
