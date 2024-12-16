@@ -1,20 +1,26 @@
 import customtkinter as ctk
 from GUI.togglebuton import ToggleButton
+from threading import Thread
+from task import Xz
 
 
 class SettingTab(ctk.CTkFrame):
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
+        self.thread_created = False
         # create viriables
+        self.cooperation_mission_var = ctk.BooleanVar(value=True)
+        self.cooperation_mission_var.trace_add("write", self.set_cooperation)
         self.keep_level_var = ctk.BooleanVar(value=True)
         self.set_window_top_var = ctk.IntVar(value=1)
         self.set_window_top_var.trace_add("write", self.set_window_top)
         self.ui_delay_var = ctk.DoubleVar(value=0.5)
         # 绑定变量到ToggleButton类
-        ToggleButton.values.update({"tp_keep_level": self.keep_level_var, "ui_delay": self.ui_delay_var, "set_window_top": self.set_window_top_var})
+        ToggleButton.values.update({"tp_keep_level": self.keep_level_var, "ui_delay": self.ui_delay_var, "set_window_top": self.set_window_top_var, "cooperation_mission": self.cooperation_mission_var})
 
         # create widgets
+        self.cooperation_mission = ctk.CTkSwitch(self, text="协助邀请", variable=self.cooperation_mission_var, command=self.set_cooperation, onvalue=True, offvalue=False)
         self.keep_level_check = ctk.CTkSwitch(self, text="突破保级", variable=self.keep_level_var, onvalue=True, offvalue=False)
         self.set_window_top_check = ctk.CTkSwitch(self, text="置顶窗口", variable=self.set_window_top_var, onvalue=1, offvalue=0, command=self.set_window_top)
         self.ui_delay_combox = ctk.CTkComboBox(self, values=["0.2", "0.5", "0.7"], justify="center", variable=self.ui_delay_var, width=10, height=20, command=self.ui_delay_slider_value)
@@ -34,6 +40,23 @@ class SettingTab(ctk.CTkFrame):
         self.keep_level_check.grid(row=1, column=1, padx=0, pady=2)
         self.ui_delay_slider.grid(row=0, column=2, columnspan=3, padx=0, pady=0, sticky="w")
         self.set_window_top_check.grid(row=1, column=2, padx=0, pady=2)
+        self.cooperation_mission.grid(row=2, column=0, columnspan=2, padx=0, pady=2)
+
+    def set_cooperation(self, *args):
+        cooperation_mission = self.cooperation_mission_var.get()
+        if cooperation_mission and not self.thread_created:
+            auto_accept_invitation = Thread(target=Xz.cooperation_mission_start, kwargs={"STOPSIGNAL": self.cooperation_mission_var})
+            auto_accept_invitation.daemon = True
+            auto_accept_invitation.start()
+            self.thread_created = True
+        else:
+            try:
+                if auto_accept_invitation.is_alived():
+                    print(f"thread is not exited, stop it")
+            except NameError:
+                self.thread_created = False
+
+        pass
 
     def set_window_top(self, *args):
         # print(args)

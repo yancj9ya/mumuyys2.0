@@ -36,7 +36,7 @@ class Jy(Click, ImageRec):
     def get_right_jj_num(self):
         """获取右边的太鼓的数量"""
         ocr_res = self.ocr.ocr((795, 425, 977, 453))
-        print(f"OCR result: {ocr_res}")
+        log.info(f"OCR result: {ocr_res[0]}")
         if ocr_res[1] > 0.6:
             hand_res_str = re.sub(r"[^a-zA-Z0-9]", "", ocr_res[0])
             return int(hand_res_str)
@@ -49,12 +49,12 @@ class Jy(Click, ImageRec):
         sleep(1)
         six_star = self.match_duo_img(six_star_img, 0.8)
         five_star = self.match_duo_img(five_star_img, 0.8)
-        print(f"Found 6-star: {len(six_star)}, 5-star: {len(five_star)}")
+        log.info(f"Found 6-star: {len(six_star)}, 5-star: {len(five_star)}")
         rec_list = six_star + five_star if six_star and five_star else six_star or five_star
 
         try:
             for area in rec_list:
-                print(f"rec_list: {len(rec_list)} Clicking area: {area}")
+                log.info(f"found {len(rec_list)} target in this page")
                 self.area_click(area)
                 sleep(1)
                 temp_num = self.get_right_jj_num()
@@ -63,7 +63,7 @@ class Jy(Click, ImageRec):
                         self.get_in_to_jy()
                         return "success"
                     temp_num_list.append(temp_num)
-                    print(f"Found JJ number: {temp_num}")
+                    log.info(f"Found JJ number: {temp_num}")
             return max(temp_num_list) if temp_num_list else None
         except Exception as e:
             log.error(f"Error in re_serch: {e}")
@@ -72,8 +72,9 @@ class Jy(Click, ImageRec):
             self.slide((517, 580), (557, 200), move_time=1)
 
     def refresh_jy_list(self):
-        print("Refreshing JY list...")
+        log.info("Refreshing JY list...")
         if not self.has_refreshed:
+            sleep(0.5)
             self.slide((190, 191), (195, 560), move_time=1)  # 下拉刷新同区好友
             self.area_click(diff_server_seat[1])
             sleep(0.5)
@@ -87,13 +88,17 @@ class Jy(Click, ImageRec):
 
     def find_max_number(self, area_type):
         """Find the max number from a given area (left or right)."""
-        self.area_click(area_type[1])
+        self.area_click(area_type[1], double_click=True, double_click_time=0.2)
         sleep(0.5)
-        print(f"Finding max number in {area_type[1]}...")
+        log.info(f"Finding max number in {area_type[-1]}...")
         for _ in range(5):
             if serch_max_num := self.re_serch():
                 if isinstance(serch_max_num, int):
-                    self.max_number = max(self.max_number, serch_max_num)
+                    if area_type == same_server_seat:
+                        self.left_max = max(self.left_max, serch_max_num)
+                    else:
+                        self.right_max = max(self.right_max, serch_max_num)
+
                 elif isinstance(serch_max_num, str):
                     return
         sleep(0.5)
@@ -122,7 +127,7 @@ class Jy(Click, ImageRec):
 
     def ward_yc(self):
         res = self.match_img(blank_seat_2)
-        print(f"Blank seat 2: {res}")
+        log.info(f"Blank seat 2: {res}")
         if res:
             self.area_click(blank_seat_2[1])
             sleep(0.5)
@@ -137,7 +142,7 @@ class Jy(Click, ImageRec):
             if res := self.ocr.ocr((1149, 128, 1237, 147)):
                 if res[1] > 0.8:
                     if re_res := re.match(pattern, res[0].replace(" ", "").replace("：", ":")):
-                        print(f"JYH end time: {res[0]}")
+                        log.info(f"JYH end time: {res[0]}")
                         return re_res.group(0)
 
     def run(self):
@@ -149,16 +154,27 @@ class Jy(Click, ImageRec):
                 if self.max_number == 0:
                     if not self.has_refreshed:
                         self.refresh_jy_list()
-                        print(f"refresh_jy_list done")
+                        log.info(f"refresh_jy_list done")
                     elif self.left_max == 0 and self.right_max == 0:
                         self.find_max_number(same_server_seat)
                         self.find_max_number(diff_server_seat)
                     else:
+                        log.info(f"left_max: {self.left_max}, right_max: {self.right_max}")
                         self.max_number = max(self.left_max, self.right_max)
                         self.finally_number = self.max_number
                 else:
-                    self.find_max_number(same_server_seat) if self.left_max > self.right_max else self.find_max_number(diff_server_seat)
-                print(f"Max number: {self.max_number}, continue ")
+                    log.info(f"Max number: {self.max_number}, continue ")
+                    if self.left_max > self.right_max:
+                        log.info(f"left_max: {self.left_max} > right_max: {self.right_max}")
+                        self.area_click(diff_server_seat[1], double_click=True, double_click_time=0.2)
+                        sleep(0.5)
+                        self.find_max_number(same_server_seat)
+                    else:
+                        log.info(f"left_max: {self.left_max} < right_max: {self.right_max}")
+                        self.area_click(same_server_seat[1], double_click=True, double_click_time=0.2)
+                        sleep(0.5)
+                        self.find_max_number(diff_server_seat)
+                log.info(f"Max number: {self.max_number}, continue ")
 
             case "yc_page":
                 self.ward_yc()

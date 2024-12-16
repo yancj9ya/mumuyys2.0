@@ -167,9 +167,9 @@ class PreTaskTab(ctk.CTkFrame):
         try:
             if self.task_start.cget("text") == "开始运行":
                 AtomTask.scheduler.start_scheduler()
-                self.task_start.configure(text="停止运行", bg_color="red")
+                self.task_start.configure(text="停止运行", fg_color="red")
             else:
                 AtomTask.scheduler.stop_scheduler()
-                self.task_start.configure(text="开始运行", bg_color="green")
+                self.task_start.configure(text="开始运行", fg_color="green")
         except Exception as e:
             messagebox.showerror("错误", f"操作失败: {e}")

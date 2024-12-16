@@ -73,4 +73,5 @@ class Click:
             self.win.mouse_move(*point)
             sleep(slide_delay)
         self.win.left_up(*end)
+        sleep(0.2)
         pass

@@ -88,7 +88,7 @@ class Scheduler:
                 if bool(re.match(pattern, instance_return)):
                     hour, minute, second = map(int, instance_return.split(":"))
                     target_time = datetime.now() + timedelta(hours=hour, minutes=minute, seconds=second)
-                    task_option[task.name]["next_time"] = target_time.strftime("%Y-%m-%d %H:%M:%S")
+                    task_option[task.name]["next_time"] = f"after {target_time.strftime("%Y-%m-%d %H:%M:%S")}"
                     task.TabMaster.add_task(task.name)
 
             self.switch_ui.switch_to(parms["end_ui"])
@@ -182,11 +182,24 @@ class Scheduler:
         判断是否有实时任务可以立即执行。
         """
         for task in self.wait_tasks:
-            self.classify(task)
-            # if self.is_time_valid(task.parms["run_time"]):
-            #     self.ready_tasks.append(task)
-            #     self.wait_tasks.remove(task)
-            #     task.set_state("ready")
+            try:
+                if task.parms.get("next_time"):
+                    if self.is_time_valid(task.parms.get("next_time")):
+                        self.ready_tasks.append(task)
+                        task.set_state("ready")
+                        self.wait_tasks.remove(task)
+                        print(f"{task.name} is ready to run.next_time: {task.parms.get('next_time')}")
+                        continue
+                    else:
+                        return  # 任务未到执行时间，不需要判断
+                elif self.is_time_valid(task.parms.get("run_time")):
+                    self.ready_tasks.append(task)
+                    task.set_state("ready")
+                    self.wait_tasks.remove(task)
+                    continue
+            except Exception as e:
+                print(f"Error in {task.name} task: {e}")
+                continue
 
     def classify(self, task: AtomTask):
         """
@@ -295,6 +308,7 @@ class Scheduler:
 
         # 如果是 "every day after" 的情况
         if isinstance(time_info, datetime):
+            print(f'{expression} is {time_info.strftime("%Y-%m-%d %H:%M:%S")}')
             # 如果当前时间晚于 "after" 的时间，返回 True，否则返回 False
             return current_time >= time_info
 

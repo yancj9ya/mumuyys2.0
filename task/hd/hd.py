@@ -39,6 +39,7 @@ class Hd(Click, ImageRec):
 
                 case "btn_mw":
                     log.insert("5.1", f"识别模式：秘闻挑战")
+                    self.times = 10
 
                 case "btn_yl":
                     log.insert("5.1", f"识别模式：御灵挑战")

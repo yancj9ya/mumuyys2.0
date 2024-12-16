@@ -104,6 +104,13 @@ class SwitchUI:
         else:
             return None
 
+    def generate_shortest_path(self, start_ui, target_ui):
+        shortest_path = nx.shortest_path(G, start_ui, target_ui)
+        if shortest_path:
+            return shortest_path
+        else:
+            return None
+
     def switch_to(self, target_ui):
         try:
             # 判断当前ui是否位于uimap，能够切换ui
