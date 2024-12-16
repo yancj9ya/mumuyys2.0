@@ -51,3 +51,16 @@ ql_page_TO_ts_main = (40, 27, 69, 59)
 # 2024/12/12
 yyl_page_TO_ward_page = (1077, 632, 1124, 675)
 ward_page_TO_yyl_page = (28, 26, 59, 63)
+
+backstreet_page_TO_fm_page = (776, 111, 790, 191)
+
+home_page_unfold_TO_backstreet_page = "step_back_street"
+
+
+step_back = ["task/based/switchui/res/step_back.bmp", (11, 12, 183, 209), "step_back"]
+step_back_2 = ["task/based/switchui/res/step_back_2.bmp", (11, 12, 183, 209), "step_back_2"]
+# 两种返回的识图样式
+BACK = {"BACK1": step_back, "BACK2": step_back_2}
+
+
+# 识图点击部分

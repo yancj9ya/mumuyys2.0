@@ -18,6 +18,16 @@ class ImageRec:
     def __init__(self):
         self.win = Windows()
 
+    def verify_img_area(self, img_area: list) -> bool:
+        try:
+            _sx, _sy, _ex, _ey = img_area
+            if not (0 <= _sx <= _ex <= 1280 and 0 <= _sy <= _ey <= 720):
+                return False
+            return True
+        except (TypeError, ValueError) as e:
+            log.error(f"verify_img_area 发生错误: {e}")
+            return False
+
     def match_ui(self, img: list, accuracy=0.8, min_accuracy=0.7) -> str:
         try:
             # 获取屏幕当前的完整截图并转为灰度图
@@ -79,6 +89,8 @@ class ImageRec:
                 min(img[1][2] + 5, 1280),
                 min(img[1][3] + 5, 720),
             ]
+            if not self.verify_img_area(match_area):
+                raise Exception("截图区域超出屏幕范围")
             ShotImage = self.win.screenshot(match_area)
             if ShotImage is not None:
                 ShotImage = cv2.cvtColor(ShotImage, cv2.COLOR_BGR2GRAY)

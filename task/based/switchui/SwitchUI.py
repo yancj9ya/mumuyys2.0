@@ -5,13 +5,21 @@ from task.based.switchui.res.page_switch_coord import *
 from task.based.Mytool.Click import Click
 from task.based.Mytool.imageRec import ImageRec
 from PIGEON.log import log
+from PIGEON.retry import retry
 
 # import matplotlib.pyplot as plt
 # 构建切换ui的路径图，主要是为了寻找最短路径
 G = nx.Graph()
-for img_ui in ui_list_keys:
-    G.add_node(img_ui)
+# for img_ui in ui_list_keys:
+#     G.add_node(img_ui)
 ui_map = {
+    "fm_page": {
+        "backstreet_page": BACK,
+    },
+    "backstreet_page": {
+        "fm_page": backstreet_page_TO_fm_page,
+        "home_page_unfold": BACK,
+    },
     "ward_page": {
         "yyl_page": ward_page_TO_yyl_page,
     },
@@ -65,6 +73,7 @@ ui_map = {
         "ts_main_ui": home_page_unfold_TO_ts_main,
         "yyl_page": home_page_unfold_TO_yyl_page,
         "soul_content_page": home_page_unfold_TO_soul_content_page,
+        "backstreet_page": home_page_unfold_TO_backstreet_page,
     },
     "home_page_fold": {
         "home_page_unfold": home_page_fold_TO_home_page_unfold,
@@ -73,7 +82,9 @@ ui_map = {
         "ts_main_ui": area_demon_TO_ts_main,
     },
 }
+
 for k, v in ui_map.items():
+    G.add_node(k)
     for e_k, e_v in v.items():
         G.add_edge(k, e_k, weight=len(e_v))
 
@@ -98,11 +109,12 @@ class SwitchUI:
         match_list = [ui_list[ui] for ui in ui_keys]
         return match_list
 
+    @retry(max_retries=5, delay=0.5)
     def find_current_ui(self):  # 寻找当前的ui
         if res := self.imageRec.match_ui(self.ui, accuracy=0.7):
             return res
         else:
-            return None
+            raise Exception("Can't find current ui")
 
     def generate_shortest_path(self, start_ui, target_ui):
         shortest_path = nx.shortest_path(G, start_ui, target_ui)
@@ -111,58 +123,61 @@ class SwitchUI:
         else:
             return None
 
+    def exute_step(self, step):
+        if isinstance(step, list):
+            for p in step:
+                self.click.area_click(p)
+                sleep(0.8)
+        elif isinstance(step, tuple):
+            self.click.area_click(step)
+        elif isinstance(step, str):
+            res = self.imageRec.match_img(ui_list[step], accuracy=0.8)
+            if res:
+                self.click.area_click(res)
+        elif isinstance(step, dict):
+            for k, v in step.items():
+                if res := self.imageRec.match_img(v, accuracy=0.9):
+                    self.click.area_click(res)
+        else:
+            raise Exception(f"Invalid step type: {type(step)}")
+
+    def confirm_page(self, need_confirm_page):
+        if self.imageRec.match_img(ui_list[need_confirm_page], accuracy=0.8):
+            return True
+        else:
+            return False
+        pass
+
+    @retry(max_retries=5, delay=0.5)
     def switch_to(self, target_ui):
+        log.info(f"@SwitchUI:Start switch to {target_ui}")
+        # 判断当前ui是否位于uimap，能够切换ui
+        start_ui = self.find_current_ui()  # 获取当前的ui位置
+        if start_ui is None:
+            log.error(f"@SwitchUI:\n Can't find current ui,\n switch to {target_ui}")
+            return False  # 找不到当前ui，无法切换
+        # 如果当前ui即是目标ui，则直接返回
+        if start_ui == target_ui:
+            return True
+        log.info(f"@SwitchUI:\n Current ui is {start_ui},\n switch to {target_ui}")
         try:
-            # 判断当前ui是否位于uimap，能够切换ui
-            start_ui = self.find_current_ui()
-            if start_ui is None:
-                log.error(f"@SwitchUI:\n Can't find current ui,\n switch to {target_ui}")
-                return False  # 找不到当前ui，无法切换
-
-            # 如果当前ui即是目标ui，则直接返回
-            if start_ui == target_ui:
-                return True
-            log.info(f"@SwitchUI:\n Current ui is {start_ui},\n switch to {target_ui}")
-
-            # 寻找最短路径并执行切换操作
+            path = self.generate_shortest_path(start_ui, target_ui)  # 获得当前ui到目标ui的最短路径
+            if not path:
+                raise Exception(f"Can't find path from {start_ui} to {target_ui}")
+            else:
+                log.info(f"[{start_ui}]->[{target_ui}] by path:{path}")
             while self.find_current_ui() != target_ui:
                 if self.running.state == "STOP":
                     return True
-
-                start_ui = self.find_current_ui()  # 获取当前的ui位置
-                path = nx.shortest_path(G, start_ui, target_ui)  # 获得当前ui到目标ui的最短路径
-                if not path:
-                    raise Exception(f"Can't find path from {start_ui} to {target_ui}")
-                log.info(f"[{start_ui}]->[{target_ui}] by path:{path}")
-
                 # 遍历路径切换ui
-                while start_ui != target_ui:
-                    if self.running.state == "STOP":
-                        return True
+                next_ui = path[path.index(start_ui) + 1]  # 获得下一个page
+                step = ui_map.get(start_ui, {}).get(next_ui)
 
-                    next_ui = path[path.index(start_ui) + 1]  # 获得下一个page
-                    step = ui_map.get(start_ui, {}).get(next_ui)
-
-                    if step is None:
-                        raise Exception(f"Can't find step from {start_ui} to {next_ui}")
-
-                    # 执行坐标点击之前先判断是否位于目标page:s_page
-                    elif self.imageRec.match_img(ui_list[start_ui], accuracy=0.9):
-                        if isinstance(step, list):
-                            for p in step:
-                                self.click.area_click(p)
-                                sleep(0.8)
-                        elif isinstance(step, tuple):
-                            self.click.area_click(step)
-                        elif isinstance(step, str):
-                            res = self.imageRec.match_img(ui_list[step], accuracy=0.7)
-                            if res:
-                                self.click.area_click(res)
-                        else:
-                            raise Exception(f"Invalid step type: {type(step)}")
-                        # 切换操作执行完成
-                        sleep(1)
-
+                if step is None:
+                    raise Exception(f"STPE_ERROR: {start_ui} to {next_ui}")
+                if self.confirm_page(start_ui):
+                    self.exute_step(step)
+                    sleep(1)
                     # 检测是否已经到达下一个页面
                     current_ui = self.find_current_ui()
                     if current_ui == next_ui:
@@ -171,24 +186,19 @@ class SwitchUI:
                     elif current_ui == start_ui:  # 仍然处于原页面，则继续循环
                         continue
                     elif current_ui not in path:  # 已经切换到其他不在路径的页面，跳出循环，重新寻找路径
-                        break
-
+                        if res := self.imageRec.match_img(v, accuracy=0.9):
+                            self.click.area_click(res)
+                            sleep(1)
+                        raise Exception(f"Confirm page {start_ui} failed")
                 else:
-                    log.info(f"Switch to {target_ui} success")
-                    return True  # 切换成功，返回True
-
+                    for k, v in BACK.items():
+                        if res := self.imageRec.match_img(v, accuracy=0.9):
+                            self.click.area_click(res)
+                            sleep(1)
+                    raise Exception(f"Confirm page {start_ui} failed")
+            else:
+                log.info(f"Switch to {target_ui} success")
+                return True  # 切换成功，返回True
         except Exception as e:
             log.error(f"@SwitchUI: {e}")
-
-    # def draw_map(self):
-    #    nx.draw(G, with_labels=True, node_color="lightblue", node_size=700, font_weight="bold")
-    #    plt.show()
-
-
-if __name__ == "__main__":
-    import os
-
-    os.path.append("D:\python\mumuyys2.0\\")
-
-    swtich = SwitchUI()
-    swtich.switch_to("ts_main_ui")
+            raise e

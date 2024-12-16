@@ -54,7 +54,8 @@ class DevTool(ctk.CTk):
         self.rect_info.grid(row=4, column=1, columnspan=2, padx=10, pady=10, sticky="ew")
 
     def choose_folder(self):
-        folder_path = filedialog.askdirectory()
+        current_dir = os.getcwd()  # 获取当前目录
+        folder_path = filedialog.askdirectory(initialdir=current_dir)
         if folder_path:  # 如果选择了文件夹
             self.folder_path_entry.delete(0, "end")
             self.folder_path_entry.insert(0, folder_path)

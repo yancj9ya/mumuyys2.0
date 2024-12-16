@@ -5,7 +5,7 @@
         "end_ui": "dg_chose_page",
         "ui_delay": "0.5",
         "change_soul": "1,1",
-        "dg_xs": "1:5",
+        "dg_xs": "1:4.7",
         "dg_rs": "50",
         "run_time": "00:00-23:59"
     },

@@ -24,7 +24,7 @@ def retry(max_retries=3, delay=1, exceptions=(Exception,), on_retry=None):
                         on_retry(retries, e)  # 执行回调函数
                     print(f"Attempt {retries} failed: {e}. Retrying in {delay} seconds...")
                     if retries < max_retries:
-                        time.sleep(delay)  # 延时再试
+                        time.sleep(delay * retries)  # 延时再试
                     else:
                         print("Max retries reached, raising exception.")
                         raise e

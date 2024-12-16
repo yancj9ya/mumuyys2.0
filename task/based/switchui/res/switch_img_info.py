@@ -25,10 +25,18 @@ ltp_page = ["task/based/switchui/res/ltp_page.bmp", [69, 635, 117, 674], "ltp_pa
 ql_page = ["task/based/switchui/res/ql_page.bmp", [107, 22, 173, 62], "ql_page"]
 ward_page = ["task/based/switchui/res/ward_page.bmp", (183, 343, 371, 584), "ward_page"]
 
+
+backstreet_page = ["task/based/switchui/res/backstreet_page.bmp", [769, 390, 791, 494], "backstreet_page"]
+fm_page = ["task/based/switchui/res/fm_page.bmp", [12, 656, 54, 704], "fm_page"]
+
+
+# 识图点击的切换方式--------------------------------------------------------------------
+step_ts = ["task/based/switchui/res/step_ts.bmp", (293, 136, 1039, 231), "step_ts"]
+step_back_street = ["task/based/switchui/res/back_street.bmp", (206, 329, 1062, 446), "back_street"]
+
+
 ui_list = locals()
 ui_list_keys = list(ui_list.keys())[8:]
-# 识图点击部分
-step_ts = ["task/based/switchui/res/step_ts.bmp", (293, 136, 1039, 231), "step_ts"]
 
 
 if __name__ == "__main__":

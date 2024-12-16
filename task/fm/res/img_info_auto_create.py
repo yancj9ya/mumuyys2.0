@@ -1,0 +1,15 @@
+# this file is auto created by devtool at 2024-12-16 21:15:02.794390
+
+fm_page_ui = ["task/fm/res/fm_page_ui.bmp", [16, 661, 59, 702], "fm_page_ui"]
+red_egg = ["task/fm/res/red_egg.bmp", [1216, 214, 1250, 248], "red_egg"]
+normal_boss = ["task/fm/res/normal_boss.bmp", [1007, 648, 1036, 691], "normal_boss"]
+real_fm = ["task/fm/res/real_fm.bmp", [1156, 618, 1206, 674], "real_fm"]
+center_entrance = ["task/fm/res/center_entrance.bmp", [621, 335, 665, 388], "center_entrance"]
+wait_start = ["task/fm/res/wait_start.bmp", [37, 486, 82, 536], "wait_start"]
+confirm_end_realfm = ["task/fm/res/confirm_end_realfm.bmp", [1223, 288, 1240, 326], "confirm_end_realfm"]
+red_egg_done = ["task/fm/res/red_egg_done.bmp", [1223, 210, 1252, 252], "red_egg_done"]
+ready_btn=['task/fm/res/ready_btn.bmp', [1132, 566, 1221, 610], 'ready_btn']
+in_battle=['task/fm/res/in_battle.bmp', [97, 15, 119, 48], 'in_battle']
+end_battle=['task/fm/res/end_battle.bmp', [35, 484, 67, 544], 'end_battle']
+back=['task/fm/res/back.bmp', [19, 16, 54, 49], 'back']
+back_confirm=['task/fm/res/back_confirm.bmp', [691, 400, 790, 444], 'back_confirm']
