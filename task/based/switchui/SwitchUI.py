@@ -109,11 +109,20 @@ class SwitchUI:
         match_list = [ui_list[ui] for ui in ui_keys]
         return match_list
 
-    @retry(max_retries=5, delay=0.5)
+    def try_back_step(self, *args, **kwargs):
+        print("try back")
+        for k, v in BACK.items():
+            if res := self.imageRec.match_img(v, accuracy=0.9):
+                self.click.area_click(res)
+                sleep(1)
+        pass
+
+    # @retry(max_retries=5, delay=0.5)
     def find_current_ui(self):  # 寻找当前的ui
         if res := self.imageRec.match_ui(self.ui, accuracy=0.7):
             return res
         else:
+            self.try_back_step()
             raise Exception("Can't find current ui")
 
     def generate_shortest_path(self, start_ui, target_ui):

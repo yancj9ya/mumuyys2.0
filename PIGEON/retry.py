@@ -2,7 +2,7 @@ import time
 import functools
 
 
-def retry(max_retries=3, delay=1, exceptions=(Exception,), on_retry=None):
+def retry(max_retries=3, delay=1, exceptions=(Exception,), on_retry=None, skip_on_failure=True):
     """
     重试装饰器，支持回调函数
     :param max_retries: 最大重试次数
@@ -25,6 +25,9 @@ def retry(max_retries=3, delay=1, exceptions=(Exception,), on_retry=None):
                     print(f"Attempt {retries} failed: {e}. Retrying in {delay} seconds...")
                     if retries < max_retries:
                         time.sleep(delay * retries)  # 延时再试
+                    elif skip_on_failure:
+                        print("Skipping on_failure...")
+                        return None
                     else:
                         print("Max retries reached, raising exception.")
                         raise e

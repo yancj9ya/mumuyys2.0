@@ -17,3 +17,4 @@ back_street_ui = ["task/based/switchui/res/back_street_ui.bmp", [769, 390, 791, 
 step_back = ["task/based/switchui/res/step_back.bmp", (174, 196, 7, 11), "step_back"]
 step_back_2=['task/based/switchui/res/step_back_2.bmp', [28, 17, 76, 63], 'step_back_2']
 fm_page=['task/based/switchui/res/fm_page.bmp', [12, 656, 54, 704], 'fm_page']
+step_back_3=['task/based/switchui/res/step_back_3.bmp', [24, 20, 74, 72], 'step_back_3']

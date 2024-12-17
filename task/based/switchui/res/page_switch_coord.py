@@ -59,8 +59,10 @@ home_page_unfold_TO_backstreet_page = "step_back_street"
 
 step_back = ["task/based/switchui/res/step_back.bmp", (11, 12, 183, 209), "step_back"]
 step_back_2 = ["task/based/switchui/res/step_back_2.bmp", (11, 12, 183, 209), "step_back_2"]
+step_back_3 = ["task/based/switchui/res/step_back_3.bmp", (11, 12, 183, 209), "step_back_3"]
+
 # 两种返回的识图样式
-BACK = {"BACK1": step_back, "BACK2": step_back_2}
+BACK = {"BACK1": step_back, "BACK2": step_back_2, "BACK3": step_back_3}
 
 
 # 识图点击部分
