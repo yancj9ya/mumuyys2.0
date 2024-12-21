@@ -28,7 +28,7 @@ ward_page = ["task/based/switchui/res/ward_page.bmp", (183, 343, 371, 584), "war
 
 backstreet_page = ["task/based/switchui/res/backstreet_page.bmp", [769, 390, 791, 494], "backstreet_page"]
 fm_page = ["task/based/switchui/res/fm_page.bmp", [12, 656, 54, 704], "fm_page"]
-
+server_page = ["task/based/switchui/res/server_page.bmp", [20, 572, 57, 619], "server_page"]
 
 # 识图点击的切换方式--------------------------------------------------------------------
 step_ts = ["task/based/switchui/res/step_ts.bmp", (293, 136, 1039, 231), "step_ts"]

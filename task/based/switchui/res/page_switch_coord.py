@@ -54,6 +54,8 @@ ward_page_TO_yyl_page = (28, 26, 59, 63)
 
 backstreet_page_TO_fm_page = (776, 111, 790, 191)
 
+server_TO_home_page_fold = (570, 583, 700, 616)
+
 home_page_unfold_TO_backstreet_page = "step_back_street"
 
 
@@ -64,5 +66,10 @@ step_back_3 = ["task/based/switchui/res/step_back_3.bmp", (11, 12, 183, 209), "s
 # 两种返回的识图样式
 BACK = {"BACK1": step_back, "BACK2": step_back_2, "BACK3": step_back_3}
 
+step_soul_content_1 = ["task/based/switchui/res/step_soul_content_1.bmp", [1214, 615, 1250, 653], "step_soul_content_1"]
+step_soul_content_2 = ["task/based/switchui/res/step_soul_content_2.bmp", [1034, 568, 1063, 603], "step_soul_content_2"]
+step_soul_content_3 = ["task/based/switchui/res/step_soul_content_3.bmp", [1186, 501, 1239, 543], "step_soul_content_3"]
 
+# 式神录
+SOUL_CONTENT = {"SOUL_CONTENT1": step_soul_content_1, "SOUL_CONTENT2": step_soul_content_2, "SOUL_CONTENT3": step_soul_content_3}
 # 识图点击部分

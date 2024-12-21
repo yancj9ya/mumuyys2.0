@@ -6,12 +6,12 @@
         "ui_delay": "0.5",
         "change_soul": "1,1",
         "dg_xs": "1:4.7",
-        "dg_rs": "50",
+        "dg_rs": "70",
         "run_time": "00:00-23:59"
     },
     "契灵": {
         "task_id": "契灵",
-        "times": "2",
+        "times": "200",
         "start_ui": "ql_page",
         "end_ui": "ql_page",
         "ui_delay": "0.5",
@@ -50,6 +50,16 @@
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2024-12-17 18:34:12"
+        "next_time": "after 2024-12-21 05:07:29"
+    },
+    "逢魔之时": {
+        "task_id": "逢魔之时",
+        "start_ui": "fm_page",
+        "end_ui": "fm_page",
+        "ui_delay": "0.5",
+        "change_soul": "4,1",
+        "run_time": "right now",
+        "repeat": "true",
+        "next_time": "17:00-22:00"
     }
 }

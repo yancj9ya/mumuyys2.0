@@ -3,13 +3,94 @@ from task.based.Mytool.Click import Click
 from task.based.Mytool.imageRec import ImageRec
 from task.based.Mytool.Ocr import Ocr
 from task.based.Mytool.Counter import Counter
-from task.hd.res.img_info import *
+from task.fm.res.img_info_auto_create import *
 from time import sleep, time, strftime, localtime
 from datetime import datetime
 from PIGEON.log import log
 from random import choices, uniform
 
 
-class Fm:
-    def __init__(self, running=None):
-        self.running = running
+class Fm(Click, ImageRec):
+    def __init__(self, **kwargs):
+        Click.__init__(self)
+        ImageRec.__init__(self)
+        self.uilist = [ready_btn, fm_page_ui, wait_start, end_battle, battle_sl]
+        self.running = kwargs.get("STOPSIGNAL", None)
+        self.has_4_pack_opened = False
+        self.task_switch = True
+        self.ui_delay = 0.5
+
+    def set_parms(self, **parms):
+        self.ui_delay = float(parms.get("ui_delay", 0.5))
+
+        pass
+
+    def loop(self):
+
+        while self.task_switch:
+            match self.running.state:
+                case "RUNNING":
+                    self.run()
+                case "STOP":
+                    self.task_switch = False
+                    log.insert("2.3", f"@任务已停止 ")
+                    return
+                case "WAIT":
+                    sleep(1)
+                    continue
+                case _:
+                    pass
+
+    def run(self):
+        sleep(self.ui_delay)
+        res = self.match_ui(self.uilist)
+        log.insert("2.1", f"UI match: {res} ")
+        match res:
+            case "fm_page_ui":
+                if not self.has_4_pack_opened:
+                    self.open_pack()
+                else:
+                    self.enter_fm()
+            case "wait_start" | "in_battle":
+                sleep(1)
+            case "end_battle":
+                self.end_battle()
+            case "ready_btn":
+                self.area_click(ready_btn[1])
+            case "battle_sl":
+                self.area_click(battle_sl[1])
+        pass
+
+    def open_pack(self):
+        if not self.match_img(red_egg_done):
+            for _ in range(5):
+                self.area_click(real_fm[1])
+                sleep(2)
+            self.area_click(red_egg[1])
+        else:
+            self.has_4_pack_opened = True
+
+    def enter_fm(self):
+        if self.match_img(hard_boss):
+            self.area_click(hard_boss[1])
+            sleep(1)
+            self.area_click(center_entrance[1])
+            sleep(1)
+            if self.match_img(confirm_hard_boss):
+                self.area_click(confirm_hard_boss[1])
+        elif self.match_img(normal_boss):
+            self.area_click(normal_boss[1])
+            sleep(1)
+            self.area_click(center_entrance[1])
+            sleep(1)
+            if self.match_img(confirm_boss):
+                self.area_click(confirm_boss[1])
+
+    def end_battle(self):
+        if self.match_img(back):
+            self.area_click(back[1])
+            sleep(1)
+        if self.match_img(back_confirm):
+            self.area_click(back_confirm[1])
+            self.task_switch = False
+        pass

@@ -7,6 +7,7 @@ from task.ts.ts import Ts
 from task.yh.yh import Yh
 from task.xz.xz import Xz
 from task.jy.jy import Jy
+from task.fm.fm import Fm
 from task.areademon.areademon import Ad
 
 

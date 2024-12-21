@@ -12,23 +12,29 @@ import re
 from PIGEON.config import task_option
 from PIGEON.log import log
 from PIGEON.event import MyEvent
+from PIGEON.client import Client
 from GUI.tab_pretask import *
 from GUI.togglebuton import ToggleButton
 from task.based.switchui.SwitchUI import SwitchUI
 from task.based.soulchange.soulchange import SoulChange
-from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy
+from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm
 from threading import Thread
 from datetime import datetime, timedelta
 from time import sleep
 
 
 class Scheduler:
-    F_MAP = {"结界寄养": Jy, "结界突破": Tp, "地域鬼王": Ad, "寮突破": Ltp, "契灵": Ql, "智能": Hd, "绘卷": Ts, "御魂": Yh, "道馆": Dg}
+    F_MAP = {"逢魔之时": Fm, "结界寄养": Jy, "结界突破": Tp, "地域鬼王": Ad, "寮突破": Ltp, "契灵": Ql, "智能": Hd, "绘卷": Ts, "御魂": Yh, "道馆": Dg}
+    tab_frame = None
 
     def __init__(self):
         self.task_ctrl = MyEvent("task_ctrl")
         self.scheduler_ctrl = MyEvent("scheduler_ctrl")
+        self.client_ctrl = MyEvent("client_ctrl")
 
+        self.client = Client(self.client_ctrl)
+
+        self.is_task_running = False
         self.ready_tasks = []
         self.wait_tasks = []
 
@@ -69,15 +75,15 @@ class Scheduler:
             pass
 
     def _sche_task_loop(self, task: AtomTask = None, parms: dict = None):
+        self.is_task_running = True
         log.clear()
         log.insert("1.0", f"{'━'*14}统计{'━'*14}\n\n\n\n\n{'━'*14}日志{'━'*14}\n", tags="sep")
         try:
             self._task_need_change_soul(parms)
-            while not self.switch_ui.switch_to(parms["start_ui"]):
-                continue
+            self.switch_ui.switch_to(parms["start_ui"])
             instance_return = self._create_task_instance(parms)
             print(f"instance_return: {instance_return}")
-
+            self.switch_ui.switch_to(parms["end_ui"])
         except Exception as e:
             log.info(f"_task function Error in {parms['task_id']} task: {e}")
 
@@ -90,11 +96,10 @@ class Scheduler:
                     target_time = datetime.now() + timedelta(hours=hour, minutes=minute, seconds=second)
                     task_option[task.name]["next_time"] = f"after {target_time.strftime("%Y-%m-%d %H:%M:%S")}"
                     task.TabMaster.add_task(task.name)
-
-            self.switch_ui.switch_to(parms["end_ui"])
             task.set_state("done")
             task.TabMaster.sort_task()
             self.task_ctrl.stop()
+            self.is_task_running = False
 
         pass
 
@@ -141,15 +146,41 @@ class Scheduler:
         实时任务立即执行。
         """
         while self.scheduler_ctrl.is_set():
+            sleep(1)
+            self.tab_frame.state_loop()
             # 检查等待任务队列是否有任务符合执行的时间条件
             self.is_ready_to_run()
             # 从就绪队列中取出任务，执行任务
             if self.task_ctrl.state == "STOP" and self.ready_tasks:
-                self.excute(self.ready_tasks.pop(0))
-            elif self.task_ctrl.state == "RUNNING":
+                # 执行任务之前检查客户端是否启动
+                self._is_client_started()
+                if self.is_task_running:
+                    continue
+                else:
+                    self.excute(self.ready_tasks.pop(0))
+            elif self.task_ctrl.state == "STOP" and not self.ready_tasks:  # 无任务运行，同时ready_tasks为空,此时关闭客户端
+                self.client.client_stop()  # 关闭客户端
                 pass
-            sleep(1.5)
+
         pass
+
+    def _is_client_started(self):
+        """
+        启动客户端
+        """
+        if not self.client.is_app_started():
+            print("客户端未启动，正在启动客户端")
+            self.client_ctrl.start()  # 启动客户端线程
+            self.client.client_start()  # 启动客户端
+            # 等待客户端启动完成，避免任务执行时客户端还未启动完成
+            while 1:
+                print("验证客户端是否启动完成")
+                if self.client.verify_app_start_finish():
+                    break
+                sleep(1)
+        else:
+            print("客户端已启动，开始执行任务")
+            return  # 客户端已启动，不需要再启动客户端
 
     def start_scheduler(self):
         """
@@ -163,9 +194,9 @@ class Scheduler:
 
     def stop_scheduler(self):
         self.scheduler_ctrl.stop()
-        if self.task_ctrl.state == "RUNNING":
+        if self.task_ctrl.state in ["RUNNING", "WAIT"]:
             self.task_ctrl.stop()
-            print("stop scheduler and task")
+            log.debug("stop scheduler and task")
         pass
 
     def delete_task(self, task: AtomTask):
@@ -182,6 +213,7 @@ class Scheduler:
         判断是否有实时任务可以立即执行。
         """
         for task in self.wait_tasks:
+
             try:
                 if task.parms.get("next_time"):
                     if self.is_time_valid(task.parms.get("next_time")):
@@ -193,6 +225,8 @@ class Scheduler:
                     else:
                         return  # 任务未到执行时间，不需要判断
                 elif self.is_time_valid(task.parms.get("run_time")):
+                    if not self.task_ctrl.is_set():
+                        log.info_nof(f"{task.name} is ready at {task.parms.get('run_time')}.")
                     self.ready_tasks.append(task)
                     task.set_state("ready")
                     self.wait_tasks.remove(task)
@@ -308,7 +342,7 @@ class Scheduler:
 
         # 如果是 "every day after" 的情况
         if isinstance(time_info, datetime):
-            print(f'{expression} is {time_info.strftime("%Y-%m-%d %H:%M:%S")}')
+            # print(f'{expression} is {time_info.strftime("%Y-%m-%d %H:%M:%S")}')
             # 如果当前时间晚于 "after" 的时间，返回 True，否则返回 False
             return current_time >= time_info
 

@@ -9,3 +9,7 @@ soul_plan1=['task/based/soulchange/res/soul_plan1.bmp', [997, 144, 1026, 173], '
 soul_plan2=['task/based/soulchange/res/soul_plan2.bmp', [996, 304, 1026, 337], 'soul_plan2']
 soul_plan3=['task/based/soulchange/res/soul_plan3.bmp', [999, 471, 1023, 499], 'soul_plan3']
 change_confirm=['task/based/soulchange/res/change_confirm.bmp', [682, 405, 835, 451], 'change_confirm']
+soul_group4=['task/based/soulchange/res/soul_group4.bmp', [1121, 318, 1236, 357], 'soul_group4']
+soul_group5=['task/based/soulchange/res/soul_group5.bmp', [1123, 382, 1232, 421], 'soul_group5']
+soul_group6=['task/based/soulchange/res/soul_group6.bmp', [1130, 454, 1220, 493], 'soul_group6']
+soul_group7=['task/based/soulchange/res/soul_group7.bmp', [1122, 526, 1229, 562], 'soul_group7']

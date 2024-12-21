@@ -28,6 +28,9 @@ class Log:
         Log_to_file.rename_file_if_older_than_one_day("log/log.txt")
         pass
 
+    def info_nof(self, message):
+        self.handler(message, "INFO")
+
     def info(self, message):
         self.handler(message, "INFO")
         Log_to_file.logtToFile(message, more_info=inspect_infomation.get_more_info(), level="INFO")

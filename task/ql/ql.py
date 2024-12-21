@@ -3,6 +3,7 @@ from task.based.Mytool.imageRec import ImageRec
 from task.based.Mytool.Ocr import Ocr
 from task.based.Mytool.Counter import Counter
 from task.ql.res.img_info import *
+from task.ql.res.img_info_auto_create import *
 from time import sleep, time, strftime, localtime
 from PIGEON.log import log
 
@@ -71,6 +72,8 @@ class Ql(Click, ImageRec):
                         return
                     self.area_click(res)
                     sleep(1)
+                    if self.match_img(full_pan_continue_confirm):
+                        self.area_click(full_pan_continue_confirm[1])
                     self.times_counter.increment()
                     log.insert("3.1", f"@第{self.times_counter.count:^3d}次挑战 ")
             case "ql_cg_ui" | "ql_cg_t_ui":
@@ -94,6 +97,7 @@ class Ql(Click, ImageRec):
                     return
                 case "WAIT":
                     sleep(1)
+                    log.insert("2.1", f"@暂停中... ")
                     continue
                 case _:
                     pass

@@ -1,0 +1,3 @@
+# this file is auto created by devtool at 2024-12-19 00:12:04.494528
+
+full_pan_continue_confirm=['task/ql/res/full_pan_continue_confirm.bmp', [719, 411, 792, 451], 'full_pan_continue_confirm']

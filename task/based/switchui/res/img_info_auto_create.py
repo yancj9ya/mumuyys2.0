@@ -18,3 +18,7 @@ step_back = ["task/based/switchui/res/step_back.bmp", (174, 196, 7, 11), "step_b
 step_back_2=['task/based/switchui/res/step_back_2.bmp', [28, 17, 76, 63], 'step_back_2']
 fm_page=['task/based/switchui/res/fm_page.bmp', [12, 656, 54, 704], 'fm_page']
 step_back_3=['task/based/switchui/res/step_back_3.bmp', [24, 20, 74, 72], 'step_back_3']
+server_page=['task/based/switchui/res/server_page.bmp', [20, 572, 57, 619], 'server_page']
+step_soul_content_1=['task/based/switchui/res/step_soul_content_1.bmp', [1214, 615, 1250, 653], 'step_soul_content_1']
+step_soul_content_2=['task/based/switchui/res/step_soul_content_2.bmp', [1034, 568, 1063, 603], 'step_soul_content_2']
+step_soul_content_3=['task/based/switchui/res/step_soul_content_3.bmp', [1186, 501, 1239, 543], 'step_soul_content_3']

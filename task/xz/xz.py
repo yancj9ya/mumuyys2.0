@@ -14,12 +14,21 @@ class Xz:
     thread_count = 0
 
     @classmethod
+    def dedect_client(cls):
+        return cls.eye.win.is_windows_exist()
+
+    @classmethod
     def auto_accept_mission(cls, **kwargs):
         try:
             # log.info("协助邀请守护进程启动")
             while cls.running.get():
-                # print(f"{kwargs.get('count')}个协助邀请守护进程启动")
                 sleep(3)  # 每三秒检测一次是否有邀请
+                # 检测客户端是否启动
+                if not cls.dedect_client():
+                    # 客户端未启动
+                    sleep(20)
+                    continue
+                # 客户端启动
                 if res := cls.eye.match_img(xz_yes):
                     log.info("发现协助邀请")
                     if cls.eye.match_img(xz_no):

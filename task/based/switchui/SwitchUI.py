@@ -1,4 +1,5 @@
 import networkx as nx
+import traceback
 from time import sleep
 from task.based.switchui.res.switch_img_info import *
 from task.based.switchui.res.page_switch_coord import *
@@ -7,12 +8,16 @@ from task.based.Mytool.imageRec import ImageRec
 from PIGEON.log import log
 from PIGEON.retry import retry
 
+
 # import matplotlib.pyplot as plt
 # 构建切换ui的路径图，主要是为了寻找最短路径
 G = nx.Graph()
 # for img_ui in ui_list_keys:
 #     G.add_node(img_ui)
 ui_map = {
+    "server_page": {
+        "home_page_fold": server_TO_home_page_fold,
+    },
     "fm_page": {
         "backstreet_page": BACK,
     },
@@ -25,12 +30,16 @@ ui_map = {
     },
     "ql_page": {
         "ts_main_ui": ql_page_TO_ts_main,
+        # "soul_content_page": SOUL_CONTENT,
     },
     "ltp_page": {
         "tp_main_ui": ltp_page_TO_tp_main,
     },
-    "soul_content_page": {
+    "soul_content_page": {  # 式神录
         "home_page_unfold": soul_content_page_TO_home_page_unfold,
+        # "tp_main_ui": soul_content_page_TO_home_page_unfold,
+        # "fm_page": soul_content_page_TO_home_page_unfold,
+        # "ql_page": soul_content_page_TO_home_page_unfold,
     },
     "dg_chose_page": {
         "shenshe_page": dg_chose_page_TO_shenshe_page,
@@ -47,6 +56,7 @@ ui_map = {
     "tp_main_ui": {
         "ts_main_ui": tp_main_TO_ts_main,
         "ltp_page": tp_main_TO_ltp_page,
+        # "soul_content_page": SOUL_CONTENT,
     },
     "ts_main_ui": {  # 探索界面
         "ts_tz_ui": ts_cm_TO_ts_tz,
@@ -101,12 +111,12 @@ class SwitchUI:
         self.click = Click()
         self.imageRec = ImageRec()
         self.running = running
-        self.ui = self.get_ui
+        self.ui = self.get_ui()
 
-    @property
     def get_ui(self):
-        ui_keys = ui_list_keys.copy()[:-1]
-        match_list = [ui_list[ui] for ui in ui_keys]
+        match_list = []
+        for ui in ui_map.keys():
+            match_list.append(ui_list[ui])
         return match_list
 
     def try_back_step(self, *args, **kwargs):
@@ -122,8 +132,7 @@ class SwitchUI:
         if res := self.imageRec.match_ui(self.ui, accuracy=0.7):
             return res
         else:
-            self.try_back_step()
-            raise Exception("Can't find current ui")
+            return None
 
     def generate_shortest_path(self, start_ui, target_ui):
         shortest_path = nx.shortest_path(G, start_ui, target_ui)
@@ -157,18 +166,28 @@ class SwitchUI:
             return False
         pass
 
-    @retry(max_retries=5, delay=0.5)
+    @retry(max_retries=10, delay=1)
     def switch_to(self, target_ui):
-        log.info(f"@SwitchUI:Start switch to {target_ui}")
-        # 判断当前ui是否位于uimap，能够切换ui
-        start_ui = self.find_current_ui()  # 获取当前的ui位置
-        if start_ui is None:
-            log.error(f"@SwitchUI:\n Can't find current ui,\n switch to {target_ui}")
-            return False  # 找不到当前ui，无法切换
-        # 如果当前ui即是目标ui，则直接返回
-        if start_ui == target_ui:
-            return True
-        log.info(f"@SwitchUI:\n Current ui is {start_ui},\n switch to {target_ui}")
+        try:
+            if self.running.state == "STOP":
+                print(f"STOP_SWITCH_UI: {target_ui}")
+                return True
+            log.info(f"@SwitchUI:Start switch to {target_ui}")
+            # 判断当前ui是否位于uimap，能够切换ui
+            start_ui = self.find_current_ui()  # 获取当前的ui位置
+            if start_ui is None:
+                log.error(f"@SwitchUI:\n Can't find current ui,\n switch to {target_ui}")
+                self.try_back_step()  # 找不到当前ui，无法切换
+                raise Exception(f"Can't find current ui")
+            # 如果当前ui即是目标ui，则直接返回
+            elif start_ui == target_ui:
+                log.info(f"@SwitchUI:already into page {target_ui}")
+                return True
+            else:
+                log.info(f"@SwitchUI:Current{start_ui}->{target_ui}")
+        except Exception as e:
+            log.error(f"@SwitchUI: {e}\nfull stack:\n{traceback.format_exc()}")
+            raise e
         try:
             path = self.generate_shortest_path(start_ui, target_ui)  # 获得当前ui到目标ui的最短路径
             if not path:
@@ -194,20 +213,25 @@ class SwitchUI:
                         continue
                     elif current_ui == start_ui:  # 仍然处于原页面，则继续循环
                         continue
+                    elif current_ui is None:  # 未知的页面，可能是正处于切换动画中，继续循环
+                        sleep(1)
+                        continue
                     elif current_ui not in path:  # 已经切换到其他不在路径的页面，跳出循环，重新寻找路径
-                        if res := self.imageRec.match_img(v, accuracy=0.9):
-                            self.click.area_click(res)
-                            sleep(1)
-                        raise Exception(f"Confirm page {start_ui} failed")
+                        raise Exception(f"Unknown page {current_ui} not in path,need to refind path")
+                elif self.confirm_page(next_ui):
+                    start_ui = next_ui  # 切换成功，更新当前ui
+                    continue
+
                 else:
-                    for k, v in BACK.items():
-                        if res := self.imageRec.match_img(v, accuracy=0.9):
-                            self.click.area_click(res)
-                            sleep(1)
-                    raise Exception(f"Confirm page {start_ui} failed")
+                    print(f"Confirm page {start_ui} failed")
+                #     # for k, v in BACK.items():
+                #     #     if res := self.imageRec.match_img(v, accuracy=0.9):
+                #     #         self.click.area_click(res)
+                #     #         sleep(1)
+                #     raise Exception(f"Confirm page {start_ui} failed")
             else:
                 log.info(f"Switch to {target_ui} success")
                 return True  # 切换成功，返回True
         except Exception as e:
-            log.error(f"@SwitchUI: {e}")
+            log.error(f"@SwitchUI: {e}\nfull stack:\n{traceback.format_exc()}")
             raise e

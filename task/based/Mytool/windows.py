@@ -146,6 +146,9 @@ class Windows:
 
         return img
 
+    def is_windows_exist(self) -> bool:
+        return IsWindow(self.handle)
+
     def notifyparent(self, x, y):
         msg = WM_PARENTNOTIFY
         wparam = WM_LBUTTONDOWN

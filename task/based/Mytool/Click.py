@@ -68,10 +68,12 @@ class Click:
         # 计算每一步的时间间隔
         slide_delay = move_time / len(move_list)
         # 开始滑动
-        self.win.left_down(*start)
+        self.win.left_down(*move_list[1])
         for point in move_list:
             self.win.mouse_move(*point)
             sleep(slide_delay)
-        self.win.left_up(*end)
-        sleep(0.2)
+        sleep(0.1)
+        self.win.left_up(*move_list[-1])
+
+        # self.win.left_up(*end)
         pass

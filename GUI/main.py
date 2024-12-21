@@ -12,6 +12,8 @@ from GUI.tab_dg import DgTab
 from GUI.tab_ts import TsTab
 from GUI.tab_log import LogTab
 from GUI.tab_pretask import PreTaskTab
+from GUI.icons.icons import Icons
+
 from PIGEON.config import setting, windows_position, Config
 
 
@@ -24,7 +26,6 @@ class MyTabView(ctk.CTkTabview):
         self.configure(bg_color="#f3f3f3")
         self.configure(border_width=1)
         self.corner_radius = 1
-        # self.configure(fg_color="grey")
         self.anchor("n")
 
         # create tabs
@@ -86,9 +87,10 @@ class App(ctk.CTk):
         x, y = self.get_window_position()
         self.geometry(f"265x360+{x}+{y}")
         self.title("八尺琼勾玉")
-        self.iconbitmap("GUI/icon.ico")
+        self.iconbitmap("GUI/icons/icon.ico")
         self.resizable(False, False)
         self.config(bg="#f3f3f3")
+        ctk.set_default_color_theme("green")
         self.wm_attributes("-topmost", 1)  # 窗口置顶
         self.protocol("WM_DELETE_WINDOW", self.save_profile)  # 关闭窗口时执行save_profile函数
 

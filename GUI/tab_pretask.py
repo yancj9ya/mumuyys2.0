@@ -2,6 +2,8 @@ import customtkinter as ctk
 import json
 import tkinter.messagebox as messagebox
 from PIGEON.config import task_option
+from GUI.icons.icons import Icons
+from PIL import Image, ImageTk
 
 # from PIGEON.scheduler import scheduler
 
@@ -91,33 +93,51 @@ class AtomTask(ctk.CTkFrame):
         self.set_state(self.state)
 
     def set_task(self):
-        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-            self.toplevel_window = TaskSettingWindow(self)
-        else:
-            self.toplevel_window.focus()
+        if self.setting_btn.cget("text") == "设置":
+            if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+                self.toplevel_window = TaskSettingWindow(self)
+            else:
+                self.toplevel_window.focus()
+        elif self.setting_btn.cget("text") == "取消":
+            self.scheduler.task_ctrl.stop()
 
     @property
     def TabMaster(self):
         return self.master.master.master.master
 
     def del_task(self):
-        if self.task_state.cget("text") == "running":
-            messagebox.showwarning("警告", "任务正在运行，无法删除。")
-        else:
-            result = messagebox.askyesno("确认删除", "您确定要删除这个任务吗？")
-            if result:
-                self.scheduler.delete_task(self)
+        if self.del_btn.cget("text") == "删除":
+            if self.task_state.cget("text") == "running":
+                messagebox.showwarning("警告", "任务正在运行，无法删除。")
+            elif self.task_state.cget("text") == "waiting":
+                result = messagebox.askyesno("确认删除", "您确定要删除这个任务吗？")
+                if result:
+                    self.scheduler.delete_task(self)
+                    self.destroy()  # 摧毁控件
+            else:
                 self.destroy()  # 摧毁控件
+        elif self.del_btn.cget("text") == "暂停":
+            if self.scheduler.task_ctrl.state == "RUNNING":
+                self.scheduler.task_ctrl.wait()
+                self.del_btn.configure(text="恢复")
+        elif self.del_btn.cget("text") == "恢复":
+            if self.scheduler.task_ctrl.state == "WAIT":
+                self.scheduler.task_ctrl.start()
+                self.del_btn.configure(text="暂停")
 
     def set_state(self, state):
         if state == "running":
-            self.task_state.configure(text=state, fg_color="Green")
+            self.task_state.configure(text=state, fg_color="Goldenrod")
+            self.del_btn.configure(text="暂停")
+            self.setting_btn.configure(text="取消", fg_color="red")
         elif state == "ready":
             self.task_state.configure(text=state, fg_color="lightgreen")
         elif state == "waiting":
             self.task_state.configure(text=state, fg_color="lightyellow")
         elif state == "done":
             self.task_state.configure(text=state, fg_color="lightgray")
+            self.del_btn.configure(text="删除")
+            self.setting_btn.configure(text="设置", fg_color="skyblue")
 
 
 class PreTaskTab(ctk.CTkFrame):
@@ -128,8 +148,10 @@ class PreTaskTab(ctk.CTkFrame):
         super().__init__(*args, **kwargs)
         self.grid_rowconfigure(1, minsize=340)
         self.grid_columnconfigure(0, minsize=80)
-        self.task_start = ctk.CTkButton(self, text="开始运行", command=self.scheduler_switch, width=15, corner_radius=2)
+        self.task_start = ctk.CTkButton(self, text="开始运行", fg_color="green", command=self.scheduler_switch, width=30, corner_radius=2)
         self.task_start.grid(row=0, column=1, padx=2, pady=2, sticky="w")
+        self.scheduler_state = ctk.CTkLabel(self, text="🐱", fg_color="transparent", width=30, text_color="green", font=("微软雅黑", 18, "bold"))
+        self.scheduler_state.grid(row=0, column=2, padx=2, pady=2, sticky="w")
 
         try:
             self.task_frame_ = task_option.json
@@ -142,6 +164,18 @@ class PreTaskTab(ctk.CTkFrame):
             messagebox.showerror("错误", "任务列表文件未找到，请检查文件路径。")
         except json.JSONDecodeError:
             messagebox.showerror("错误", "任务列表文件内容不是有效的 JSON 格式。")
+
+    def state_loop(self):
+        try:
+            # print("state_loop")
+            current_text = self.scheduler_state.cget("text")
+            # 定义状态转换字典
+            state_transition = {" 🐱": "🐱", "🐱": " 🐱"}
+            # 更新状态
+            if current_text in state_transition:
+                self.scheduler_state.configure(text=state_transition[current_text])
+        except Exception as e:
+            messagebox.showerror("错误", f"状态循环操作失败: {e}")
 
     def add_task(self, task_name):
         new_task = AtomTask(self.task_frame, task_name)
@@ -166,6 +200,7 @@ class PreTaskTab(ctk.CTkFrame):
     def scheduler_switch(self):
         try:
             if self.task_start.cget("text") == "开始运行":
+                AtomTask.scheduler.tab_frame = self
                 AtomTask.scheduler.start_scheduler()
                 self.task_start.configure(text="停止运行", fg_color="red")
             else:
