@@ -127,7 +127,7 @@ class ImageRec:
                 shot_color_img = cv2.cvtColor(self.win.screenshot(img[1]), cv2.COLOR_BGRA2BGR)
                 template_color_img = cv2.imread(img[0], cv2.IMREAD_COLOR)
                 color_simi = np.mean((shot_color_img - template_color_img) ** 2)
-                log.debug(f"颜色相似度: {color_simi:.2f}")
+                log.debug(f"颜色均方差: {color_simi:.2f}")
                 return matched_img if color_simi < color_simi_acc else None
             else:
                 return None

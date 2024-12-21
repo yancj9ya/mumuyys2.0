@@ -45,15 +45,15 @@ class Yh(Click, ImageRec):
     def room(self):
         if res := self.match_img(color_tz):
             self.Driver = True
-            log.info(f"Driver:{self.Driver}")
+            log.insert("5.1", f"Driver:{self.Driver}")
         else:
             self.Driver = False
-            log.info(f"Driver:{self.Driver}")
+            log.insert("5.1", f"Driver:{self.Driver}")
 
     def run(self):
         sleep(self.random_delay)
         match_res = self.match_ui(self.uilist)
-        log.debug(f"MATCHED UI:{match_res}")
+        log.insert("2.1", f"MATCHED UI:{match_res}")
         match match_res:
             case "fight_ui":
                 sleep(1)
@@ -61,7 +61,7 @@ class Yh(Click, ImageRec):
                 self.random_probability_delay(0.03)  # 在100次里面随机3次范围在2-4的长时延迟
                 self.area_click([990, 462, 1125, 520])
                 self.yh_counter.increment()
-                log.info(f"完成第{self.yh_counter.count}次挑战")
+                log.insert("3.1", f"完成第{self.yh_counter.count}次挑战")
             case "yh_end_mark_ui":
                 if uniform(0, 1) <= 0.7:
                     self.double_click([990, 462, 1125, 520])
@@ -78,19 +78,20 @@ class Yh(Click, ImageRec):
                     self.room()
                 if self.Driver:
                     if res := self.match_color_img(color_tz, color_simi_acc=90):
-                        log.info(f"matched color img:{res}")
+                        log.debug(f"Color image matched")
                         sleep(0.2)
                         self.area_click(res)
                     else:
-                        log.debug("未匹配到颜色")
+                        log.debug("Color image not matched")
                 else:
                     sleep(2)
 
     def loop(self):
+        log.insert("4.1", f"开始循环，次数：{self.times}")
         while all([self.running.is_set(), self.yh_counter.count < self.times]):
             self.run()
 
     def set_parms(self, **values):
-        self.times = values.get("times", 0)
+        self.times = int(values.get("times", 0))
         self.ui_delay = values.get("ui_delay", 0.5)
         self.yh_counter.reset()
