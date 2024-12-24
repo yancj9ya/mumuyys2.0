@@ -1,10 +1,10 @@
 {
-    "times": "126",
+    "times": "120",
     "tp_keep_level": true,
     "ui_delay": 0.55,
     "set_window_top": 0,
     "dg_xs": "1:4.7",
-    "dg_rs": 80,
+    "dg_rs": 50,
     "tp_ticket_limit": 10,
     "monster_limit": 500,
     "with_tp": true,

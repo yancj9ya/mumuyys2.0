@@ -71,15 +71,15 @@ class Fm(Click, ImageRec):
             self.has_4_pack_opened = True
 
     def enter_fm(self):
-        if self.match_img(hard_boss):
-            self.area_click(hard_boss[1])
+        if self.match_img(hard_boss, accuracy=0.8):
+            self.area_click(hard_boss[1], double_click=True)
             sleep(1)
             self.area_click(center_entrance[1])
             sleep(1)
             if self.match_img(confirm_hard_boss):
                 self.area_click(confirm_hard_boss[1])
         elif self.match_img(normal_boss):
-            self.area_click(normal_boss[1])
+            self.area_click(normal_boss[1], double_click=True)
             sleep(1)
             self.area_click(center_entrance[1])
             sleep(1)

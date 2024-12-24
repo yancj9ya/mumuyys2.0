@@ -111,14 +111,23 @@ class Jy(Click, ImageRec):
             sleep(0.5)
             if self.match_img(enter_jy):
                 self.area_click(enter_jy[1])
+                log.info("Enter JY page")
             if self.match_img(jy_sure_page):
                 if self.match_img(red_damo):
                     self.area_click(red_damo[1])
-                if self.match_img(fonfirm_jy_btn):
+                    log.info("Red damo")
+                if self.match_img(confirm_jy_btn):
                     sleep(0.5)
-                    self.area_click(fonfirm_jy_btn[1])
+                    self.area_click(confirm_jy_btn[1])
+                    log.info("Confirm JY")
                     confirm_jy_success = True
+                    log.info("Set confirm_jy_success to True")
+            else:
+                self.area_click([630, 309, 648, 385])
+                log.info("Click center of JY page")
         while True:
+            if self.match_img(confirm_jy_btn):
+                self.area_click(confirm_jy_btn[1])
             if self.match_img(exit_jy_page):
                 self.area_click(exit_jy_page[1])
                 sleep(1)

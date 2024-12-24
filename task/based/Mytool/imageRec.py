@@ -1,12 +1,10 @@
 from task.based.Mytool.windows import Windows
-from PIGEON.log import Log
+from PIGEON.log import log
 from random import randint
 import cv2
 import numpy as np
 import pathlib
 import time
-
-log = Log()
 
 
 class ImageRec:

@@ -1,7 +1,8 @@
 from task.based.Mytool.windows import Windows
 from ppocronnx.predict_system import TextSystem
-import cv2
+import cv2, re
 from PIGEON.log import Log
+from time import sleep
 
 log = Log()
 
@@ -26,17 +27,39 @@ class Ocr:
             ocr_img = cls.win.screenshot(area)
             # ocr_img = cv2.resize(ocr_img, (0,0), fx=2, fy=1)
             # _, ocr_img = cv2.threshold(ocr_img,127,255,cv2.THRESH_BINARY)
+            ocr_result = cls.text_recognizer.ocr_single_line(ocr_img)
             if debug:
+                print(ocr_result)
+                cv2.namedWindow("ocr_img", cv2.WINDOW_NORMAL)
                 cv2.imshow("ocr_img", ocr_img)
-                cv2.waitKey(0)
+                cv2.waitKey(500)
             if ocr_img is None:
                 raise ValueError("无法获取窗口截图")
             # ocr_img = cv2.cvtColor(ocr_img, cv2.COLOR_BGRA2GRAY)
-            ocr_result = cls.text_recognizer.ocr_single_line(ocr_img)
+
             return ocr_result
         except Exception as e:
             log.error(f"OCR操作失败: {e}")
             return None
+
+    @classmethod
+    def ocr_by_re(cls, area: list | tuple, pattern: str, threshold=0.6, try_times=10, debug=False):
+        t_t = try_times
+        try:
+            while t_t > 0:
+                sleep(0.2)
+                res = cls.ocr(area, debug)
+                print(f"尝试次数: {t_t}, 识别结果: {res}")
+                if res[1] > threshold:
+                    text = re.sub(r"\s+", "", res[0])  # 去除空格
+                    if re_res := re.search(pattern, text, re.VERBOSE):
+                        return re_res
+                    else:
+                        t_t -= 1
+
+        except Exception as e:
+            log.error(f"OCR_by_re操作失败: {e}")
+        pass
 
     @classmethod
     def ocr_numbers(cls, area: list) -> str:

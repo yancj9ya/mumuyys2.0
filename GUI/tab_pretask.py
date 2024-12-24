@@ -2,6 +2,7 @@ import customtkinter as ctk
 import json
 import tkinter.messagebox as messagebox
 from PIGEON.config import task_option
+from PIGEON.log import log
 from GUI.icons.icons import Icons
 from PIL import Image, ImageTk
 
@@ -78,16 +79,17 @@ class AtomTask(ctk.CTkFrame):
         self.name = task_name
         self.parms = task_option.get(task_name, {})
 
-        self.grid_columnconfigure([0, 1], minsize=80)
+        self.grid_columnconfigure(0, minsize=90)
+        self.grid_columnconfigure(1, minsize=80)
         self.grid_columnconfigure([2, 3], minsize=40)
-        self.task_name = ctk.CTkLabel(self, text=task_name, width=15, fg_color="skyblue", font=("微软雅黑", 12, "bold"))
-        self.task_name.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
-        self.task_state = ctk.CTkLabel(self, text="running", fg_color="green")
-        self.task_state.grid(row=0, column=1, padx=2, pady=2, sticky="ew")
+        self.task_name = ctk.CTkLabel(self, text=task_name, width=50, fg_color="skyblue", font=("微软雅黑", 11, "bold"), corner_radius=8)
+        self.task_name.grid(row=0, column=0, padx=1, pady=2, sticky="ew")
+        self.task_state = ctk.CTkLabel(self, text="running", fg_color="green", corner_radius=8)
+        self.task_state.grid(row=0, column=1, padx=1, pady=2, sticky="ew")
         self.setting_btn = ctk.CTkButton(self, text="设置", command=self.set_task, width=8, corner_radius=8)
-        self.setting_btn.grid(row=0, column=2, padx=0, pady=2, sticky="e")
+        self.setting_btn.grid(row=0, column=2, padx=1, pady=2, sticky="e")
         self.del_btn = ctk.CTkButton(self, text="删除", command=self.del_task, width=8, corner_radius=8)
-        self.del_btn.grid(row=0, column=3, padx=2, pady=2, sticky="w")
+        self.del_btn.grid(row=0, column=3, padx=1, pady=2, sticky="w")
 
         self.state = self.scheduler.get_state(task_name)
         self.set_state(self.state)
@@ -106,38 +108,44 @@ class AtomTask(ctk.CTkFrame):
         return self.master.master.master.master
 
     def del_task(self):
-        if self.del_btn.cget("text") == "删除":
-            if self.task_state.cget("text") == "running":
-                messagebox.showwarning("警告", "任务正在运行，无法删除。")
-            elif self.task_state.cget("text") == "waiting":
-                result = messagebox.askyesno("确认删除", "您确定要删除这个任务吗？")
-                if result:
-                    self.scheduler.delete_task(self)
+        try:
+            if self.del_btn.cget("text") == "删除":
+                if self.task_state.cget("text") == "running":
+                    messagebox.showwarning("警告", "任务正在运行，无法删除。")
+                elif self.task_state.cget("text") in ["waiting", "ready"]:
+                    result = messagebox.askyesno("确认删除", "您确定要删除这个任务吗？")
+                    if result:
+                        self.scheduler.delete_task(self)
+                        self.destroy()  # 摧毁控件
+                else:
                     self.destroy()  # 摧毁控件
-            else:
-                self.destroy()  # 摧毁控件
-        elif self.del_btn.cget("text") == "暂停":
-            if self.scheduler.task_ctrl.state == "RUNNING":
-                self.scheduler.task_ctrl.wait()
-                self.del_btn.configure(text="恢复")
-        elif self.del_btn.cget("text") == "恢复":
-            if self.scheduler.task_ctrl.state == "WAIT":
-                self.scheduler.task_ctrl.start()
-                self.del_btn.configure(text="暂停")
+            elif self.del_btn.cget("text") == "暂停":
+                if self.scheduler.task_ctrl.state == "RUNNING":
+                    self.scheduler.task_ctrl.wait()
+                    self.del_btn.configure(text="恢复")
+            elif self.del_btn.cget("text") == "恢复":
+                if self.scheduler.task_ctrl.state == "WAIT":
+                    self.scheduler.task_ctrl.start()
+                    self.del_btn.configure(text="暂停")
+        except Exception as e:
+            messagebox.showerror("错误", f"操作失败: {e}")
 
     def set_state(self, state):
-        if state == "running":
-            self.task_state.configure(text=state, fg_color="Goldenrod")
-            self.del_btn.configure(text="暂停")
-            self.setting_btn.configure(text="取消", fg_color="red")
-        elif state == "ready":
-            self.task_state.configure(text=state, fg_color="lightgreen")
-        elif state == "waiting":
-            self.task_state.configure(text=state, fg_color="lightyellow")
-        elif state == "done":
-            self.task_state.configure(text=state, fg_color="lightgray")
-            self.del_btn.configure(text="删除")
-            self.setting_btn.configure(text="设置", fg_color="skyblue")
+        try:
+            if state == "running":
+                self.task_state.configure(text=state, fg_color="Goldenrod")
+                self.del_btn.configure(text="暂停")
+                self.setting_btn.configure(text="取消", fg_color="red")
+            elif state == "ready":
+                self.task_state.configure(text=state, fg_color="lightgreen")
+            elif state == "waiting":
+                self.task_state.configure(text=state, fg_color="lightyellow")
+            elif state == "done":
+                self.task_state.configure(text=state, fg_color="lightgray")
+                self.del_btn.configure(text="删除")
+                self.setting_btn.configure(text="设置", fg_color="skyblue")
+        except Exception as e:
+            log.error(f"设置任务状态失败: {e}")
 
 
 class PreTaskTab(ctk.CTkFrame):
@@ -158,8 +166,8 @@ class PreTaskTab(ctk.CTkFrame):
             self.add_task_btn = ctk.CTkOptionMenu(self, values=list(self.task_frame_.keys()), command=self.add_task, width=80, corner_radius=2, anchor="center")
             self.add_task_btn.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
 
-            self.task_frame = ctk.CTkScrollableFrame(self, width=220, height=240, corner_radius=0)
-            self.task_frame.grid(row=1, column=0, columnspan=4, padx=2, pady=2, sticky="nsew")
+            self.task_frame = ctk.CTkScrollableFrame(self, width=228, height=240, corner_radius=0)
+            self.task_frame.grid(row=1, column=0, columnspan=4, padx=1, pady=2, sticky="nsew")
         except FileNotFoundError:
             messagebox.showerror("错误", "任务列表文件未找到，请检查文件路径。")
         except json.JSONDecodeError:
@@ -195,7 +203,7 @@ class PreTaskTab(ctk.CTkFrame):
 
         # 更新每个任务的布局
         for idx, task in enumerate(sorted_tasks):
-            task.grid(row=idx, column=0, padx=2, pady=1, sticky="ew")
+            task.grid(row=idx, column=0, padx=2, pady=2, sticky="ew")
 
     def scheduler_switch(self):
         try:

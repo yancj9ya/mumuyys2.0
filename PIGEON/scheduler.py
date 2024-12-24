@@ -11,6 +11,7 @@
 import re
 from PIGEON.config import task_option
 from PIGEON.log import log
+from PIGEON.threadsafelist import ThreadSafeList
 from PIGEON.event import MyEvent
 from PIGEON.client import Client
 from GUI.tab_pretask import *
@@ -35,8 +36,8 @@ class Scheduler:
         self.client = Client(self.client_ctrl)
 
         self.is_task_running = False
-        self.ready_tasks = []
-        self.wait_tasks = []
+        self.ready_tasks = ThreadSafeList()
+        self.wait_tasks = ThreadSafeList()
 
         self.switch_ui = SwitchUI(running=self.task_ctrl)
         self.soul_change = SoulChange(running=self.task_ctrl)
@@ -157,7 +158,11 @@ class Scheduler:
                 if self.is_task_running:
                     continue
                 else:
-                    self.excute(self.ready_tasks.pop(0))
+                    # 取出任务并执行
+                    current_task = self.ready_tasks.pop(0)
+                    log.info(f"pop out {current_task.name} task.")
+                    self.excute(current_task)
+
             elif self.task_ctrl.state == "STOP" and not self.ready_tasks:  # 无任务运行，同时ready_tasks为空,此时关闭客户端
                 self.client.client_stop()  # 关闭客户端
                 pass
@@ -203,8 +208,10 @@ class Scheduler:
         """在队列内寻找对应的任务并删除"""
         if task in self.ready_tasks:
             self.ready_tasks.remove(task)
+            log.debug(f"delete {task.name} task from ready_tasks.")
         elif task in self.wait_tasks:
             self.wait_tasks.remove(task)
+            log.debug(f"delete {task.name} task from wait_tasks.")
         else:
             print("任务不存在")
 
@@ -213,7 +220,7 @@ class Scheduler:
         判断是否有实时任务可以立即执行。
         """
         for task in self.wait_tasks:
-
+            log.insert("5.1", f"wait_tasks={[task.name for task in self.wait_tasks]}")
             try:
                 if task.parms.get("next_time"):
                     if self.is_time_valid(task.parms.get("next_time")):
@@ -249,11 +256,13 @@ class Scheduler:
                 # print(f"{task.name} is ready to run.next_time: {next_time}")
                 self.ready_tasks.append(task)
                 task.set_state("ready")
+                log.debug(f"{task.name} is add to ready_tasks")
                 return  # 任务已分类，不需要重复判断
             else:
                 # print(f"{task.name} is not ready to run.next_time: {next_time}")
                 self.wait_tasks.append(task)
                 task.set_state("waiting")
+                log.debug(f"{task.name} is add to wait_tasks")
                 return  # 任务已分类，不需要重复判断
 
         # 检查 run_time 参数
@@ -262,6 +271,7 @@ class Scheduler:
             if self.is_time_valid(run_time):
                 self.ready_tasks.append(task)
                 task.set_state("ready")
+                log.debug(f"{task.name} is add to ready_tasks")
             else:
                 self.wait_tasks.append(task)
                 task.set_state("waiting")
@@ -269,6 +279,7 @@ class Scheduler:
             # 如果没有 run_time，直接归入等待队列
             self.wait_tasks.append(task)
             task.set_state("waiting")
+            log.debug(f"{task.name} is add to wait_tasks")
 
     def get_state(self, task_id):
 

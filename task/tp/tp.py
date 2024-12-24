@@ -74,7 +74,7 @@ class Tp(Click, ImageRec):
                 # 退结界判断
                 if self.keep_57_flag:
                     res = self.match_duo_img((have_po[0], [371, 144, 1132, 535]))
-                    log.info(f"目前版面：{len(res)}/9")
+                    log.insert("3.1", f"目前版面：{len(res)}/9")
                     if len(res) == 8:
                         self.quit_to_keep(area)
                         return  # 直接返回uimatch，避免战斗的点击标记
@@ -144,13 +144,13 @@ class Tp(Click, ImageRec):
             else:
                 times = 0
         while self.counter.count < times:
-            print(f"state:{self.running.state}")
+            # print(f"state:{self.running.state}")
             match self.running.state:
                 case "RUNNING":
                     self.run()
                     log.insert("5.1", f"突破进度 {self.counter.count}/{times}")
                 case "STOP":
-                    log.insert("2.3", f"@任务已停止 ")
+                    log.insert("2.1", f"@任务已停止 ")
                     self.counter.reset()
                     return
                 case "WAIT":

@@ -132,6 +132,7 @@ class SwitchUI:
         if res := self.imageRec.match_ui(self.ui, accuracy=0.7):
             return res
         else:
+            self.imageRec.win.del_cache()
             return None
 
     def generate_shortest_path(self, start_ui, target_ui):
@@ -160,7 +161,7 @@ class SwitchUI:
             raise Exception(f"Invalid step type: {type(step)}")
 
     def confirm_page(self, need_confirm_page):
-        if self.imageRec.match_img(ui_list[need_confirm_page], accuracy=0.8):
+        if self.imageRec.match_img(ui_list[need_confirm_page], accuracy=0.7):
             return True
         else:
             return False

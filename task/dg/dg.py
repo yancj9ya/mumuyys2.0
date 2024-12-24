@@ -6,7 +6,7 @@ from task.dg.res.img_info import *
 from time import sleep, time, strftime, localtime
 
 from PIGEON.log import Log
-import traceback
+import traceback, random
 
 log = Log()
 
@@ -31,7 +31,7 @@ class Dg(Click, ImageRec):
         pre_xs_min = float(self.dg_xs.split(":")[0])
         pre_xs_max = float(self.dg_xs.split(":")[1])
         # 获取在预设最小人数前提上根据系数的增量人数,如果系数小于4，则增量人数为0
-        add_rs = int((dg_xs - 4.0) * 60) if dg_xs >= 4.0 else 0  # and dg_rs >= 100
+        add_rs = int((dg_xs - 4.0) * 60) if dg_xs >= 4.0 and pre_rs >= 70 else 0  # and dg_rs >= 100
         # 判断系数是否在预设范围且人数符合条件，符合则返回True，否则返回False
         if all([pre_xs_min <= dg_xs <= pre_xs_max, pre_rs + add_rs <= dg_rs, dg_rs <= 150]):
             log.insert("3.0", f"进攻道馆：系数{dg_xs:.2f}，人数{dg_rs}")
@@ -57,53 +57,47 @@ class Dg(Click, ImageRec):
 
     def chose_dg(self):
         try:
-            if res := Ocr.ocr([499, 625, 705, 671]):
-                res = list(res)
-                res[0] = res[0].strip()
-                # log.info(f'{res}')
-                if res[1] > 0.8:
-                    numbers = 1 if "".join(filter(str.isdigit, res[0])) == "" else int("".join(filter(str.isdigit, res[0])))
-                    if numbers == 0:
-                        self.DG_SWITCH = False
-                    else:
-                        self.DG_COUNT = numbers
-                else:
-                    # log.info(f'res[1]={res[1]}')
+            match = Ocr.ocr_by_re([499, 625, 705, 671], "([0-2])次")
+            if match:
+                self.DG_COUNT = int(match.group(1))
+                if self.DG_COUNT == 0:
+                    self.DG_SWITCH = False
                     return
+                else:
+                    log.info(f"道馆可进攻次数：{self.DG_COUNT}")
+                    log.info(f"道馆SWITCH：{self.DG_SWITCH}")
             else:
                 return
-            log.info(f"道馆可进攻次数：{self.DG_COUNT}")
-            log.info(f"道馆SWITCH：{self.DG_SWITCH}")
-            # while self.DG_SWITCH and not self.running.is_set():
             for i in range(3):
-                if not self.running.is_set():
-                    return
+                # if not self.running.is_set():
+                #     return
+                assert self.running.is_set(), "接收到停止信号"
                 if res := self.match_duo_img(dg_coin_right_ui, accuracy=0.8):
                     for area in res:
-                        sleep(0.2)
-                        if not self.running.is_set():
-                            return
+                        sleep(random.uniform(0.1, 0.7))
+                        assert self.running.is_set(), "接收到停止信号"
                         ocr_area = [area[0] + 35, area[1], area[2] + 43, area[3]]
-                        ocr_result = Ocr.ocr(ocr_area)
-                        if not ocr_result:
+                        match = Ocr.ocr_by_re(ocr_area, "([0-9]{3})")
+                        if match:
+                            dg_sj_num = int(match.group(1))
+                            self.area_click(ocr_area)
+                        else:
                             continue
-                        dg_sj = ocr_result[0]  # 这个是返回道馆的赏金字符串
-                        dg_sj_num = int("".join([char for char in dg_sj if char.isdigit()]))  # 采用列表推导式过滤出数字
-                        self.area_click(ocr_area)
-                        sleep(1.2)
-                        left_area = self.match_img(dg_chose_left_ui)  # 取得左边的道馆人数ui位置
-                        if not left_area:
+                        sleep(1)
+                        if left_area := self.match_img(dg_chose_left_ui):  # 取得左边的道馆人数ui位置
+                            left_ocr_area = [
+                                left_area[0] + 200,
+                                left_area[1] + 40,
+                                left_area[0] + 292,
+                                left_area[1] + 60,
+                            ]  # 根据左边的道馆ui，取得ocr识别的人数区域
+                            match = Ocr.ocr_by_re(left_ocr_area, "([1]?[0-9]{2})人")
+                            if match:
+                                dg_rs = int(match.group(1))
+                            else:
+                                continue
+                        else:
                             continue
-                        left_ocr_area = [
-                            left_area[0] + 200,
-                            left_area[1] + 40,
-                            left_area[0] + 292,
-                            left_area[1] + 60,
-                        ]  # 根据左边的道馆ui，取得ocr识别的人数区域
-                        dg_rs_result = Ocr.ocr(left_ocr_area)
-                        if not dg_rs_result:
-                            continue
-                        dg_rs = int("".join([char for char in dg_rs_result[0] if char.isdigit()]))  # 改为列表推导式取出数字
                         dg_xs = (dg_sj_num / dg_rs) if dg_rs != 0 else 10  # 计算系数
                         log.info(f"{str(dg_sj_num):<3}万，{str(dg_rs):>4}人，系数：{dg_xs:.2f}")
                         if self.decide_attack_or_not(dg_xs, dg_rs):
@@ -123,11 +117,14 @@ class Dg(Click, ImageRec):
                             self.DG_TIME = None
                             return
                 self.mouse_scroll(("down", 9), 1158, 310)
-            log.info("未能找到合适的系数道馆，刷新重找")
-            self.area_click([1129, 613, 1193, 678])
-            sleep(1)
-            self.area_click([686, 403, 796, 443])
-            sleep(1)
+            else:
+                log.info("未能找到合适的系数道馆，刷新重找")
+                self.area_click([1129, 613, 1193, 678])
+                sleep(1)
+                self.area_click([686, 403, 796, 443])
+                sleep(1)
+        except AssertionError as e:
+            log.debug(f"停止信号：{e}")
         except Exception as e:
             log.error(f"chose_dg()函数出错了：{e}，traceback:{traceback.format_exc()}")
 
