@@ -22,9 +22,9 @@ class Click:
 
     def click(self, x, y, press_time=0.2, animation_time=0.05) -> None:
         x, y = int(x), int(y)  # 缩放坐标
-        # self.notifyparent(x, y)#通知父类
-        # self.mouseactivate()
-        # self.setcursor()
+        self.win.notifyparent(x, y)  # 通知父类
+        self.win.mouseactivate()
+        self.win.setcursor()
         self.win.left_down(x, y)
         sleep(press_time)
         self.win.left_up(x, y)

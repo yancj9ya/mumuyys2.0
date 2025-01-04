@@ -142,7 +142,8 @@ class SwitchUI:
         else:
             return None
 
-    def exute_step(self, step):
+    def exute_step(self, step, path: list[str, str] = [None, None]):
+        log.file(f"Execute step:from {path[0]} to {path[-1]} by {step}")
         if isinstance(step, list):
             for p in step:
                 self.click.area_click(p)
@@ -205,14 +206,16 @@ class SwitchUI:
                 if step is None:
                     raise Exception(f"STPE_ERROR: {start_ui} to {next_ui}")
                 if self.confirm_page(start_ui):
-                    self.exute_step(step)
+                    self.exute_step(step, path=[start_ui, next_ui])
                     sleep(1)
                     # 检测是否已经到达下一个页面
                     current_ui = self.find_current_ui()
                     if current_ui == next_ui:
                         start_ui = next_ui  # 切换成功，更新当前ui
+                        log.file(f"Switch to {next_ui} success")
                         continue
                     elif current_ui == start_ui:  # 仍然处于原页面，则继续循环
+                        log.file(f"Switch to {next_ui} failed,still in {start_ui}")
                         continue
                     elif current_ui is None:  # 未知的页面，可能是正处于切换动画中，继续循环
                         sleep(1)

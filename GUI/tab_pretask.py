@@ -25,6 +25,17 @@ class SetOption(ctk.CTkFrame):
 
 
 class TaskSettingWindow(ctk.CTkToplevel):
+    option_map = {
+        "task_id": "任务名称",
+        "start_ui": "任务初始界面",
+        "end_ui": "任务结束界面",
+        "ui_delay": "运行内部延迟",
+        "change_soul": "是否更换御魂",
+        "run_time": "任务可执行时间",
+        "repeat": "是否重复执行",
+        "next_time": "重复执行的下次时间",
+    }
+
     def __init__(self, task, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -40,11 +51,10 @@ class TaskSettingWindow(ctk.CTkToplevel):
         self.complete_btn.pack(pady=2, padx=4, fill="x")
 
     def create_option(self):
-        option_map = {"task_id": "任务名称", "start_ui": "任务初始界面", "end_ui": "任务结束界面", "ui_delay": "运行内部延迟", "change_soul": "是否更换御魂", "run_time": "任务可执行时间", "repeat": "是否重复执行", "next_time": "重复执行的下次时间"}
         try:
             task_name = self.task.task_name.cget("text")
             for option, value in task_option.get(task_name, {}).items():
-                option_s = SetOption(self, option_map.get(option, option), value)
+                option_s = SetOption(self, self.option_map.get(option, option), value)
                 option_s.pack(pady=2, anchor="e", fill="x")
         except FileNotFoundError:
             messagebox.showerror("错误", "文件未找到，请检查文件路径。")
@@ -54,6 +64,7 @@ class TaskSettingWindow(ctk.CTkToplevel):
             messagebox.showerror("错误", f"发生错误: {e}")
 
     def complete_set(self):
+        reversed_option_map = {v: k for k, v in self.option_map.items()}
         task_name = self.task.task_name.cget("text")
         # 更新 JSON 数据
         try:
@@ -61,7 +72,7 @@ class TaskSettingWindow(ctk.CTkToplevel):
             for set in self.winfo_children():
                 if isinstance(set, SetOption):
                     print(set.name, set.set_option_value.get())
-                    task_option.get(task_name)[set.name] = set.set_option_value.get()
+                    task_option.get(task_name)[reversed_option_map.get(set.name, set.name)] = set.set_option_value.get()
 
         except FileNotFoundError:
             messagebox.showerror("错误", "文件未找到，请检查文件路径。")

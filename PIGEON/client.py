@@ -5,6 +5,7 @@ import subprocess
 from threading import Thread
 from time import sleep
 from task.based.Mytool.imageRec import ImageRec
+from PIGEON.log import log
 
 
 class Client:
@@ -27,7 +28,7 @@ class Client:
             t.start()
             return True
         else:
-            print(f"alreadly started {self.app_path}")
+            log.file(f"alreadly started {self.app_path}")
 
     def client_launch(self, app_path, process_ctrl):
         self.process = subprocess.Popen(app_path)
@@ -40,13 +41,13 @@ class Client:
         if hasattr(self, "process"):
             self.running.stop()
         else:
-            # print("client not start by program")
+            log.file("client not start by program")
             pass
 
     def verify_app_start_finish(self):
         app_server = ["PIGEON/config/app_server.bmp", (11, 465, 256, 678), "app_server"]
         if res := self.imgrec.match_img(app_server):
-            print(f"app_server found {res}")
+            log.file(f"app_server found {res},client start finish")
             return True
         else:
             # self.imgrec.win.del_cache()

@@ -50,15 +50,7 @@
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-01-04 17:37:57",
-        "任务名称": "结界寄养",
-        "任务初始界面": "ward_page",
-        "任务结束界面": "ward_page",
-        "运行内部延迟": "0.5",
-        "是否更换御魂": "false",
-        "任务可执行时间": "right now",
-        "是否重复执行": "true",
-        "重复执行的下次时间": "after 2025-01-04 17:37:57"
+        "next_time": "after 2025-01-04 23:39:21"
     },
     "逢魔之时": {
         "task_id": "逢魔之时",
