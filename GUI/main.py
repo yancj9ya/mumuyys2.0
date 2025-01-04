@@ -4,6 +4,7 @@ if __name__ == "__main__":
     sys.path.append(r"D:\\python\\mumuyys2.0")
 # this file is used to run the GUI program
 import customtkinter as ctk
+import tkinter.messagebox as messagebox
 import json
 from GUI.togglebuton import ToggleButton
 from GUI.tab_main import MainTab
@@ -12,7 +13,7 @@ from GUI.tab_dg import DgTab
 from GUI.tab_ts import TsTab
 from GUI.tab_log import LogTab
 from GUI.tab_pretask import PreTaskTab
-from GUI.icons.icons import Icons
+from GUI.stray import Pystray
 
 from PIGEON.config import setting, windows_position, Config
 
@@ -29,10 +30,10 @@ class MyTabView(ctk.CTkTabview):
         self.anchor("n")
 
         # create tabs
+        self.add("调度器")
         self.add("常用")
         self.add("道馆")
         self.add("绘卷")
-        self.add("调度器")
         self.add("设置")
         self.add("log")
 
@@ -84,6 +85,16 @@ class log_area(ctk.CTkTextbox):
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
+        # 初始化一个stray类
+        self.stray = Pystray("GUI/icons/icon.ico", "PIGEON")
+        self.stray.left_click = self.show_window  # 左键单击事件
+        self.stray.left_doubleclick = self.hide_window  # 右键双击事件
+        self.stray.menu = {
+            1024: ("显示窗口", lambda: self.show_window()),
+            1023: ("隐藏窗口", lambda: self.hide_window()),
+            1025: ("退出", lambda: self.close_window()),
+        }
+        self.stray.run_detached()  # 后台运行stray
         x, y = self.get_window_position()
         self.geometry(f"265x360+{x}+{y}")
         self.title("八尺琼勾玉")
@@ -92,7 +103,7 @@ class App(ctk.CTk):
         self.config(bg="#f3f3f3")
         ctk.set_default_color_theme("green")
         self.wm_attributes("-topmost", 1)  # 窗口置顶
-        self.protocol("WM_DELETE_WINDOW", self.save_profile)  # 关闭窗口时执行save_profile函数
+        self.protocol("WM_DELETE_WINDOW", self.hide_window)  # 关闭窗口时执行save_profile函数
 
         self.tab_view = MyTabView(master=self, width=255, height=150, anchor="nw", command=self.tab_changed)
         self.tab_view.pack(side="top")
@@ -110,6 +121,19 @@ class App(ctk.CTk):
         else:
             self.log_area.pack(side="bottom", fill="y", expand=True)
 
+    def hide_window(self):
+        self.withdraw()
+
+    def show_window(self):
+
+        self.deiconify()
+
+    def close_window(self):
+        close_or_not = messagebox.askyesno("提示", "是否要退出程序？")
+        if close_or_not:
+            self.save_profile()
+            self.destroy()
+
     def save_profile(self):
         try:
             for key, value in ToggleButton.values.items():
@@ -123,7 +147,6 @@ class App(ctk.CTk):
         except:
             pass
         Config.save_all_config()
-        self.destroy()
 
     def load_profile(self):
         for k, v in setting:

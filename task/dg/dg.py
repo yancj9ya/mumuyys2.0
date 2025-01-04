@@ -19,7 +19,7 @@ class Dg(Click, ImageRec):
         self.main_ui_sleep = 0.5
         self.DG_TIME = None
         self.DG_SWITCH = True
-        self.DG_COUNT = 1
+        self.DG_COUNT = 2
         self.counter = Counter()
         self.dg_rs = 70
         self.dg_xs = "2:5"
@@ -64,8 +64,8 @@ class Dg(Click, ImageRec):
                     self.DG_SWITCH = False
                     return
                 else:
-                    log.info(f"道馆可进攻次数：{self.DG_COUNT}")
-                    log.info(f"道馆SWITCH：{self.DG_SWITCH}")
+                    log.insert("3.1", f"道馆可进攻次数：{self.DG_COUNT}")
+                    log.insert("4.1", f"道馆SWITCH：{self.DG_SWITCH}")
             else:
                 return
             for i in range(3):
@@ -117,6 +117,7 @@ class Dg(Click, ImageRec):
                             self.DG_TIME = None
                             return
                 self.mouse_scroll(("down", 9), 1158, 310)
+                log.info("mouse_scrolled")
             else:
                 log.info("未能找到合适的系数道馆，刷新重找")
                 self.area_click([1129, 613, 1193, 678])
@@ -245,7 +246,7 @@ class Dg(Click, ImageRec):
 
     def loop(self):
         # log.clear()
-        log.info(f"{'道馆进攻程序开始':^27}")
+        log.info(f"{'道馆进攻程序开始':*^22}")
         while self.DG_SWITCH:
             match self.running.state:
                 case "RUNNING":

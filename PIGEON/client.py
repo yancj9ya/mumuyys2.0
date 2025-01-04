@@ -25,6 +25,7 @@ class Client:
             t = Thread(target=self.client_launch, args=(self.app_path, self.running))
             t.daemon = True
             t.start()
+            return True
         else:
             print(f"alreadly started {self.app_path}")
 
@@ -48,6 +49,6 @@ class Client:
             print(f"app_server found {res}")
             return True
         else:
-            self.imgrec.win.del_cache()
+            # self.imgrec.win.del_cache()
             return False
         pass

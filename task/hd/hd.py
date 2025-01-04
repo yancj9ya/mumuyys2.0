@@ -24,31 +24,32 @@ class Hd(Click, ImageRec):
 
     # 寻找按钮并且识别次数
     def find_btn_tz(self):
-        if btn_res := self.find_duo_img("task/hd/res/btn", [672, 266, 1260, 701], return_only_one=True):
-            self.BTN_TZ = btn_res[0:2] + ["btn_tz"]
-            log.info(f"找到按钮：{btn_res}")
-            self.uilist.append(self.BTN_TZ)
-            log.debug(f"按钮添加到ui列表：{self.BTN_TZ}")
-            match btn_res[2]:
-                case "btn_yyh":
-                    log.insert("5.1", f"识别模式：业原火")
-                    if ocr_res := Ocr.ocr([754, 23, 809, 60]):
-                        if ocr_res[1] > 0.9:
-                            self.times = int(ocr_res[0])
-                            log.info(f"挑战次数为{self.times}")
+        try:
+            if btn_res := self.find_duo_img("task/hd/res/btn", [672, 266, 1260, 701], return_only_one=True):
+                self.BTN_TZ = btn_res[0:2] + ["btn_tz"]
+                log.info(f"找到按钮：{btn_res}")
+                self.uilist.append(self.BTN_TZ)
+                log.debug(f"按钮添加到ui列表：{self.BTN_TZ}")
+                match btn_res[2]:
+                    case "btn_yyh":
+                        log.insert("5.1", f"识别模式：业原火")
+                        if ocr_res := Ocr.ocr([754, 23, 809, 60]):
+                            if ocr_res[1] > 0.9:
+                                self.times = int(ocr_res[0])
+                                log.info(f"挑战次数为{self.times}")
 
-                case "btn_mw":
-                    log.insert("5.1", f"识别模式：秘闻挑战")
-                    self.times = 10
+                    case "btn_mw":
+                        log.insert("5.1", f"识别模式：秘闻挑战")
+                        self.times = 10
 
-                case "btn_yl":
-                    log.insert("5.1", f"识别模式：御灵挑战")
-                    self.need_stat_reward = True
-                case _:
-                    log.insert("5.1", f"识别模式：版本活动")
-                    pass
-        else:
-            log.error("未找到按钮")
+                    case "btn_yl":
+                        log.insert("5.1", f"识别模式：御灵挑战")
+                        self.need_stat_reward = True
+                    case _:
+                        log.insert("5.1", f"识别模式：版本活动")
+                        pass
+        except Exception as e:
+            log.error("未找到按钮,{e}")
 
     @property
     def random_delay(self):
@@ -106,7 +107,7 @@ class Hd(Click, ImageRec):
                     log.info(f"挑战次数达到{self.times}，退出循环")
                     self.task_switch = False
                     return
-                self.area_click(self.BTN_TZ[1])
+                self.area_click(self.BTN_TZ[1], double_click=True)
                 sleep(1.5)
                 self.hd_counter.increment()
                 # log.insert("3.1", f"开始第{self.hd_counter.count}次挑战")

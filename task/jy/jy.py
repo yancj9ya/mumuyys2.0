@@ -24,17 +24,19 @@ class Jy(Click, ImageRec):
         self.right_max = 0
 
     def loop(self):
+        """main loop of the program"""
         while True:
             self.run()
             if hasattr(self, "next_time"):
                 break
 
     def set_parms(self, *args, **kwargs):
+        """set parameters for the program,but not used in this program"""
         pass
 
     @retry(max_retries=5, delay=1, exceptions=(Exception,))
     def get_right_jj_num(self):
-        """获取右边的太鼓的数量"""
+        """get current JJ number from the right place"""
         ocr_res = self.ocr.ocr((795, 425, 977, 453))
         log.info(f"OCR result: {ocr_res[0]}")
         if ocr_res[1] > 0.6:
@@ -45,6 +47,7 @@ class Jy(Click, ImageRec):
         sleep(1)  # Add a small delay to avoid infinite looping
 
     def re_serch(self):
+        """get the max number of same and diff server JY list"""
         temp_num_list = []
         sleep(1)
         six_star = self.match_duo_img(six_star_img, 0.8)
@@ -74,6 +77,7 @@ class Jy(Click, ImageRec):
             self.slide((517, 580), (557, 200), move_time=1)
 
     def refresh_jy_list(self):
+        """flash list of same and diff server by slide to bottom"""
         log.info("Refreshing JY list...")
         if not self.has_refreshed:
             sleep(0.5)
@@ -90,6 +94,8 @@ class Jy(Click, ImageRec):
 
     def find_max_number(self, area_type):
         """Find the max number from a given area (left or right)."""
+        if hasattr(self, "next_time"):
+            return  # 如果已经设置了下一次运行时间说明已经蹲了结界，则不再继续查找
         self.area_click(area_type[1], double_click=True, double_click_time=0.2)
         sleep(0.5)
         log.info(f"Finding max number in {area_type[-1]}...")
@@ -106,6 +112,7 @@ class Jy(Click, ImageRec):
         sleep(0.5)
 
     def get_in_to_jy(self):
+        """enter cofirmed ward and excute then return to self ward"""
         confirm_jy_success = False
         while not confirm_jy_success:
             sleep(0.5)
@@ -138,6 +145,7 @@ class Jy(Click, ImageRec):
         sleep(1)
 
     def ward_yc(self):
+        """confirm jy or not if yes then set self.next_time -> self.next_time"""
         res = self.match_img(blank_seat_2)
         log.info(f"Blank seat 2: {res}")
         if res:
@@ -148,6 +156,7 @@ class Jy(Click, ImageRec):
             self.area_click(exit_jy_page[1])
 
     def get_jyh_end_time(self):
+        """get the end time of JY"""
         pattern = r"^[0][0-5]:[0-5][0-9]:[0-5][0-9]$"
         while True:
             sleep(1)
@@ -158,6 +167,7 @@ class Jy(Click, ImageRec):
                         return re_res.group(0)
 
     def run(self):
+        """main logics of the program"""
         sleep(self.ui_delay)
         match_result = self.match_ui(self.uilist)
         log.insert("2.1", f"Matched UI: {match_result}")

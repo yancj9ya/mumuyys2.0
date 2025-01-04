@@ -1,10 +1,8 @@
 from task.based.Mytool.windows import Windows
 from ppocronnx.predict_system import TextSystem
 import cv2, re
-from PIGEON.log import Log
+from PIGEON.log import log
 from time import sleep
-
-log = Log()
 
 
 class Ocr:
@@ -43,19 +41,21 @@ class Ocr:
             return None
 
     @classmethod
-    def ocr_by_re(cls, area: list | tuple, pattern: str, threshold=0.6, try_times=10, debug=False):
+    def ocr_by_re(cls, area: list | tuple, pattern: str, threshold=0.6, try_times=5, debug=False):
         t_t = try_times
         try:
             while t_t > 0:
                 sleep(0.2)
                 res = cls.ocr(area, debug)
-                print(f"尝试次数: {t_t}, 识别结果: {res}")
-                if res[1] > threshold:
-                    text = re.sub(r"\s+", "", res[0])  # 去除空格
-                    if re_res := re.search(pattern, text, re.VERBOSE):
-                        return re_res
-                    else:
-                        t_t -= 1
+                log.file(f"尝试次数: {t_t}, 识别结果: {res}")
+                if res[1] < threshold:
+                    t_t -= 1
+                    continue
+                text = re.sub(r"\s+", "", res[0])  # 去除空格
+                if re_res := re.search(pattern, text, re.VERBOSE):
+                    return re_res
+                else:
+                    t_t -= 1
 
         except Exception as e:
             log.error(f"OCR_by_re操作失败: {e}")

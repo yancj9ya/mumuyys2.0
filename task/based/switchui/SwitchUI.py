@@ -222,9 +222,10 @@ class SwitchUI:
                 elif self.confirm_page(next_ui):
                     start_ui = next_ui  # 切换成功，更新当前ui
                     continue
-
                 else:
-                    print(f"Confirm page {start_ui} failed")
+                    sleep(0.5)
+                    continue
+                    # print(f"Confirm page {start_ui} failed")
                 #     # for k, v in BACK.items():
                 #     #     if res := self.imageRec.match_img(v, accuracy=0.9):
                 #     #         self.click.area_click(res)

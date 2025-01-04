@@ -22,6 +22,7 @@ from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm
 from threading import Thread
 from datetime import datetime, timedelta
 from time import sleep
+from win11toast import toast
 
 
 class Scheduler:
@@ -50,6 +51,36 @@ class Scheduler:
             self.excute(task)
         elif isinstance(task, AtomTask):
             self.classify(task)
+
+    def scheduler_loop(self):
+        """
+        检查等待任务队列是否有任务符合执行的时间条件
+        如果有，则将该任务从等待队列移动到就绪队列。
+        从就绪队列中取出任务，执行任务。
+        实时任务立即执行。
+        """
+        while self.scheduler_ctrl.is_set():
+            sleep(1)
+            # self.tab_frame.state_loop()
+            # 检查等待任务队列是否有任务符合执行的时间条件
+            self.is_ready_to_run()
+            # 从就绪队列中取出任务，执行任务
+            if self.task_ctrl.state == "STOP" and self.ready_tasks:
+                # 执行任务之前检查客户端是否启动
+                self._is_client_started()
+                if self.is_task_running:
+                    continue
+                else:
+                    # 取出任务并执行
+                    current_task = self.ready_tasks.pop(0)
+                    log.info(f"pop out {current_task.name} task.")
+                    self.excute(current_task)
+
+            elif self.task_ctrl.state == "STOP" and not self.ready_tasks:  # 无任务运行，同时ready_tasks为空,此时关闭客户端
+                self.client.client_stop()  # 关闭客户端
+                pass
+
+        pass
 
     def excute(self, task: AtomTask | ToggleButton):
         # 实时任务立即执行
@@ -137,36 +168,7 @@ class Scheduler:
             task.toggle_change()
         if self.task_ctrl.state == "RUNNING":
             self.task_ctrl.stop()
-        pass
-
-    def scheduler_loop(self):
-        """
-        检查等待任务队列是否有任务符合执行的时间条件
-        如果有，则将该任务从等待队列移动到就绪队列。
-        从就绪队列中取出任务，执行任务。
-        实时任务立即执行。
-        """
-        while self.scheduler_ctrl.is_set():
-            sleep(1)
-            self.tab_frame.state_loop()
-            # 检查等待任务队列是否有任务符合执行的时间条件
-            self.is_ready_to_run()
-            # 从就绪队列中取出任务，执行任务
-            if self.task_ctrl.state == "STOP" and self.ready_tasks:
-                # 执行任务之前检查客户端是否启动
-                self._is_client_started()
-                if self.is_task_running:
-                    continue
-                else:
-                    # 取出任务并执行
-                    current_task = self.ready_tasks.pop(0)
-                    log.info(f"pop out {current_task.name} task.")
-                    self.excute(current_task)
-
-            elif self.task_ctrl.state == "STOP" and not self.ready_tasks:  # 无任务运行，同时ready_tasks为空,此时关闭客户端
-                self.client.client_stop()  # 关闭客户端
-                pass
-
+            toast(f"{task.name} 任务已结束")
         pass
 
     def _is_client_started(self):
@@ -178,11 +180,13 @@ class Scheduler:
             self.client_ctrl.start()  # 启动客户端线程
             self.client.client_start()  # 启动客户端
             # 等待客户端启动完成，避免任务执行时客户端还未启动完成
+            print("等待客户端启动完成")
             while 1:
-                print("验证客户端是否启动完成")
                 if self.client.verify_app_start_finish():
                     break
-                sleep(1)
+                if self.client.imgrec.win.is_windows_exist():  # self.client.imgrec.win.is_window_top() and
+                    self.client.imgrec.win.set_window_bottom()
+                    sleep(0.05)
         else:
             print("客户端已启动，开始执行任务")
             return  # 客户端已启动，不需要再启动客户端
@@ -209,9 +213,11 @@ class Scheduler:
         if task in self.ready_tasks:
             self.ready_tasks.remove(task)
             log.debug(f"delete {task.name} task from ready_tasks.")
+            task.destroy()
         elif task in self.wait_tasks:
             self.wait_tasks.remove(task)
             log.debug(f"delete {task.name} task from wait_tasks.")
+            task.destroy()
         else:
             print("任务不存在")
 
@@ -220,8 +226,9 @@ class Scheduler:
         判断是否有实时任务可以立即执行。
         """
         for task in self.wait_tasks:
-            log.insert("5.1", f"wait_tasks={[task.name for task in self.wait_tasks]}")
+            # log.insert("5.1", f"wait_tasks={[task.name for task in self.wait_tasks]}")
             try:
+                task.task_name.configure(fg_color="#4a86e8")
                 if task.parms.get("next_time"):
                     if self.is_time_valid(task.parms.get("next_time")):
                         self.ready_tasks.append(task)
@@ -229,8 +236,6 @@ class Scheduler:
                         self.wait_tasks.remove(task)
                         print(f"{task.name} is ready to run.next_time: {task.parms.get('next_time')}")
                         continue
-                    else:
-                        return  # 任务未到执行时间，不需要判断
                 elif self.is_time_valid(task.parms.get("run_time")):
                     if not self.task_ctrl.is_set():
                         log.info_nof(f"{task.name} is ready at {task.parms.get('run_time')}.")
@@ -241,6 +246,9 @@ class Scheduler:
             except Exception as e:
                 print(f"Error in {task.name} task: {e}")
                 continue
+            finally:
+                sleep(0.5)
+                task.task_name.configure(fg_color="skyblue")
 
     def classify(self, task: AtomTask):
         """
@@ -275,6 +283,7 @@ class Scheduler:
             else:
                 self.wait_tasks.append(task)
                 task.set_state("waiting")
+                log.debug(f"{task.name} is add to wait_tasks")
         else:
             # 如果没有 run_time，直接归入等待队列
             self.wait_tasks.append(task)

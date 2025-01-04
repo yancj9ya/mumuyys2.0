@@ -7,6 +7,7 @@ from PIGEON.log import log
 from task.based.Mytool.Counter import Counter
 from random import choices
 from time import time
+from win11toast import toast
 
 
 class Ltp(Click, ImageRec):
@@ -46,6 +47,7 @@ class Ltp(Click, ImageRec):
         if self.fight_again_counter.count > 5:
             self.times = 0
             log.info(f"已经连续{self.fight_again_counter.count}次挑战失败，请求人为介入")
+            toast("已经连续5次挑战失败，请人为介入")
             return
         self.area_click([828, 489, 899, 540])
         sleep(0.5)

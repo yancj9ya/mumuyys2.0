@@ -68,7 +68,19 @@ class Windows:
     def handle(self) -> int:
         return win32gui.FindWindowEx(self.par_handle, None, None, "MuMuPlayer")
 
+    def is_handle_valid(self) -> bool:
+        if self.handle == 0:
+            return False
+        else:
+            return IsWindow(self.handle)
+
     def screenshot(self, area: list, save_img=False, method="win_shot", debug=False) -> np.ndarray:
+        if not self.is_handle_valid():
+            log.error(f"窗口句柄: {self.handle} 已失效")
+            self.del_cache()
+            return None
+
+        # 截图方式
         match method:
             case "win_shot":
                 while Windows.LOCK:  # locked
@@ -146,8 +158,29 @@ class Windows:
 
         return img
 
+    def get_window_name(self, hwnd) -> str:
+        return win32gui.GetWindowText(hwnd)
+
+    def is_window_top(self) -> bool:
+        try:
+            # 获取top窗口的句柄
+            top_window_hwnd = win32gui.GetForegroundWindow()
+            # print(f"前置窗口句柄:{top_window_hwnd}and 名字:{self.get_window_name(top_window_hwnd)}，模拟器句柄:{self.par_handle}")
+            if self.par_handle == top_window_hwnd or self.get_window_name(top_window_hwnd) == "八尺琼勾玉":  # 防止脚本gui置顶导致的不后置
+                return True
+            else:
+                return False
+        except Exception as e:
+            log.error(f"获取前置窗口句柄失败，错误信息: {e}")
+            return False
+        finally:
+            top_window_hwnd = None
+
+    def set_window_bottom(self):
+        win32gui.SetWindowPos(self.par_handle, win32con.HWND_BOTTOM, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+
     def is_windows_exist(self) -> bool:
-        return IsWindow(self.handle)
+        return IsWindow(self.par_handle)
 
     def notifyparent(self, x, y):
         msg = WM_PARENTNOTIFY

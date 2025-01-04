@@ -110,6 +110,7 @@ class ImageRec:
                 s_Y = img[1][1] + matchCor[1] - 5
                 e_X = w + s_X
                 e_Y = h + s_Y
+                log.file(f"匹配到<{img[0].split('/')[-1]}> 坐标: {s_X},{s_Y} - {e_X},{e_Y}")
                 return [s_X, s_Y, e_X, e_Y]
             return None
         except Exception as e:
@@ -123,6 +124,7 @@ class ImageRec:
             if matched_img := self.match_img(img, accuracy=accuracy):
 
                 shot_color_img = cv2.cvtColor(self.win.screenshot(img[1]), cv2.COLOR_BGRA2BGR)
+                assert shot_color_img is not None, "截图失败,返回的图像为空"
                 template_color_img = cv2.imread(img[0], cv2.IMREAD_COLOR)
                 color_simi = np.mean((shot_color_img - template_color_img) ** 2)
                 log.debug(f"颜色均方差: {color_simi:.2f}")
@@ -140,6 +142,7 @@ class ImageRec:
         temp_list = []
         try:
             f_shot_img = self.win.screenshot(img[1])
+            assert f_shot_img is not None, "截图失败,返回的图像为空"
             shot_img = cv2.cvtColor(f_shot_img, cv2.COLOR_BGRA2GRAY)
             template = cv2.imread(img[0], cv2.IMREAD_GRAYSCALE)
             Res = cv2.matchTemplate(shot_img, template, cv2.TM_CCOEFF_NORMED)
@@ -171,6 +174,7 @@ class ImageRec:
             path = pathlib.Path(img_dir)
             img_list = [img_file for img_file in path.glob("*") if img_file.is_file()]
             ShotImage = cv2.cvtColor(self.win.screenshot(match_area), cv2.COLOR_BGRA2GRAY)
+            assert ShotImage is not None, "截图失败,返回的图像为空"
             for img in img_list:
                 # print(img)
                 template = cv2.imread(str(img), cv2.IMREAD_GRAYSCALE)

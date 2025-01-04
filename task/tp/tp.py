@@ -6,6 +6,7 @@ from task.tp.res.img_info import *
 from time import sleep, time, strftime, localtime
 from PIGEON.log import Log
 from random import shuffle
+from win11toast import toast
 
 log = Log()
 
@@ -102,6 +103,7 @@ class Tp(Click, ImageRec):
         if self.fight_again_counter.count > 5:
             self.stop_flag.set()
             log.info(f"已经连续{self.fight_again_counter.count}次挑战失败，请求人为介入")
+            toast("已经连续5次挑战失败，请人为介入")
             return
         self.area_click([828, 489, 899, 540])
         sleep(0.5)
