@@ -178,6 +178,7 @@ class Windows:
 
     def set_window_bottom(self):
         win32gui.SetWindowPos(self.par_handle, win32con.HWND_BOTTOM, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+        log.file(f"窗口置底: {self.par_handle}")
 
     def is_windows_exist(self) -> bool:
         return IsWindow(self.par_handle)

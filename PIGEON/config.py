@@ -58,5 +58,4 @@ class Config:
 
 
 setting = Config("PIGEON/config/setting.json")
-windows_position = Config("PIGEON/config/windows_position.json")
 task_option = Config("PIGEON/config/task_option.json")

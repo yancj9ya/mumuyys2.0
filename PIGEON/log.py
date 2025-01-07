@@ -130,6 +130,8 @@ class Log:
 class Log_to_file:
     is_open = True
     last_log_message = None
+    repeat_message = []
+    max_size = 5
 
     @classmethod
     def _fmt(cls, message, more_info: tuple = None, level: str = "INFO"):
@@ -146,21 +148,60 @@ class Log_to_file:
             cls.last_log_message = message
 
         # 格式化日志信息
-        msg = f">{now}|{more_info[0]:^15}|{more_info[1]:^15}|{more_info[2]:<3}|{level:^8}|: {message}\n"
+        msg = f">{now}|{level:>5}|{more_info[0]:>15}:{more_info[2]:<3}|{more_info[1][:20]:^20}||{message}\n"
         return msg
 
     @classmethod
-    def logtToFile(cls, message: str, more_info: tuple = None, level: str = "INFO"):
-        if msg := cls._fmt(message, more_info, level):
-            cls.write_to_file(msg)
+    def filter_repeat_message(cls, message):
+        """
+        过滤重复日志信息
+        :param message: 日志信息
+        :return: 0 表示重复消息不输出;1 表示非重复消息,需要输出;-1表示不仅需要输出当前消息,还需要输出之前的重复消息并且清空集合
+        """
+        if len(cls.repeat_message) < cls.max_size:
+            if message not in cls.repeat_message:
+                cls.repeat_message.append(message)  # 添加到列表末尾
+                return 1  # 表示新消息
+            else:
+                return 0  # 表示是重复消息
         else:
-            return
+            if message not in cls.repeat_message:
+                # 需要输出当前消息和集合中的所有消息，并清空集合
+                return -1
+            else:
+                # 消息在集合中，是重复消息
+                return 0
+
+    @classmethod
+    def logtToFile(cls, message: str, more_info: tuple = None, level: str = "INFO"):
+        match cls.filter_repeat_message(message):
+            case 0:
+                return
+            case 1:
+                if msg := cls._fmt(message, more_info, level):
+                    cls.write_to_file(msg)
+                else:
+                    return
+            case -1:
+                # 输出之前的重复消息
+                for msg in cls.repeat_message:
+                    if _msg := cls._fmt(msg, more_info, level):
+                        cls.write_to_file(_msg)
+                # 输出当前消息
+                if msg := cls._fmt(message, more_info, level):
+                    cls.write_to_file(msg)
+                # 清空集合
+                cls.repeat_message.clear()
 
     @classmethod
     def write_to_file(cls, message: str):
         if cls.is_open:
-            with open("log/log.txt", "a", encoding="utf-8") as f:
-                f.write(message)
+            with open("log/log.txt", "r+", encoding="utf-8") as f:
+                # 先读取之前已有的内容
+                lines = f.readlines()
+                f.seek(0)  # 将文件指针指向开头
+                f.write(message)  # 写入日志信息
+                f.writelines(lines)  # 将之前的内容重新写入文件
         else:
             pass
             # print(f"日志文件已关闭，无法写入日志：{message}")

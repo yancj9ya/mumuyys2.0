@@ -32,7 +32,7 @@ class Click:
         # self.setcursor()
         # self.mouse_move(x, y)
 
-    def area_click(self, area: list | tuple, press_time=0.2, double_click=False, double_click_time=0.1, animation_time=0.05) -> None:
+    def area_click(self, area: list | tuple, press_time=0.2, double_click=False, double_click_time=0.05, animation_time=0.05) -> None:
         # rand_x = randint(area[0], area[2])
         # rand_y = randint(area[1], area[3])
         rand_x, rand_y = RandomCoord(area)

@@ -14,8 +14,8 @@ from GUI.tab_ts import TsTab
 from GUI.tab_log import LogTab
 from GUI.tab_pretask import PreTaskTab
 from GUI.stray import Pystray
-
-from PIGEON.config import setting, windows_position, Config
+from PIGEON.log import log
+from PIGEON.config import setting, Config
 
 
 # from PIGEON import Task
@@ -97,7 +97,7 @@ class App(ctk.CTk):
         self.stray.run_detached()  # 后台运行stray
         x, y = self.get_window_position()
         self.geometry(f"265x360+{x}+{y}")
-        self.title("八尺琼勾玉")
+        self.title("牛马小纸人 2.0")
         self.iconbitmap("GUI/icons/icon.ico")
         self.resizable(False, False)
         self.config(bg="#f3f3f3")
@@ -138,25 +138,25 @@ class App(ctk.CTk):
         try:
             for key, value in ToggleButton.values.items():
                 setting[key] = value.get()
-        except:
+            # save window position to config file
+            setting["window_position"] = {"x": self.winfo_x(), "y": self.winfo_y()}
+        except Exception as e:
+            log.error(f"save_profile error: {e}")
+            pass
 
-            pass
-        try:
-            windows_position["x"] = self.winfo_x()
-            windows_position["y"] = self.winfo_y()
-        except:
-            pass
         Config.save_all_config()
 
     def load_profile(self):
         for k, v in setting:
+            if k == "window_position":
+                continue
             ToggleButton.values[k].set(v)
         pass
 
     def get_window_position(self):
         try:
-            return windows_position["x"], windows_position["y"]
-        except FileNotFoundError:
+            return setting["window_position"]["x"], setting["window_position"]["y"]
+        except Exception:
             return 200, 200
 
 

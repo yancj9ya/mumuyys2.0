@@ -26,14 +26,14 @@ class SetOption(ctk.CTkFrame):
 
 class TaskSettingWindow(ctk.CTkToplevel):
     option_map = {
-        "task_id": "任务名称",
+        "task_id": "执行任务名称",
         "start_ui": "任务初始界面",
         "end_ui": "任务结束界面",
-        "ui_delay": "运行内部延迟",
+        "ui_delay": "内部运行延迟",
         "change_soul": "是否更换御魂",
-        "run_time": "任务可执行时间",
+        "run_time": "任务执行时间",
         "repeat": "是否重复执行",
-        "next_time": "重复执行的下次时间",
+        "next_time": "下次执行时间",
     }
 
     def __init__(self, task, *args, **kwargs):
@@ -128,6 +128,8 @@ class AtomTask(ctk.CTkFrame):
                     messagebox.showwarning("警告", "任务正在运行，无法删除。")
                 elif self.task_state.cget("text") in ["waiting", "ready"]:
                     self.scheduler.delete_task(self)
+                elif self.task_state.cget("text") == "done":
+                    self.destroy()
             elif self.del_btn.cget("text") == "暂停":
                 if self.scheduler.task_ctrl.state == "RUNNING":
                     self.scheduler.task_ctrl.wait()

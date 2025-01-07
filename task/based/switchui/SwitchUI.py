@@ -196,6 +196,8 @@ class SwitchUI:
                 raise Exception(f"Can't find path from {start_ui} to {target_ui}")
             else:
                 log.info(f"[{start_ui}]->[{target_ui}] by path:{path}")
+            # 创建一个失败的变量，用于记录切换失败的次数
+            page_switch_failed_count = 0
             while self.find_current_ui() != target_ui:
                 if self.running.state == "STOP":
                     return True
@@ -204,7 +206,7 @@ class SwitchUI:
                 step = ui_map.get(start_ui, {}).get(next_ui)
 
                 if step is None:
-                    raise Exception(f"STPE_ERROR: {start_ui} to {next_ui}")
+                    raise Exception(f"STPE_ERROR: {start_ui} to {next_ui}, step is None")
                 if self.confirm_page(start_ui):
                     self.exute_step(step, path=[start_ui, next_ui])
                     sleep(1)
@@ -213,10 +215,17 @@ class SwitchUI:
                     if current_ui == next_ui:
                         start_ui = next_ui  # 切换成功，更新当前ui
                         log.file(f"Switch to {next_ui} success")
+                        page_switch_failed_count = 0
                         continue
                     elif current_ui == start_ui:  # 仍然处于原页面，则继续循环
                         log.file(f"Switch to {next_ui} failed,still in {start_ui}")
-                        continue
+                        if page_switch_failed_count < 5:
+                            page_switch_failed_count += 1
+                            continue
+                        else:
+                            self.click.win.del_cache()
+                            page_switch_failed_count = 0
+                            continue
                     elif current_ui is None:  # 未知的页面，可能是正处于切换动画中，继续循环
                         sleep(1)
                         continue

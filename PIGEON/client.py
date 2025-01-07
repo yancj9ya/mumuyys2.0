@@ -46,10 +46,10 @@ class Client:
 
     def verify_app_start_finish(self):
         app_server = ["PIGEON/config/app_server.bmp", (11, 465, 256, 678), "app_server"]
-        if res := self.imgrec.match_img(app_server):
+        if res := self.imgrec.match_img(app_server, accuracy=0.75):
             log.file(f"app_server found {res},client start finish")
             return True
         else:
-            # self.imgrec.win.del_cache()
+            self.imgrec.win.del_cache()
             return False
         pass

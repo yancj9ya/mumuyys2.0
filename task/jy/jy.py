@@ -180,6 +180,7 @@ class Jy(Click, ImageRec):
                     elif self.left_max == 0 and self.right_max == 0:
                         self.find_max_number(same_server_seat)
                         self.find_max_number(diff_server_seat)
+                        return
                     else:
                         log.info(f"left_max: {self.left_max}, right_max: {self.right_max}")
                         self.max_number = max(self.left_max, self.right_max)

@@ -1,5 +1,5 @@
 {
-    "times": "79",
+    "times": "80",
     "tp_keep_level": true,
     "ui_delay": 0.55,
     "set_window_top": 1,
@@ -9,5 +9,9 @@
     "monster_limit": 500,
     "with_tp": true,
     "file_log": true,
-    "cooperation_mission": true
+    "cooperation_mission": true,
+    "window_position": {
+        "x": 2210,
+        "y": 308
+    }
 }

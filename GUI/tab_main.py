@@ -24,7 +24,7 @@ class MainTab(ctk.CTkFrame):
         # text
         self.text_times = ctk.CTkLabel(self, text="执行次数:", font=("微软雅黑", 14))
         # combobox
-        self.times = ctk.CTkComboBox(self, values=["10", "30", "50", "100", "200", "300", "500", "999"], width=80, height=20, command=self.times_slider_value, justify="center", variable=self.times_value)
+        self.times = ctk.CTkComboBox(self, values=["10", "30", "50", "80", "500", "999"], width=80, height=20, command=self.times_slider_value, justify="center", variable=self.times_value)
         self.times.set("30")  # set default value
         # slider
         self.times_slider = ctk.CTkSlider(self, from_=0, to=300, command=self.times_slider_value, number_of_steps=300)

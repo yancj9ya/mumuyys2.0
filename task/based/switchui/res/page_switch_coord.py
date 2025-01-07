@@ -54,7 +54,7 @@ ward_page_TO_yyl_page = (28, 26, 59, 63)
 
 backstreet_page_TO_fm_page = (776, 111, 790, 191)
 
-server_TO_home_page_fold = (570, 583, 700, 616)
+server_TO_home_page_fold = (592, 579, 687, 613)
 
 home_page_unfold_TO_backstreet_page = "step_back_street"
 
