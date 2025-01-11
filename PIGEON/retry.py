@@ -1,5 +1,6 @@
 import time
 import functools
+from PIGEON.log import log
 
 
 def retry(max_retries=3, delay=1, exceptions=(Exception,), on_retry=None, skip_on_failure=True):
@@ -22,14 +23,14 @@ def retry(max_retries=3, delay=1, exceptions=(Exception,), on_retry=None, skip_o
                     retries += 1
                     if on_retry:
                         on_retry(retries, e)  # 执行回调函数
-                    print(f"Attempt {retries} failed: {e}. Retrying in {delay} seconds...")
+                    log.file(f"Attempt {retries} failed: {e}. Retrying in {delay} seconds...")
                     if retries < max_retries:
                         time.sleep(delay * retries)  # 延时再试
                     elif skip_on_failure:
-                        print("Skipping on_failure...")
+                        log.file("Skipping on_failure...")
                         return None
                     else:
-                        print("Max retries reached, raising exception.")
+                        log.file("Max retries reached, raising exception.")
                         raise e
 
         return wrapper

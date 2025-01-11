@@ -83,7 +83,7 @@ class Log:
         # 格式化日志信息
         match level:
             case "INFO":
-                msg = {"time": f"| {now} | ", "content_info": f"{message}\n"}  # "tag":"content"
+                msg = {"time": f"{now} ", "content_info": f"{message}\n"}  # "tag":"content"
             case "ERROR":
                 msg = {"time": f"| {now} | ", "content_error": f"{message}\n"}  # "tag":"content"
             case "DEBUG":

@@ -15,6 +15,8 @@ class Jy(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
+        self.running = kwargs.get("STOPSIGNAL", None)
+        self.task_switch = True
         self.ui_delay = 0.5
         self.ocr = Ocr()
         self.uilist = [jy_main_ui, yc_page, self_ward]
@@ -25,10 +27,23 @@ class Jy(Click, ImageRec):
 
     def loop(self):
         """main loop of the program"""
-        while True:
-            self.run()
-            if hasattr(self, "next_time"):
-                break
+
+        while self.task_switch:
+            match self.running.state:
+                case "RUNNING":
+                    if hasattr(self, "next_time"):
+                        self.task_switch = False
+                        continue
+                    self.run()
+                case "STOP":
+                    self.task_switch = False
+                    log.insert("2.3", f"@任务已停止 ")
+                    return
+                case "WAIT":
+                    sleep(1)
+                    continue
+                case _:
+                    pass
 
     def set_parms(self, *args, **kwargs):
         """set parameters for the program,but not used in this program"""
@@ -41,7 +56,10 @@ class Jy(Click, ImageRec):
         log.info(f"OCR result: {ocr_res[0]}")
         if ocr_res[1] > 0.6:
             hand_res_str = re.sub(r"[^a-zA-Z0-9]", "", ocr_res[0])
-            return int(hand_res_str)
+            if hand_res_str in ["76", "67", "59"]:
+                return int(hand_res_str)
+            else:
+                raise Exception("grt wrong number from OCR", ocr_res)
         else:
             raise Exception("Failed to get right JJ number")
         sleep(1)  # Add a small delay to avoid infinite looping

@@ -148,7 +148,7 @@ class Dg(Click, ImageRec):
 
     def dg_ready_ui(self):
         if not self.DG_TIME:
-            log.insert("4.1", f"wait for start {'.'*(int(time())%5)}")
+            log.insert("4.1", f"wait for start ...")
             sleep(0.5)
         elif self.match_img(dg_end_ui):
             sleep(1)

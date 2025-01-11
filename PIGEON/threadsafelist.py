@@ -20,13 +20,19 @@ class ThreadSafeList:
         with self._lock:
             return self._list[index]
 
-    def __len__(self):
+    def to_list(self):  # 返回一个线程安全的浅拷贝
         with self._lock:
-            return len(self._list)
+            return list(self._list)
 
     def to_list(self):  # 返回一个线程安全的浅拷贝
         with self._lock:
             return list(self._list)
+
+    def pop(self, index=-1):
+        with self._lock:
+            if len(self._list) == 0:
+                raise IndexError("pop from empty list")
+            return self._list.pop(index)
 
     def __iter__(self):
         # 获取列表的快照（浅拷贝）用于迭代，确保迭代时线程安全
@@ -35,12 +41,25 @@ class ThreadSafeList:
         # 返回快照的迭代器
         return iter(snapshot)
 
-    def pop(self, index=-1):
-        with self._lock:
-            if len(self._list) == 0:
-                raise IndexError("pop from empty list")
-            return self._list.pop(index)
-
     def __contains__(self, item):
         with self._lock:
             return item in self._list
+
+    def __len__(self):
+        with self._lock:
+            return len(self._list)
+
+    def __add__(self, other):
+        with self._lock:
+            if isinstance(other, ThreadSafeList):
+                # 返回一个新的 ThreadSafeList 对象，合并当前列表和另一个线程安全列表
+                new_list = ThreadSafeList()
+                new_list._list = self._list + other.to_list()
+                return new_list
+            elif isinstance(other, list):
+                # 如果是普通列表，直接合并
+                new_list = ThreadSafeList()
+                new_list._list = self._list + other
+                return new_list
+            else:
+                raise TypeError("Unsupported type for addition")

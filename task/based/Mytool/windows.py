@@ -58,7 +58,7 @@ class Windows:
             del self.__dict__["par_handle"]
         if "handle" in self.__dict__:
             del self.__dict__["handle"]
-        log.debug("删除句柄缓存")
+        log.file("删除句柄缓存")
 
     @cached_property
     def par_handle(self) -> int:
@@ -76,7 +76,7 @@ class Windows:
 
     def screenshot(self, area: list, save_img=False, method="win_shot", debug=False) -> np.ndarray:
         if not self.is_handle_valid():
-            log.error(f"窗口句柄: {self.handle} 已失效")
+            log.file(f"窗口句柄: {self.handle} 已失效")
             self.del_cache()
             return None
 

@@ -2,6 +2,7 @@ from task.based.Mytool.Click import Click
 from task.based.Mytool.imageRec import ImageRec
 from task.based.Mytool.Ocr import Ocr
 from task.based.Mytool.Counter import Counter
+from task.based.base.res.base_img import *
 from task.ql.res.img_info import *
 from task.ql.res.img_info_auto_create import *
 from time import sleep, time, strftime, localtime
@@ -12,16 +13,7 @@ class Ql(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [
-            fight_ui,
-            ql_sb_ui,
-            damo_ui,
-            btn_tz_ui,
-            ql_main_ui,
-            ql_cg_ui,
-            ql_cg_t_ui,
-            ql_sb_ui,
-        ]
+        self.uilist = [FIGHTING, ql_sb_ui, damo_ui, btn_tz_ui, ql_main_ui, ql_cg_ui, ql_cg_t_ui, ql_sb_ui]
         self.ui_delay = 0.5
         self.running = kwargs.get("STOPSIGNAL", True)
         self.cg_counter = Counter()
@@ -58,7 +50,7 @@ class Ql(Click, ImageRec):
         match_result = self.match_ui(self.uilist, accuracy=0.9)
         log.insert("2.1", f"@匹配结果:{match_result} ")
         match match_result:
-            case "fight_ui":
+            case "FIGHTING":
                 sleep(1)
             case "damo_ui" | "ql_sb_ui":
                 self.area_click([990, 462, 1125, 520])

@@ -178,7 +178,7 @@ class SwitchUI:
             # 判断当前ui是否位于uimap，能够切换ui
             start_ui = self.find_current_ui()  # 获取当前的ui位置
             if start_ui is None:
-                log.error(f"@SwitchUI:\n Can't find current ui,\n switch to {target_ui}")
+                log.file(f"@SwitchUI:\n Can't find current ui,\n switch to {target_ui}")
                 self.try_back_step()  # 找不到当前ui，无法切换
                 raise Exception(f"Can't find current ui")
             # 如果当前ui即是目标ui，则直接返回
@@ -188,7 +188,7 @@ class SwitchUI:
             else:
                 log.info(f"@SwitchUI:Current{start_ui}->{target_ui}")
         except Exception as e:
-            log.error(f"@SwitchUI: {e}\nfull stack:\n{traceback.format_exc()}")
+            log.file(f"@SwitchUI: {e}\nfull stack:\n{traceback.format_exc()}")
             raise e
         try:
             path = self.generate_shortest_path(start_ui, target_ui)  # 获得当前ui到目标ui的最短路径

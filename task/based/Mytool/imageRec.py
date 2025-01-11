@@ -114,7 +114,7 @@ class ImageRec:
                 return [s_X, s_Y, e_X, e_Y]
             return None
         except Exception as e:
-            log.error(f"match_img<{img}> 发生错误: {e}")
+            log.file(f"match_img<{img}> 发生错误: {e}")
             return None
 
     def match_color_img(self, img: list | tuple, accuracy=0.8, color_simi_acc=0.9) -> list:

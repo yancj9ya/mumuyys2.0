@@ -1,6 +1,7 @@
 from task.based.Mytool.Click import Click
 from task.based.Mytool.imageRec import ImageRec
 from task.based.Mytool.Ocr import Ocr
+from task.based.base.res.base_img import *
 from task.ltp.res.img_info import *
 from time import sleep
 from PIGEON.log import log
@@ -15,7 +16,7 @@ class Ltp(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [fight_ui, main_ui, damo_ui, end_mark_ui, fail_ui]
+        self.uilist = [FIGHTING, main_ui, damo_ui, end_mark_ui, fail_ui]
         self.ui_delay = 0.5
         self.running = kwargs.get("STOPSIGNAL", None)
         self.times = 1
@@ -68,7 +69,7 @@ class Ltp(Click, ImageRec):
             case "damo_ui":
                 self.reward_confirm()
                 self.area_click([733, 336, 1198, 644], press_time=0.02, double_click=True)
-            case "fight_ui":
+            case "FIGHTING":
                 sleep(1)
             case "fail_ui":
                 self.challenge_again()

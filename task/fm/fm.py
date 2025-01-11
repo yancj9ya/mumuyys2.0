@@ -14,7 +14,7 @@ class Fm(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [ready_btn, fm_page_ui, wait_start, end_battle, battle_sl]
+        self.uilist = [FIGHTING, ready_btn, fm_page_ui, wait_start, end_battle, battle_sl, damo_ui]
         self.running = kwargs.get("STOPSIGNAL", None)
         self.has_4_pack_opened = False
         self.task_switch = True
@@ -59,6 +59,12 @@ class Fm(Click, ImageRec):
                 self.area_click(ready_btn[1])
             case "battle_sl":
                 self.area_click(battle_sl[1])
+            case "damo_ui":
+                self.area_click(damo_ui[1])
+            case "FIGHTING":
+                sleep(1)
+            case _:
+                pass
         pass
 
     def open_pack(self):

@@ -2,6 +2,7 @@ from task.based.Mytool.Click import Click
 from task.based.Mytool.imageRec import ImageRec
 from task.based.Mytool.Ocr import Ocr
 from task.based.Mytool.Counter import Counter
+from task.based.base.res.base_img import *
 from task.tp.res.img_info import *
 from time import sleep, time, strftime, localtime
 from PIGEON.log import Log
@@ -15,7 +16,7 @@ class Tp(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [fight_ui, damo_ui, tp_main_ui, end_mark_ui, fail_ui]
+        self.uilist = [FIGHTING, damo_ui, tp_main_ui, end_mark_ui, fail_ui]
         self.keep_57_flag = False
         self.ocr = Ocr()
         self.counter = Counter("tp")
@@ -119,7 +120,7 @@ class Tp(Click, ImageRec):
         match_result = self.match_ui(self.uilist)
         log.insert("2.1", f"Matched UI:{match_result}")
         match match_result:
-            case "fight_ui":
+            case "FIGHTING":
                 sleep(1)
             case "tp_main_ui":
                 self.tp_main_ui()

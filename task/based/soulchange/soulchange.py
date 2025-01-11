@@ -15,7 +15,7 @@ class SoulChange:
         pass
 
     def changeSoulTo(self, soul: str):
-
+        soul = soul.strip().replace(".", ",")
         group = soul.split(",")[0]
         plan = soul.split(",")[-1]
         log.info(f"开始切换御魂: 组{group} ,方案{plan}")

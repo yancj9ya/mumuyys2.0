@@ -16,7 +16,7 @@ class Hd(Click, ImageRec):
         self.BTN_TZ = None
         self.ui_delay = 0.5
         self.hd_counter = Counter()
-        self.uilist = [fight_ui, damo_ui, end_mark_ui, sl_ui, end_999_hdyh_ui, ready_ui]
+        self.uilist = [FIGHTING, damo_ui, end_mark_ui, sl_ui, end_999_hdyh_ui, ready_ui]
         self.running = kwargs.get("STOPSIGNAL", True)
         self.times = 0
         self.reward_dict = {}
@@ -88,7 +88,7 @@ class Hd(Click, ImageRec):
         match_res = self.match_ui(self.uilist)
         log.insert("2.1", f"Matched UI: {match_res}")
         match match_res:
-            case "fight_ui":
+            case "FIGHTING":
                 sleep(1)
             case "damo_ui":
                 self.reward_confirm()

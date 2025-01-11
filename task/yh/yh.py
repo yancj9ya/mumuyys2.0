@@ -2,6 +2,7 @@ from task.based.Mytool.Click import Click
 from task.based.Mytool.imageRec import ImageRec
 from task.based.Mytool.Ocr import Ocr
 from task.based.Mytool.Counter import Counter
+from task.based.base.res.base_img import *
 from task.yh.res.img_info import *
 from time import sleep, time, strftime, localtime
 from PIGEON.log import log
@@ -14,7 +15,7 @@ class Yh(Click, ImageRec):
         ImageRec.__init__(self)
         self.ui_delay = 0.5
         self.yh_counter = Counter()
-        self.uilist = [fight_ui, damo_ui, yh_end_mark2_ui, yh_end_mark_ui, room_ui]
+        self.uilist = [FIGHTING, damo_ui, yh_end_mark2_ui, yh_end_mark_ui, room_ui]
         self.running = values.get("STOPSIGNAL", True)
         self.Driver = None
         self.times = 0
@@ -55,7 +56,7 @@ class Yh(Click, ImageRec):
         match_res = self.match_ui(self.uilist)
         log.insert("2.1", f"MATCHED UI:{match_res}")
         match match_res:
-            case "fight_ui":
+            case "FIGHTING":
                 sleep(1)
             case "damo_ui":
                 self.random_probability_delay(0.03)  # 在100次里面随机3次范围在2-4的长时延迟

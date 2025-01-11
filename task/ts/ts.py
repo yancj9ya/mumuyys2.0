@@ -16,14 +16,7 @@ class Ts(Click, ImageRec):
         ImageRec.__init__(self)
         self.monster_counter = Counter(name="monster")
         self.tp_ticket_count = Counter(name="tp_ticket")
-        self.uilist = [
-            ts_main_box,
-            ts_main_ui,
-            ts_tz_ui,
-            ts_cm_ui,
-            damo_ui,
-            ts_end_mark_ui,
-        ]
+        self.uilist = [ts_main_box, ts_main_ui, ts_tz_ui, ts_cm_ui, damo_ui, ts_end_mark_ui]
         self.ui_delay = 0.5
         self.reward_dict = {}
         self.last_monster = None

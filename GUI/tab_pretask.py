@@ -155,6 +155,10 @@ class AtomTask(ctk.CTkFrame):
                 self.task_state.configure(text=state, fg_color="lightgray")
                 self.del_btn.configure(text="删除")
                 self.setting_btn.configure(text="设置", fg_color="skyblue")
+            elif state == "error":
+                self.task_state.configure(text=state, fg_color="red")
+                self.setting_btn.configure(text="设置", fg_color="skyblue")
+                self.del_btn.configure(text="删除")
         except Exception as e:
             log.error(f"设置任务状态失败: {e}")
 

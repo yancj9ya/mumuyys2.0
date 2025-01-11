@@ -16,288 +16,17 @@ from PIGEON.event import MyEvent
 from PIGEON.client import Client
 from GUI.tab_pretask import *
 from GUI.togglebuton import ToggleButton
+from GUI.tab_pretask import AtomTask
 from task.based.switchui.SwitchUI import SwitchUI
 from task.based.soulchange.soulchange import SoulChange
-from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm
+from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, AutoPowerOff
 from threading import Thread
 from datetime import datetime, timedelta
 from time import sleep
 from win11toast import toast
 
 
-class Scheduler:
-    F_MAP = {"逢魔之时": Fm, "结界寄养": Jy, "结界突破": Tp, "地域鬼王": Ad, "寮突破": Ltp, "契灵": Ql, "智能": Hd, "绘卷": Ts, "御魂": Yh, "道馆": Dg}
-    tab_frame = None
-
-    def __init__(self):
-        self.task_ctrl = MyEvent("task_ctrl")
-        self.scheduler_ctrl = MyEvent("scheduler_ctrl")
-        self.client_ctrl = MyEvent("client_ctrl")
-
-        self.client = Client(self.client_ctrl)
-
-        self.is_task_running = False
-        self.ready_tasks = ThreadSafeList()
-        self.wait_tasks = ThreadSafeList()
-
-        self.switch_ui = SwitchUI(running=self.task_ctrl)
-        self.soul_change = SoulChange(running=self.task_ctrl)
-
-    def submit_task(self, task: AtomTask | ToggleButton):
-        """
-        提交任务到队列。或者直接执行
-        """
-        if isinstance(task, ToggleButton):
-            self.excute(task)
-        elif isinstance(task, AtomTask):
-            self.classify(task)
-
-    def scheduler_loop(self):
-        """
-        检查等待任务队列是否有任务符合执行的时间条件
-        如果有，则将该任务从等待队列移动到就绪队列。
-        从就绪队列中取出任务，执行任务。
-        实时任务立即执行。
-        """
-        while self.scheduler_ctrl.is_set():
-            sleep(1)
-            # self.tab_frame.state_loop()
-            # 检查等待任务队列是否有任务符合执行的时间条件
-            self.is_ready_to_run()
-            # 从就绪队列中取出任务，执行任务
-            if self.task_ctrl.state == "STOP" and self.ready_tasks:
-                # 执行任务之前检查客户端是否启动
-                self._is_client_started()
-                if self.is_task_running:
-                    continue
-                else:
-                    # 取出任务并执行
-                    current_task = self.ready_tasks.pop(0)
-                    log.info(f"pop out {current_task.name} task.")
-                    self.excute(current_task)
-
-            elif self.task_ctrl.state == "STOP" and not self.ready_tasks:  # 无任务运行，同时ready_tasks为空,此时关闭客户端
-                self.client.client_stop()  # 关闭客户端
-                pass
-
-        pass
-
-    def excute(self, task: AtomTask | ToggleButton):
-        # 实时任务立即执行
-        if isinstance(task, ToggleButton):
-            if not task.is_on and self.task_ctrl.state == "STOP":  # 任务未开启，且当前状态为停止
-                parms = {k: v.get() for k, v in task.values.items() if v is not None}
-                thread = Thread(target=self._rt_task_loop, kwargs={"task": task, "parms": parms})
-                thread.daemon = True
-                thread.start()
-                self.task_ctrl.start()
-            elif self.task_ctrl.state == "RUNNING" and not task.is_on:
-                log.info(f"已有任务在运行，请先停止当前任务")
-                task.toggle_change()
-            elif task.is_on and self.task_ctrl.state == "RUNNING":
-                self.task_ctrl.stop()
-            pass
-        elif isinstance(task, AtomTask):
-            if self.task_ctrl.state == "STOP":
-                self.task_ctrl.start()
-                thread = Thread(target=self._sche_task_loop, kwargs={"task": task, "parms": task.parms})
-                thread.daemon = True
-                thread.start()
-                task.set_state("running")
-            pass
-
-    def _sche_task_loop(self, task: AtomTask = None, parms: dict = None):
-        self.is_task_running = True
-        log.clear()
-        log.insert("1.0", f"{'━'*14}统计{'━'*14}\n\n\n\n\n{'━'*14}日志{'━'*14}\n", tags="sep")
-        try:
-            self._task_need_change_soul(parms)
-            self.switch_ui.switch_to(parms["start_ui"])
-            instance_return = self._create_task_instance(parms)
-            print(f"instance_return: {instance_return}")
-            self.switch_ui.switch_to(parms["end_ui"])
-        except Exception as e:
-            log.info(f"_task function Error in {parms['task_id']} task: {e}")
-
-        finally:
-            if instance_return:
-                # 如果任务有下一次运行时间，则更新任务的 next_time 参数
-                pattern = r"^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$"
-                if bool(re.match(pattern, instance_return)):
-                    hour, minute, second = map(int, instance_return.split(":"))
-                    target_time = datetime.now() + timedelta(hours=hour, minutes=minute, seconds=second)
-                    task_option[task.name]["next_time"] = f"after {target_time.strftime("%Y-%m-%d %H:%M:%S")}"
-                    task.TabMaster.add_task(task.name)
-            task.set_state("done")
-            task.TabMaster.sort_task()
-            self.task_ctrl.stop()
-            self.is_task_running = False
-
-        pass
-
-    def _create_task_instance(self, parms):
-        try:
-            log.info(f"Start {parms['task_id']} task.")
-            task_instance = self.F_MAP.get(parms["task_id"])(STOPSIGNAL=self.task_ctrl)
-            task_instance.set_parms(**parms)
-            task_instance.loop()
-            return getattr(task_instance, "next_time", None)
-        except Exception as e:
-            log.info(f"Error in {parms['task_id']} task: {e}")
-            return None
-        finally:
-            log.info(f"End {parms['task_id']} task.")
-
-    def _task_need_change_soul(self, parms):
-        if parms.get("change_soul") != "false":
-            self.soul_change.changeSoulTo(parms["change_soul"])
-
-    def _rt_task_loop(self, task: ToggleButton = None, parms: dict = None):
-        log.clear()
-        log.insert("1.0", f"{'━'*14}统计{'━'*14}\n\n\n\n\n{'━'*14}日志{'━'*14}\n", tags="sep")
-        log.info(f"ui_delay : {parms.get('ui_delay'):.3f} seconds")
-        # 创建task任务实例
-        task_instance = self.F_MAP.get(task.name)(STOPSIGNAL=self.task_ctrl, parms=parms)
-        # 设置参数
-        # print(f"parms: {parms}")
-        task_instance.set_parms(**parms)
-        # 启动任务循环
-        task_instance.loop()
-        # 等待任务结束
-        if task.is_on:
-            task.toggle_change()
-        if self.task_ctrl.state == "RUNNING":
-            self.task_ctrl.stop()
-            toast(f"{task.name} 任务已结束")
-        pass
-
-    def _is_client_started(self):
-        """
-        启动客户端
-        """
-        if not self.client.is_app_started():
-            print("客户端未启动，正在启动客户端")
-            self.client_ctrl.start()  # 启动客户端线程
-            self.client.client_start()  # 启动客户端
-            # 等待客户端启动完成，避免任务执行时客户端还未启动完成
-            print("等待客户端启动完成")
-            while 1:
-                if self.client.verify_app_start_finish():
-                    break
-                if self.client.imgrec.win.is_windows_exist():  # self.client.imgrec.win.is_window_top() and
-                    self.client.imgrec.win.set_window_bottom()
-                    sleep(0.05)
-        else:
-            print("客户端已启动，开始执行任务")
-            return  # 客户端已启动，不需要再启动客户端
-
-    def start_scheduler(self):
-        """
-        启动调度器
-        """
-        self.scheduler_ctrl.start()
-        thread = Thread(target=self.scheduler_loop)
-        thread.daemon = True
-        thread.start()
-        pass
-
-    def stop_scheduler(self):
-        self.scheduler_ctrl.stop()
-        if self.task_ctrl.state in ["RUNNING", "WAIT"]:
-            self.task_ctrl.stop()
-            log.debug("stop scheduler and task")
-        pass
-
-    def delete_task(self, task: AtomTask):
-        """在队列内寻找对应的任务并删除"""
-        if task in self.ready_tasks:
-            self.ready_tasks.remove(task)
-            log.debug(f"delete {task.name} task from ready_tasks.")
-            task.destroy()
-        elif task in self.wait_tasks:
-            self.wait_tasks.remove(task)
-            log.debug(f"delete {task.name} task from wait_tasks.")
-            task.destroy()
-        else:
-            print("任务不存在")
-
-    def is_ready_to_run(self):
-        """
-        判断是否有实时任务可以立即执行。
-        """
-        for task in self.wait_tasks:
-            # log.insert("5.1", f"wait_tasks={[task.name for task in self.wait_tasks]}")
-            try:
-                task.task_name.configure(fg_color="#4a86e8")
-                if task.parms.get("next_time"):
-                    if self.is_time_valid(task.parms.get("next_time")):
-                        self.ready_tasks.append(task)
-                        task.set_state("ready")
-                        self.wait_tasks.remove(task)
-                        print(f"{task.name} is ready to run.next_time: {task.parms.get('next_time')}")
-                        continue
-                elif self.is_time_valid(task.parms.get("run_time")):
-                    if not self.task_ctrl.is_set():
-                        log.info_nof(f"{task.name} is ready at {task.parms.get('run_time')}.")
-                    self.ready_tasks.append(task)
-                    task.set_state("ready")
-                    self.wait_tasks.remove(task)
-                    continue
-            except Exception as e:
-                print(f"Error in {task.name} task: {e}")
-                continue
-            finally:
-                sleep(0.5)
-                task.task_name.configure(fg_color="skyblue")
-
-    def classify(self, task: AtomTask):
-        """
-        将任务分类到等待队列或就绪队列。
-        """
-        # 获取任务的参数
-        task.parms = task_option.get(task.name, {})
-
-        # 优先判断 next_time 参数
-        next_time = task.parms.get("next_time")
-        if next_time is not None:  # 如果存在 next_time 参数
-            if self.is_time_valid(next_time):
-                # print(f"{task.name} is ready to run.next_time: {next_time}")
-                self.ready_tasks.append(task)
-                task.set_state("ready")
-                log.debug(f"{task.name} is add to ready_tasks")
-                return  # 任务已分类，不需要重复判断
-            else:
-                # print(f"{task.name} is not ready to run.next_time: {next_time}")
-                self.wait_tasks.append(task)
-                task.set_state("waiting")
-                log.debug(f"{task.name} is add to wait_tasks")
-                return  # 任务已分类，不需要重复判断
-
-        # 检查 run_time 参数
-        run_time = task.parms.get("run_time")
-        if run_time is not None:  # 如果存在 run_time 参数
-            if self.is_time_valid(run_time):
-                self.ready_tasks.append(task)
-                task.set_state("ready")
-                log.debug(f"{task.name} is add to ready_tasks")
-            else:
-                self.wait_tasks.append(task)
-                task.set_state("waiting")
-                log.debug(f"{task.name} is add to wait_tasks")
-        else:
-            # 如果没有 run_time，直接归入等待队列
-            self.wait_tasks.append(task)
-            task.set_state("waiting")
-            log.debug(f"{task.name} is add to wait_tasks")
-
-    def get_state(self, task_id):
-
-        if self.is_time_valid(task_option[task_id]["run_time"]):
-            print(f"{task_id} is ready to run.task_parms: {task_option[task_id]}")
-            return "ready"
-        else:
-            return "waiting"
-
+class TimeManager:
     def parse_time_expression(self, expression: str):
         """
         解析时间表达式。
@@ -373,6 +102,346 @@ class Scheduler:
             return start_time <= current_time <= end_time
 
         return False
+
+
+class TaskManager:
+    def __init__(self):
+        self.ready_tasks = ThreadSafeList()
+        self.wait_tasks = ThreadSafeList()
+
+    def delete_task(self, task: AtomTask):
+        """在队列内寻找对应的任务并删除"""
+        if task in self.ready_tasks:
+            self.ready_tasks.remove(task)
+            log.debug(f"delete {task.name} task from ready_tasks.")
+            task.destroy()
+        elif task in self.wait_tasks:
+            self.wait_tasks.remove(task)
+            log.debug(f"delete {task.name} task from wait_tasks.")
+            task.destroy()
+        else:
+            print("任务不存在")
+
+    def is_ready_to_run(self):
+        """
+        判断是否有实时任务可以立即执行。
+        """
+        for task in self.wait_tasks:
+            # log.insert("5.1", f"wait_tasks={[task.name for task in self.wait_tasks]}")
+            try:
+                task.task_name.configure(fg_color="#4a86e8")
+                if task.parms.get("next_time"):
+                    if self.is_time_valid(task.parms.get("next_time")):
+                        self.ready_tasks.append(task)
+                        task.set_state("ready")
+                        self.wait_tasks.remove(task)
+                        print(f"{task.name} is ready to run.next_time: {task.parms.get('next_time')}")
+                        continue
+                elif self.is_time_valid(task.parms.get("run_time")):
+                    if not self.task_ctrl.is_set():
+                        log.info_nof(f"{task.name} is ready at {task.parms.get('run_time')}.")
+                    self.ready_tasks.append(task)
+                    task.set_state("ready")
+                    self.wait_tasks.remove(task)
+                    continue
+            except Exception as e:
+                print(f"Error in {task.name} task: {e}")
+                continue
+            finally:
+                sleep(0.5)
+                task.task_name.configure(fg_color="skyblue")
+
+    def classify(self, task: AtomTask):
+        """
+        将任务分类到等待队列或就绪队列。
+        """
+        # 获取任务的参数
+        task.parms = task_option.get(task.name, {})
+        # 设置一个获取关机时间的钩子
+        now = datetime.now()
+        if task.name == "自动关机":
+            # 获取当前所有任务列表的最晚执行时间，然后将关机任务的执行时间设置为最晚执行时间的后1分钟
+            for _task in self.wait_tasks + self.ready_tasks:
+                if _task.name == "自动关机":
+                    continue
+                if _task.parms.get("next_time"):
+                    run_time = self.parse_time_expression(_task.parms.get("next_time"))
+                elif _task.parms.get("run_time"):
+                    run_time = self.parse_time_expression(_task.parms.get("run_time"))
+                else:
+                    log.error(f"task {_task.name} has no run_time or next_time parameter.")
+                if isinstance(run_time, datetime):
+                    if run_time > now:
+                        now = run_time
+                elif isinstance(run_time, tuple):
+                    if run_time[1] > now:
+                        now = run_time[1]
+            task.parms["run_time"] = f"after {(now + timedelta(minutes=1)).strftime("%Y-%m-%d %H:%M:%S")}"
+
+        # 优先判断 next_time 参数
+        if next_time := task.parms.get("next_time"):  # 如果存在 next_time 参数
+            if self.is_time_valid(next_time):
+                # print(f"{task.name} is ready to run.next_time: {next_time}")
+                self.ready_tasks.append(task)
+                task.set_state("ready")
+                log.debug(f"{task.name} is add to ready_tasks")
+                return  # 任务已分类，不需要重复判断
+            else:
+                # print(f"{task.name} is not ready to run.next_time: {next_time}")
+                self.wait_tasks.append(task)
+                task.set_state("waiting")
+                log.debug(f"{task.name} is add to wait_tasks")
+                return  # 任务已分类，不需要重复判断
+
+        # 检查 run_time 参数
+        run_time = task.parms.get("run_time")
+        if run_time is not None:  # 如果存在 run_time 参数
+            if self.is_time_valid(run_time):
+                self.ready_tasks.append(task)
+                task.set_state("ready")
+                log.debug(f"{task.name} is add to ready_tasks")
+            else:
+                self.wait_tasks.append(task)
+                task.set_state("waiting")
+                log.debug(f"{task.name} is add to wait_tasks")
+        else:
+            # 如果没有 run_time，直接归入等待队列
+            self.wait_tasks.append(task)
+            task.set_state("waiting")
+            log.debug(f"{task.name} is add to wait_tasks")
+
+    def get_state(self, task_id):
+
+        if self.is_time_valid(task_option[task_id]["run_time"]):
+            print(f"{task_id} is ready to run.task_parms: {task_option[task_id]}")
+            return "ready"
+        else:
+            return "waiting"
+
+
+class TaskExecutor:
+    F_MAP = {
+        "逢魔之时": Fm,
+        "结界寄养": Jy,
+        "结界突破": Tp,
+        "地域鬼王": Ad,
+        "寮突破": Ltp,
+        "契灵": Ql,
+        "智能": Hd,
+        "绘卷": Ts,
+        "御魂": Yh,
+        "道馆": Dg,
+        "自动关机": AutoPowerOff,
+    }
+
+    def __init__(self):
+        self.task_ctrl = MyEvent("task_ctrl")
+        self.is_task_running = False
+        self.switch_ui = SwitchUI(running=self.task_ctrl)
+        self.soul_change = SoulChange(running=self.task_ctrl)
+        pass
+
+    def _rt_task_loop(self, task: ToggleButton = None, parms: dict = None):
+        log.clear()
+        log.insert("1.0", f"{'━'*14}统计{'━'*14}\n\n\n\n\n{'━'*14}日志{'━'*14}\n", tags="sep")
+        log.info(f"ui_delay : {parms.get('ui_delay'):.3f} seconds")
+        # 创建task任务实例
+        task_instance = self.F_MAP.get(task.name)(STOPSIGNAL=self.task_ctrl, parms=parms)
+        # 设置参数
+        # print(f"parms: {parms}")
+        task_instance.set_parms(**parms)
+        # 启动任务循环
+        task_instance.loop()
+        # 等待任务结束
+        if task.is_on:
+            task.toggle_change()
+        if self.task_ctrl.state == "RUNNING":
+            self.task_ctrl.stop()
+            toast(f"{task.name} 任务已结束")
+        pass
+
+    def _sche_task_loop(self, task: AtomTask = None, parms: dict = None):
+        self.is_task_running = True
+        log.clear()
+        log.insert("1.0", f"{'━'*14}统计{'━'*14}\n\n\n\n\n{'━'*14}日志{'━'*14}\n", tags="sep")
+        try:
+            self._task_need_change_soul(parms)
+            self._task_need_switch_page(parms, "start_ui")
+            instance_return = self._create_task_instance(parms)
+            self._task_need_switch_page(parms, "end_ui")
+            log.file(f"instance_return: {instance_return}")
+        except Exception as e:
+            log.info(f"_task function Error in {parms['task_id']} task: {e}")
+
+        finally:
+            if instance_return:
+                # 如果任务有下一次运行时间，则更新任务的 next_time 参数
+                pattern = r"^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$"
+                if bool(re.match(pattern, instance_return)):
+                    hour, minute, second = map(int, instance_return.split(":"))
+                    target_time = datetime.now() + timedelta(hours=hour, minutes=minute, seconds=second)
+                    task_option[task.name]["next_time"] = f"after {target_time.strftime("%Y-%m-%d %H:%M:%S")}"
+                    task.TabMaster.add_task(task.name)
+            task.set_state("done")
+            task.TabMaster.sort_task()
+            self.task_ctrl.stop()
+            self.is_task_running = False
+
+        pass
+
+    def execute(self, task: AtomTask | ToggleButton):
+        try:
+            # 实时任务立即执行
+            if isinstance(task, ToggleButton):
+                task_is_off = not task.is_on
+                is_stopped = self.task_ctrl.state == "STOP"
+                is_running = self.task_ctrl.state == "RUNNING"
+
+                if task_is_off and is_stopped:  # 任务未开启，且当前状态为停止
+                    parms = {k: v.get() for k, v in task.values.items() if v is not None}
+                    thread = Thread(target=self._rt_task_loop, kwargs={"task": task, "parms": parms})
+                    thread.daemon = True
+                    thread.start()
+                    self.task_ctrl.start()
+                elif is_running and task_is_off:
+                    log.info("已有任务在运行，请先停止当前任务")
+                    task.toggle_change()
+                elif task.is_on and is_running:
+                    self.task_ctrl.stop()
+
+            elif isinstance(task, AtomTask) and self.task_ctrl.state == "STOP":
+                self.task_ctrl.start()
+                thread = Thread(target=self._sche_task_loop, kwargs={"task": task, "parms": task.parms})
+                thread.daemon = True
+                thread.start()
+                task.set_state("running")
+
+        except Exception as e:
+            log.error(f"执行任务时发生错误: {e}")
+            self.task_ctrl.stop()
+            if isinstance(task, ToggleButton):
+                task.toggle_change()
+            elif isinstance(task, AtomTask):
+                task.set_state("error")
+
+    def _create_task_instance(self, parms):
+        try:
+            log.info(f"Start {parms['task_id']} task.")
+            task_instance = self.F_MAP.get(parms["task_id"])(STOPSIGNAL=self.task_ctrl)
+            task_instance.set_parms(**parms)
+            task_instance.loop()
+            return getattr(task_instance, "next_time", None)
+        except Exception as e:
+            log.info(f"Error in {parms['task_id']} task: {e}")
+            return None
+        finally:
+            log.info(f"End {parms['task_id']} task.")
+
+    def _task_need_change_soul(self, parms):
+        if parms.get("change_soul", "false") != "false":
+            self.soul_change.changeSoulTo(parms["change_soul"])
+
+    def _task_need_switch_page(self, parms, page):
+        if parms.get(page):
+            self.switch_ui.switch_to(parms[page])
+
+
+class ClientManager:
+    def __init__(self):
+        self.client_ctrl = MyEvent("client_ctrl")
+        self.client = Client(self.client_ctrl)
+
+    def _is_client_started(self):
+        """
+        启动客户端
+        """
+        if not self.client.is_app_started():
+            print("客户端未启动，正在启动客户端")
+            self.client_ctrl.start()  # 启动客户端线程
+            self.client.client_start()  # 启动客户端
+            # 等待客户端启动完成，避免任务执行时客户端还未启动完成
+            print("等待客户端启动完成")
+            while 1:
+                if self.client.verify_app_start_finish():
+                    break
+                if self.client.imgrec.win.is_windows_exist():  # self.client.imgrec.win.is_window_top() and
+                    self.client.imgrec.win.set_window_bottom()
+                    sleep(0.05)
+        else:
+            print("客户端已启动，开始执行任务")
+            return  # 客户端已启动，不需要再启动客户端
+
+
+class GUIInterface:
+    def submit_task(self, task: AtomTask | ToggleButton):
+        """
+        提交任务到队列。或者直接执行
+        """
+        if isinstance(task, ToggleButton):
+            self.execute(task)
+        elif isinstance(task, AtomTask):
+            self.classify(task)
+
+
+class Scheduler(TimeManager, TaskManager, TaskExecutor, ClientManager, GUIInterface):
+
+    tab_frame = None
+
+    def __init__(self):
+        TimeManager.__init__(self)
+        TaskManager.__init__(self)
+        TaskExecutor.__init__(self)
+        ClientManager.__init__(self)
+        GUIInterface.__init__(self)
+
+        self.scheduler_ctrl = MyEvent("scheduler_ctrl")
+
+    def scheduler_loop(self):
+        """
+        检查等待任务队列是否有任务符合执行的时间条件
+        如果有，则将该任务从等待队列移动到就绪队列。
+        从就绪队列中取出任务，执行任务。
+        实时任务立即执行。
+        """
+        while self.scheduler_ctrl.is_set():
+            sleep(1)
+            # self.tab_frame.state_loop()
+            # 检查等待任务队列是否有任务符合执行的时间条件
+            self.is_ready_to_run()
+            # 从就绪队列中取出任务，执行任务
+            if self.task_ctrl.state == "STOP" and self.ready_tasks:
+                # 执行任务之前检查客户端是否启动
+                self._is_client_started()
+                if self.is_task_running:
+                    continue
+                else:
+                    # 取出任务并执行
+                    current_task = self.ready_tasks.pop(0)
+                    log.info(f"pop out {current_task.name} task.")
+                    self.execute(current_task)
+
+            elif self.task_ctrl.state == "STOP" and not self.ready_tasks:  # 无任务运行，同时ready_tasks为空,此时关闭客户端
+                self.client.client_stop()  # 关闭客户端
+                pass
+
+        pass
+
+    def start_scheduler(self):
+        """
+        启动调度器
+        """
+        self.scheduler_ctrl.start()
+        thread = Thread(target=self.scheduler_loop)
+        thread.daemon = True
+        thread.start()
+        pass
+
+    def stop_scheduler(self):
+        self.scheduler_ctrl.clear()
+        # if self.task_ctrl.state in ["RUNNING", "WAIT"]:
+        #     self.task_ctrl.stop()
+        #     log.debug("stop scheduler and task")
+        pass
 
 
 scheduler = Scheduler()
