@@ -3,9 +3,7 @@
 from GUI import App
 from GUI import ToggleButton
 from GUI.tab_pretask import PreTaskTab, AtomTask
-from PIGEON.MidTrans import Task
 from PIGEON.log import Log
-from PIGEON.taskmanager import taskManager
 from PIGEON.scheduler import scheduler
 
 

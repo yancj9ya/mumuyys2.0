@@ -27,7 +27,7 @@ from win11toast import toast
 
 
 class TimeManager:
-    def parse_time_expression(self, expression: str):
+    def parse_time_expression(self, expression: str | datetime):
         """
         解析时间表达式。
         """
@@ -437,11 +437,10 @@ class Scheduler(TimeManager, TaskManager, TaskExecutor, ClientManager, GUIInterf
         pass
 
     def stop_scheduler(self):
-        self.scheduler_ctrl.clear()
-        # if self.task_ctrl.state in ["RUNNING", "WAIT"]:
-        #     self.task_ctrl.stop()
-        #     log.debug("stop scheduler and task")
-        pass
+        """
+        停止调度器
+        """
+        return self.scheduler_ctrl.clear()
 
 
 scheduler = Scheduler()

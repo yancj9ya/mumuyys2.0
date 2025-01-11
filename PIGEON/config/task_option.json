@@ -50,7 +50,7 @@
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-01-11 17:56:39"
+        "next_time": "after 2025-01-11 23:58:47"
     },
     "逢魔之时": {
         "task_id": "逢魔之时",
@@ -63,6 +63,6 @@
     "自动关机": {
         "task_id": "自动关机",
         "延迟时间": "0",
-        "run_time": "after 2025-01-09 23:38:40"
+        "run_time": "after 2025-01-11 23:59:47"
     }
 }
