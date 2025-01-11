@@ -14,6 +14,9 @@ from functools import cached_property
 
 
 # from Mytool.nemu.mumuScreencap import MuMuScreenCap
+WM_XBUTTONDOWN = 0x020B
+WM_XBUTTONUP = 0x020C
+MK_XBUTTON1 = 0x0020
 
 WM_LBUTTONDOWN = 0x0201
 WM_SERCURSOR = 0x20
@@ -229,14 +232,14 @@ class Windows:
         return win32gui.GetWindowRect(self.handle)
 
     def x_button_down(self, x, y):
-        msg = WM_XBUTTONDOWN
-        wparam = MK_XBUTTON1
+        msg = WM_XBUTTONDOWN  # type: ignore
+        wparam = MK_XBUTTON1  # type: ignore
         Lparam = y << 16 | x
         PostMessage(self.handle, msg, wparam, Lparam)
 
     def x_button_up(self, x, y):
-        msg = WM_XBUTTONUP
-        wparam = MK_XBUTTON1
+        msg = WM_XBUTTONUP  # type: ignore
+        wparam = MK_XBUTTON1  # type: ignore
         Lparam = y << 16 | x
         PostMessage(self.handle, msg, wparam, Lparam)
 
