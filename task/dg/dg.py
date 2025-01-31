@@ -166,7 +166,7 @@ class Dg(Click, ImageRec):
 
     def img_dgsign(self, img, times=5):
         for i in range(times):
-            if self.match_img(img, accuracy=0.8):
+            if self.match_img(img, accuracy=0.8, needMask=dg_sign_mask):  # str(dg_sign_mask)
                 return True
             sleep(0.1)
         return False
@@ -254,6 +254,7 @@ class Dg(Click, ImageRec):
                 case "STOP":
                     return
                 case "WAIT":
+                    log.info("等待中...")
                     sleep(1)
                     continue
                 case _:
@@ -264,4 +265,4 @@ class Dg(Click, ImageRec):
         self.main_ui_sleep = kwargs.get("main_ui_sleep", 0.5)
         self.dg_rs = int(kwargs.get("dg_rs", 70))
         self.dg_xs = kwargs.get("dg_xs", "2:5")
-        log.info(f"set dg_rs:{self.dg_rs},dg_xs:{self.dg_xs}")
+        log.insert("5.0", f"set 人数:{self.dg_rs},系数:{self.dg_xs} ")

@@ -8,7 +8,9 @@ from task.yh.yh import Yh
 from task.xz.xz import Xz
 from task.jy.jy import Jy
 from task.fm.fm import Fm
+from task.sixgate.sixgate import SixGate
 from task.shutdown.auto_power_off import AutoPowerOff
+from task.frog.frog import Frog
 from task.areademon.areademon import Ad
 
 

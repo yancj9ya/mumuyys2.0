@@ -30,10 +30,6 @@ backstreet_page = ["task/based/switchui/res/backstreet_page.bmp", [769, 390, 791
 fm_page = ["task/based/switchui/res/fm_page.bmp", [12, 656, 54, 704], "fm_page"]
 server_page = ["task/based/switchui/res/server_page.bmp", [20, 360, 400, 700], "server_page"]
 
-# 识图点击的切换方式--------------------------------------------------------------------
-step_ts = ["task/based/switchui/res/step_ts.bmp", (293, 136, 1039, 231), "step_ts"]
-step_back_street = ["task/based/switchui/res/back_street.bmp", (206, 329, 1062, 446), "back_street"]
-
 
 ui_list = locals()
 ui_list_keys = list(ui_list.keys())[8:]

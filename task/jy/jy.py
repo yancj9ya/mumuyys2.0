@@ -56,7 +56,7 @@ class Jy(Click, ImageRec):
         log.info(f"OCR result: {ocr_res[0]}")
         if ocr_res[1] > 0.6:
             hand_res_str = re.sub(r"[^a-zA-Z0-9]", "", ocr_res[0])
-            if hand_res_str in ["76", "67", "59"]:
+            if hand_res_str in ["76", "67", "59", "50"]:
                 return int(hand_res_str)
             else:
                 raise Exception("grt wrong number from OCR", ocr_res)

@@ -13,7 +13,7 @@ class Client:
         self.imgrec = ImageRec()
         self.running = client_ctrl
         self.app_process_name = "MuMuPlayer.exe"
-        self.app_path = r"H:\MuMuPlayer-12.0-1\shell\MuMuPlayer.exe -p com.netease.onmyoji.wyzymnqsd_cps -v 0"
+        self.app_path = r"H:\MuMu Player 12\shell\MuMuPlayer.exe -p com.netease.onmyoji.wyzymnqsd_cps -v 0"  # "H:\MuMu Player 12\shell\MuMuPlayer.exe" -p com.netease.onmyoji.wyzymnqsd_cps -v 0
 
     def is_app_started(self):
         for proc in psutil.process_iter():

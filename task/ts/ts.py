@@ -46,7 +46,7 @@ class Ts(Click, ImageRec):
         elif self.last_monster == "boss":
             self.exit_once()  # 结束战斗
             log.info(f'{"*"*20}Quit')
-        elif self.last_monster == "normal":
+        elif self.last_monster == "normal":  # 找不到Next怪，向右走
             log.debug(f"@No found，head toward")
             match choices(["slide", "click"], weights=[0.8, 0.2], k=1)[0]:
                 case "slide":
@@ -145,5 +145,5 @@ class Ts(Click, ImageRec):
             ui_delay=values.get("ui_delay", 0.5),
         )
         self.tp.stat_award = self.reward_confirm
-
+        log.debug(f"set_parms: \n突破卷限制{self.tp_ticket_limit} \n怪物限制{self.monster_limit}")
         pass

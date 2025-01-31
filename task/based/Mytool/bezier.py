@@ -180,12 +180,14 @@ class BezierTrajectory:
         # print(bezier_num, bezier_level, bezier_type)
         move_list = BezierTrajectory.trackArray(start=(start_x, start_y), end=(end_x, end_y), numberList=bezier_num, le=bezier_level, deviation=10, bias=0.5, type=bezier_type[0], cbb=0, yhh=5)
 
-        if end_x - start_x > end_y - start_y:  # 横坐标差值大于纵坐标差值，则为横向移动
+        if abs(end_x - start_x) >= abs(end_y - start_y):  # 横坐标差值大于纵坐标差值，则为横向移动
+            print("横向移动")
             if start_x > end_x:  # 向右滑动
                 return sorted(move_list, key=lambda x: x[0], reverse=True)
             else:  # 向左滑动
                 return sorted(move_list, key=lambda x: x[0])
         else:  # 纵坐标差值大于横坐标差值，则为纵向移动
+            print("纵向移动")
             if start_y > end_y:  # 向上滑动
                 return sorted(move_list, key=lambda x: x[1], reverse=True)
             else:  # 向下滑动
@@ -195,4 +197,8 @@ class BezierTrajectory:
 
 if __name__ == "__main__":
     # (1168, 172, 1202, 207), (1161, 466, 1193, 517)
-    print(BezierTrajectory.move_by_bezier(1180, 180, 1170, 500))
+    start, end = [1162, 146, 1226, 203], [231, 133, 301, 199]
+    s_x, s_y = random.randint(start[0], start[2]), random.randint(start[1], start[3])
+    e_x, e_y = random.randint(end[0], end[2]), random.randint(end[1], end[3])
+    print(s_x, s_y, e_x, e_y)
+    print(BezierTrajectory.move_by_bezier(s_x, s_y, e_x, e_y))

@@ -19,7 +19,7 @@ from GUI.togglebuton import ToggleButton
 from GUI.tab_pretask import AtomTask
 from task.based.switchui.SwitchUI import SwitchUI
 from task.based.soulchange.soulchange import SoulChange
-from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, AutoPowerOff
+from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog
 from threading import Thread
 from datetime import datetime, timedelta
 from time import sleep
@@ -231,7 +231,9 @@ class TaskExecutor:
         "绘卷": Ts,
         "御魂": Yh,
         "道馆": Dg,
+        "六道之门": SixGate,
         "自动关机": AutoPowerOff,
+        "对弈竞猜": Frog,
     }
 
     def __init__(self):
@@ -299,6 +301,7 @@ class TaskExecutor:
 
                 if task_is_off and is_stopped:  # 任务未开启，且当前状态为停止
                     parms = {k: v.get() for k, v in task.values.items() if v is not None}
+                    # print(f'即时任务参数：{[f"{k}:{v}" for k,v in parms.items()]}')
                     thread = Thread(target=self._rt_task_loop, kwargs={"task": task, "parms": parms})
                     thread.daemon = True
                     thread.start()
@@ -335,7 +338,8 @@ class TaskExecutor:
             log.info(f"Error in {parms['task_id']} task: {e}")
             return None
         finally:
-            log.info(f"End {parms['task_id']} task.")
+            del task_instance
+            log.info(f"{parms['task_id']} task instance finnally exit.")
 
     def _task_need_change_soul(self, parms):
         if parms.get("change_soul", "false") != "false":

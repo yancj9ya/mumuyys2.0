@@ -2,6 +2,7 @@ damo_ui = ["task/dg/res/damo_ui.bmp", [562, 497, 685, 580], "damo_ui"]
 dg_end_ui = ["task/dg/res/dg_end_ui.bmp", [1077, 175, 1109, 211], "dg_end_ui"]
 fight_ui = ["task/dg/res/fight_ui.bmp", [142, 0, 457, 66], "fight_ui"]
 dg_ready_ui = ["task/dg/res/dg_ready_ui.bmp", [560, 9, 606, 61], "ready_ui"]
+dg_sign_mask = "task/dg/res/dg_sign_mask.png"
 dg_sign = ["task/dg/res/dg_sign.bmp", [176, 255, 265, 350], "dg_sign"]
 dg_btn_ready = ["task/dg/res/dg_btn_ready.bmp", [1132, 637, 1230, 694], "dg_btn_ready"]
 dg_fight_ui = ["task/dg/res/dg_fight_ui.bmp", [113, 53, 247, 136], "fight_ui"]

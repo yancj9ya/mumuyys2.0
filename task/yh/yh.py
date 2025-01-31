@@ -15,7 +15,7 @@ class Yh(Click, ImageRec):
         ImageRec.__init__(self)
         self.ui_delay = 0.5
         self.yh_counter = Counter()
-        self.uilist = [FIGHTING, damo_ui, yh_end_mark2_ui, yh_end_mark_ui, room_ui]
+        self.uilist = [FIGHTING, damo_ui, yh_end_mark2_ui, yh_end_mark_ui, room_ui, accept_gear]
         self.running = values.get("STOPSIGNAL", True)
         self.Driver = None
         self.times = 0
@@ -78,19 +78,34 @@ class Yh(Click, ImageRec):
                     sleep(1)
                     self.room()
                 if self.Driver:
-                    if res := self.match_color_img(color_tz, color_simi_acc=90):
+                    if res := self.match_color_img_by_hist(color_tz):
                         log.debug(f"Color image matched")
                         sleep(0.2)
                         self.area_click(res)
-                    else:
-                        log.debug("Color image not matched")
+                        # self.yh_counter.increment()
+                        log.insert("3.1", f"进行第{self.yh_counter.count}次挑战")
                 else:
                     sleep(2)
+            case "accept_gear":
+                self.area_click(accept_gear[1], double_click=True)
+                self.uilist.remove(accept_gear)
 
     def loop(self):
         log.insert("4.1", f"开始循环，次数：{self.times}")
-        while all([self.running.is_set(), self.yh_counter.count < self.times]):
-            self.run()
+        while self.yh_counter.count < self.times:
+            match self.running.state:
+                case "RUNNING":
+                    self.run()
+                    log.insert("4.1", f"进度 {self.yh_counter.count}/{self.times}")
+                case "STOP":
+                    log.insert("2.1", f"@任务已停止 ")
+                    self.yh_counter.reset()
+                    return
+                case "WAIT":
+                    sleep(1)
+                    continue
+                case _:
+                    pass
 
     def set_parms(self, **values):
         self.times = int(values.get("times", 0))

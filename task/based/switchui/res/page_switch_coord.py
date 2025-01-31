@@ -1,4 +1,5 @@
 # This file is used to store the coordinates of the switch page elements.
+from task.based.switchui.res.img_info_auto_create import *
 
 tp_main_TO_ts_main = (1189, 117, 1220, 150)
 
@@ -18,7 +19,7 @@ ts_end_mark_TO_ts_cm = (990, 462, 1125, 520)
 
 tp_damo_TO_tp_main = (560, 475, 662, 551)
 
-home_page_unfold_TO_ts_main = "step_ts"
+
 home_page_fold_TO_home_page_unfold = (1217, 610, 1242, 674)
 
 # 2024/12/8
@@ -56,8 +57,26 @@ backstreet_page_TO_fm_page = (776, 111, 790, 191)
 
 server_TO_home_page_fold = (592, 579, 687, 613)
 
-home_page_unfold_TO_backstreet_page = "step_back_street"
+# 识图点击的切换方式--------------------------------------------------------------------
+# step_ts = ["task/based/switchui/res/step_ts.bmp", (293, 136, 1039, 231), "step_ts"]
+# step_back_street = ["task/based/switchui/res/back_street.bmp", (206, 329, 1062, 446), "back_street"]
 
+home_page_unfold_TO_backstreet_page = "step_back_street"
+home_page_unfold_TO_ts_main = "step_ts"
+# 庭院到探索
+HOME_PAGEUNFOLD_TO_TS = {
+    "HOME_PAGEUNFOLD_TO_TS1": step_ts,
+    "HOME_PAGEUNFOLD_TO_TS2": step_ts_1,
+    "HOME_PAGEUNFOLD_TO_TS3": step_ts_2,
+    "HOME_PAGEUNFOLD_TO_TS4": step_ts_3,
+}
+# 庭院到町中
+HOME_PAGEUNFOLD_TO_BACKSTREET = {
+    "HOME_PAGEUNFOLD_TO_BACKSTREET1": step_back_street,
+    "HOME_PAGEUNFOLD_TO_BACKSTREET2": step_back_street_1,
+    "HOME_PAGEUNFOLD_TO_BACKSTREET3": step_back_street_2,
+    "HOME_PAGEUNFOLD_TO_BACKSTREET4": step_back_street_3,
+}
 
 step_back = ["task/based/switchui/res/step_back.bmp", (11, 12, 183, 209), "step_back"]
 step_back_2 = ["task/based/switchui/res/step_back_2.bmp", (11, 12, 183, 209), "step_back_2"]
@@ -71,5 +90,9 @@ step_soul_content_2 = ["task/based/switchui/res/step_soul_content_2.bmp", [1034,
 step_soul_content_3 = ["task/based/switchui/res/step_soul_content_3.bmp", [1186, 501, 1239, 543], "step_soul_content_3"]
 
 # 式神录
-SOUL_CONTENT = {"SOUL_CONTENT1": step_soul_content_1, "SOUL_CONTENT2": step_soul_content_2, "SOUL_CONTENT3": step_soul_content_3}
+SOUL_CONTENT = {
+    "SOUL_CONTENT1": step_soul_content_1,
+    "SOUL_CONTENT2": step_soul_content_2,
+    "SOUL_CONTENT3": step_soul_content_3,
+}
 # 识图点击部分

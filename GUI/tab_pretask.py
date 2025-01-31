@@ -3,10 +3,6 @@ import json
 import tkinter.messagebox as messagebox
 from PIGEON.config import task_option
 from PIGEON.log import log
-from GUI.icons.icons import Icons
-from PIL import Image, ImageTk
-
-# from PIGEON.scheduler import scheduler
 
 
 class SetOption(ctk.CTkFrame):
@@ -100,9 +96,9 @@ class AtomTask(ctk.CTkFrame):
         self.task_name.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
         self.task_state = ctk.CTkLabel(self, text="running", fg_color="green", corner_radius=0)
         self.task_state.grid(row=0, column=1, padx=2, pady=2, sticky="ew")
-        self.setting_btn = ctk.CTkButton(self, text="设置", command=self.set_task, width=8, corner_radius=0)
+        self.setting_btn = ctk.CTkButton(self, text="设置", command=self.set_task, fg_color="skyblue", width=8, corner_radius=0)
         self.setting_btn.grid(row=0, column=2, padx=2, pady=2, sticky="ew")
-        self.del_btn = ctk.CTkButton(self, text="删除", command=self.del_task, width=8, corner_radius=0)
+        self.del_btn = ctk.CTkButton(self, text="删除", command=self.del_task, fg_color="#EF5350", width=8, corner_radius=0)
         self.del_btn.grid(row=0, column=3, padx=2, pady=2, sticky="ew")
 
         self.state = self.scheduler.get_state(task_name)
@@ -144,13 +140,13 @@ class AtomTask(ctk.CTkFrame):
     def set_state(self, state):
         try:
             if state == "running":
-                self.task_state.configure(text=state, fg_color="Goldenrod")
+                self.task_state.configure(text=state, fg_color="#E1BEE7")
                 self.del_btn.configure(text="暂停")
                 self.setting_btn.configure(text="取消", fg_color="red")
             elif state == "ready":
                 self.task_state.configure(text=state, fg_color="lightgreen")
             elif state == "waiting":
-                self.task_state.configure(text=state, fg_color="lightyellow")
+                self.task_state.configure(text=state, fg_color="#FFF176")
             elif state == "done":
                 self.task_state.configure(text=state, fg_color="lightgray")
                 self.del_btn.configure(text="删除")
@@ -175,8 +171,6 @@ class PreTaskTab(ctk.CTkFrame):
         self.task_start.grid(row=0, column=1, padx=1, pady=2, sticky="w")
         self.one_key_add_btn = ctk.CTkButton(self, text="一键日常", command=self.one_key_add, width=20, corner_radius=30, font=("微软雅黑", 10, "bold"))
         self.one_key_add_btn.grid(row=0, column=2, padx=1, pady=2, sticky="w")
-        # self.scheduler_state = ctk.CTkLabel(self, text="🐱", fg_color="transparent", width=30, text_color="green", font=("微软雅黑", 18, "bold"))
-        # self.scheduler_state.grid(row=0, column=2, padx=2, pady=2, sticky="w")
 
         try:
             self.task_frame_ = task_option.json
@@ -197,18 +191,6 @@ class PreTaskTab(ctk.CTkFrame):
                 self.add_task(task_name)
         except Exception as e:
             messagebox.showerror("错误", f"操作失败: {e}")
-
-    # def state_loop(self):
-    #     try:
-    #         # print("state_loop")
-    #         current_text = self.scheduler_state.cget("text")
-    #         # 定义状态转换字典
-    #         state_transition = {" 🐱": "🐱", "🐱": " 🐱"}
-    #         # 更新状态
-    #         if current_text in state_transition:
-    #             self.scheduler_state.configure(text=state_transition[current_text])
-    #     except Exception as e:
-    #         messagebox.showerror("错误", f"状态循环操作失败: {e}")
 
     def add_task(self, task_name):
         new_task = AtomTask(self.task_frame, task_name, corner_radius=0)

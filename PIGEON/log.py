@@ -85,9 +85,9 @@ class Log:
             case "INFO":
                 msg = {"time": f"{now} ", "content_info": f"{message}\n"}  # "tag":"content"
             case "ERROR":
-                msg = {"time": f"| {now} | ", "content_error": f"{message}\n"}  # "tag":"content"
+                msg = {"time": f"{now} ", "content_error": f"{message}\n"}  # "tag":"content"
             case "DEBUG":
-                msg = {"time": f"| {now} | ", "content_debug": f"{message}\n"}  # "tag":"content"
+                msg = {"time": f"{now} ", "content_debug": f"{message}\n"}  # "tag":"content"
         return msg
 
     def emit(self, message, tag=None):
@@ -195,16 +195,25 @@ class Log_to_file:
 
     @classmethod
     def write_to_file(cls, message: str):
-        if cls.is_open:
-            with open("log/log.txt", "r+", encoding="utf-8") as f:
-                # 先读取之前已有的内容
-                lines = f.readlines()
-                f.seek(0)  # 将文件指针指向开头
-                f.write(message)  # 写入日志信息
-                f.writelines(lines)  # 将之前的内容重新写入文件
-        else:
-            pass
-            # print(f"日志文件已关闭，无法写入日志：{message}")
+        if not cls.is_open:
+            print(f"日志文件已关闭，无法写入日志：{message}")
+            return
+
+        # 检查日志目录是否存在，如果不存在则创建
+        log_dir = "log"
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+
+        # 日志文件路径
+        log_file = os.path.join(log_dir, "log.txt")
+
+        try:
+            # 使用追加模式打开文件
+            with open(log_file, "a", encoding="utf-8") as f:
+                log_message = f"{message}"
+                f.write(log_message)  # 写入日志信息
+        except Exception as e:
+            print(f"写入日志失败: {e}")
 
     @staticmethod
     def rename_file_if_older_than_one_day(file_path):

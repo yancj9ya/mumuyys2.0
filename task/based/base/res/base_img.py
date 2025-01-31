@@ -1,1 +1,1 @@
-FIGHTING = ("task/fm/res/FIGHTING.bmp", (263, 688, 291, 714), "FIGHTING")
+FIGHTING = ("task/based/base/res/FIGHTING.bmp", (263, 688, 650, 714), "FIGHTING")

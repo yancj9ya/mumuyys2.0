@@ -34,7 +34,8 @@ class Ad(ImageRec, Click):
                     self.hot_challenge = False
                     self.area_click(current_challenge[1])
                 else:
-                    log.info("No more challenges available.")
+                    log.info(f"no more challenge")
+                    log.info(f"{self.challenged_list} and {self.hot_challenge}")
                     self.stop_task = True
             case "challenge_start":
                 if self.challenge_start_filter:
@@ -58,11 +59,19 @@ class Ad(ImageRec, Click):
         pass
 
     def loop(self):
-        while self.running.is_set():
-            self.run()
-            if self.stop_task:
-                break
-        pass
+        while not self.stop_task:
+            match self.running.state:
+                case "RUNNING":
+                    self.run()
+                case "STOP":
+                    self.task_switch = False
+                    log.insert("2.3", f"@任务已停止 ")
+                    return
+                case "WAIT":
+                    sleep(1)
+                    continue
+                case _:
+                    pass
 
     def set_parms(self, **values):
         self.ui_delay = float(values.get("ui_delay", 0.5))

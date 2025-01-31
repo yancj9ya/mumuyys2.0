@@ -50,7 +50,7 @@
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-01-11 23:58:47"
+        "next_time": "after 2025-02-01 04:10:39"
     },
     "逢魔之时": {
         "task_id": "逢魔之时",
@@ -58,11 +58,21 @@
         "end_ui": "fm_page",
         "ui_delay": "0.5",
         "change_soul": "3,1",
-        "run_time": "17:00-22:00"
+        "run_time": "17:00-23:59"
     },
     "自动关机": {
         "task_id": "自动关机",
         "延迟时间": "0",
-        "run_time": "after 2025-01-11 23:59:47"
+        "run_time": "after 2025-01-17 00:00:00"
+    },
+    "对弈竞猜": {
+        "task_id": "对弈竞猜",
+        "start_ui": "home_page_unfold",
+        "end_ui": "home_page_unfold",
+        "ui_delay": "0.7",
+        "change_soul": "false",
+        "run_time": "right now",
+        "repeat": "true",
+        "next_time": "after 2025-01-31 23:49:59"
     }
 }

@@ -80,10 +80,10 @@ ui_map = {
         "tp_main_ui": tp_damo_TO_tp_main,
     },
     "home_page_unfold": {  # 主页展开
-        "ts_main_ui": home_page_unfold_TO_ts_main,
+        "ts_main_ui": HOME_PAGEUNFOLD_TO_TS,
         "yyl_page": home_page_unfold_TO_yyl_page,
         "soul_content_page": home_page_unfold_TO_soul_content_page,
-        "backstreet_page": home_page_unfold_TO_backstreet_page,
+        "backstreet_page": HOME_PAGEUNFOLD_TO_BACKSTREET,
     },
     "home_page_fold": {
         "home_page_unfold": home_page_fold_TO_home_page_unfold,
@@ -120,7 +120,7 @@ class SwitchUI:
         return match_list
 
     def try_back_step(self, *args, **kwargs):
-        print("try back")
+        log.warning("try back")
         for k, v in BACK.items():
             if res := self.imageRec.match_img(v, accuracy=0.9):
                 self.click.area_click(res)
@@ -151,12 +151,12 @@ class SwitchUI:
         elif isinstance(step, tuple):
             self.click.area_click(step)
         elif isinstance(step, str):
-            res = self.imageRec.match_img(ui_list[step], accuracy=0.8)
+            res = self.imageRec.match_img_by_hist(ui_list[step], accuracy=0.8)
             if res:
                 self.click.area_click(res)
         elif isinstance(step, dict):
             for k, v in step.items():
-                if res := self.imageRec.match_img(v, accuracy=0.9):
+                if res := self.imageRec.match_img_by_hist(v, accuracy=0.75):
                     self.click.area_click(res)
         else:
             raise Exception(f"Invalid step type: {type(step)}")

@@ -1,0 +1,17 @@
+# this file is auto created by devtool at 2025-01-29 19:05:23.553747
+
+frog = ["task/frog/res/frog.bmp", [1195, 315, 1226, 349], "frog"]
+left = ["task/frog/res/left.bmp", [113, 297, 200, 400], "left"]
+right = ["task/frog/res/right.bmp", [1065, 315, 1173, 396], "right"]
+confirm = ["task/frog/res/confirm.bmp", [600, 101, 671, 143], "confirm"]
+coin_30 = ["task/frog/res/coin_30.bmp", [883, 578, 943, 615], "coin_30"]
+bet_on = ["task/frog/res/bet_on.bmp", [1045, 429, 1105, 486], "bet_on"]
+bet_on_confirm = ["task/frog/res/bet_on_confirm.bmp", [708, 408, 809, 442], "bet_on_confirm"]
+coin_30_on = ["task/frog/res/coin_30_on.bmp", [832, 470, 994, 638], "coin_30_on"]
+coin_30_not_on = ["task/frog/res/coin_30_not_on.bmp", [838, 484, 985, 640], "coin_30_not_on"]
+bet_hall = ["task/frog/res/bet_hall.bmp", [560, 5, 679, 37], "bet_hall"]
+bet_lose = ["task/frog/res/bet_lose.bmp", [508, 255, 774, 343], "bet_lose"]
+next_turn = ["task/frog/res/next_turn.bmp", [676, 516, 710, 537], "next_turn"]
+bet_win = ["task/frog/res/bet_win.bmp", [509, 269, 785, 334], "bet_win"]
+box = ["task/frog/res/box.bmp", [602, 394, 677, 450], "box"]
+bet_done = ["task/frog/res/bet_done.bmp", (71, 291, 1240, 466), "bet_done"]
