@@ -164,4 +164,4 @@ class Tp(Click, ImageRec):
 
     def set_parms(self, **kwargs):
         self.keep_57_flag = kwargs.get("tp_keep_level", True)
-        self.ui_delay = kwargs.get("ui_delay", 0.5)
+        self.ui_delay = float(kwargs.get("ui_delay", 0.5))

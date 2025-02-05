@@ -122,7 +122,7 @@ class SwitchUI:
     def try_back_step(self, *args, **kwargs):
         log.warning("try back")
         for k, v in BACK.items():
-            if res := self.imageRec.match_img(v, accuracy=0.9):
+            if res := self.imageRec.match_img(v, accuracy=0.8):
                 self.click.area_click(res)
                 sleep(1)
         pass
@@ -151,12 +151,12 @@ class SwitchUI:
         elif isinstance(step, tuple):
             self.click.area_click(step)
         elif isinstance(step, str):
-            res = self.imageRec.match_img_by_hist(ui_list[step], accuracy=0.8)
+            res = self.imageRec.match_img(ui_list[step], accuracy=0.8)
             if res:
                 self.click.area_click(res)
         elif isinstance(step, dict):
             for k, v in step.items():
-                if res := self.imageRec.match_img_by_hist(v, accuracy=0.75):
+                if res := self.imageRec.match_img(v, accuracy=0.75):
                     self.click.area_click(res)
         else:
             raise Exception(f"Invalid step type: {type(step)}")

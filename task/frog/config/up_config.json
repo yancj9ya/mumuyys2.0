@@ -1,0 +1,89 @@
+{
+    "last_bet": {
+        "time": "2025-02-04 23:55:30",
+        "red_up_list": [
+            "查查尔",
+            "梅布斯尼",
+            "面灵气喵",
+            "雯雯",
+            "不知名清流",
+            "徐清林",
+            "不包邮"
+        ],
+        "blue_up_list": [
+            "徐OK",
+            "七面相",
+            "天真·珈百璃",
+            "CC南浔"
+        ]
+    },
+    "up_list": {
+        "查查尔": {
+            "uid": "d9dc2a75497c4a91b2db1e909a36544d",
+            "win_times": 24,
+            "lose_times": 23
+        },
+        "梅布斯尼": {
+            "uid": "3d4726d99f2642a485729695b798cb8c",
+            "win_times": 24,
+            "lose_times": 22
+        },
+        "徐OK": {
+            "uid": "c3c989fae4074d04b478b8ba47ae4120",
+            "win_times": 27,
+            "lose_times": 20
+        },
+        "面灵气喵": {
+            "uid": "462382f1127b46c5add1185d88f0ea40",
+            "win_times": 23,
+            "lose_times": 24
+        },
+        "雯雯": {
+            "uid": "aaa923436aa440df9ac1ee3f47387b99",
+            "win_times": 27,
+            "lose_times": 20
+        },
+        "鸽海程璐": {
+            "uid": "1d2dcbbd7e3d481c8d0f27ba4ff0dc71",
+            "win_times": 24,
+            "lose_times": 20
+        },
+        "不知名清流": {
+            "uid": "8982241de1844638b4bb455139b8dcc0",
+            "win_times": 29,
+            "lose_times": 18
+        },
+        "七面相": {
+            "uid": "840742d60e4a43208605ae68ca8c3f64",
+            "win_times": 26,
+            "lose_times": 21
+        },
+        "天真·珈百璃": {
+            "uid": "30e383c884f844a18a7a76fe3c1e888f",
+            "win_times": 27,
+            "lose_times": 16
+        },
+        "徐清林": {
+            "uid": "21657a558bdd4ddfb6501298350336e7",
+            "win_times": 27,
+            "lose_times": 18
+        },
+        "晨时微凉": {
+            "uid": "72584a679e2f45b6859566b5523400d5",
+            "win_times": 27,
+            "lose_times": 17
+        },
+        "CC南浔": {
+            "uid": "74db771d92a54c28ae3e98d19aa565a3",
+            "win_times": 27,
+            "lose_times": 19
+        },
+        "不包邮": {
+            "uid": "0e4e0c5a1e494a1fa9a58ac55de689c1",
+            "win_times": 24,
+            "lose_times": 23
+        }
+    },
+    "update_rate_time": "2025-02-04 23:55:35",
+    "note": "win_times 和 lose_times 的值暂时设为 0，具体数值需根据实际数据进行更新。"
+}

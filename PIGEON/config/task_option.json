@@ -1,8 +1,8 @@
 {
     "道馆": {
         "task_id": "道馆",
-        "start_ui": "dg_chose_page",
-        "end_ui": "dg_chose_page",
+        "start_ui": "TEMPLE_CHOSE",
+        "end_ui": "COURTYARD_UF",
         "ui_delay": "0.5",
         "change_soul": "1,1",
         "dg_xs": "1:4.7",
@@ -12,50 +12,50 @@
     "契灵": {
         "task_id": "契灵",
         "times": "200",
-        "start_ui": "ql_page",
-        "end_ui": "ql_page",
+        "start_ui": "SOUL_PET",
+        "end_ui": "SOUL_PET",
         "ui_delay": "0.5",
         "change_soul": "4.1",
         "run_time": "00:01-23:59"
     },
     "寮突破": {
         "task_id": "寮突破",
-        "start_ui": "ltp_page",
-        "end_ui": "ltp_page",
+        "start_ui": "ENCHANTMENT_2",
+        "end_ui": "ENCHANTMENT_2",
         "ui_delay": "0.5",
         "change_soul": "1,2",
         "run_time": "21:00-6:00"
     },
     "结界突破": {
         "task_id": "结界突破",
-        "start_ui": "tp_main_ui",
-        "end_ui": "tp_main_ui",
+        "start_ui": "ENCHANTMENT_1",
+        "end_ui": "ENCHANTMENT_1",
         "ui_delay": 0.5,
         "change_soul": "1,2",
         "run_time": "00:00-23:59"
     },
     "地域鬼王": {
         "task_id": "地域鬼王",
-        "start_ui": "area_demon_ui",
-        "end_ui": "area_demon_ui",
+        "start_ui": "REGIONAL_DEMON_KING",
+        "end_ui": "REGIONAL_DEMON_KING",
         "ui_delay": "0.5",
         "change_soul": "3.3",
         "run_time": "06:00-23:59"
     },
     "结界寄养": {
         "task_id": "结界寄养",
-        "start_ui": "ward_page",
-        "end_ui": "ward_page",
+        "start_ui": "WARD",
+        "end_ui": "WARD",
         "ui_delay": "0.5",
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-02-01 04:10:39"
+        "next_time": "after 2025-02-05 17:59:38"
     },
     "逢魔之时": {
         "task_id": "逢魔之时",
-        "start_ui": "fm_page",
-        "end_ui": "fm_page",
+        "start_ui": "BOSS_DAILY",
+        "end_ui": "BOSS_DAILY",
         "ui_delay": "0.5",
         "change_soul": "3,1",
         "run_time": "17:00-23:59"
@@ -63,16 +63,16 @@
     "自动关机": {
         "task_id": "自动关机",
         "延迟时间": "0",
-        "run_time": "after 2025-01-17 00:00:00"
+        "run_time": "after 2025-02-03 06:01:00"
     },
     "对弈竞猜": {
         "task_id": "对弈竞猜",
-        "start_ui": "home_page_unfold",
-        "end_ui": "home_page_unfold",
+        "start_ui": "COURTYARD_UF",
+        "end_ui": "COURTYARD_UF",
         "ui_delay": "0.7",
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-01-31 23:49:59"
+        "next_time": "after 2025-02-04 23:55:20"
     }
 }

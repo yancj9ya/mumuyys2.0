@@ -184,9 +184,9 @@ class Log_to_file:
                     return
             case -1:
                 # 输出之前的重复消息
-                for msg in cls.repeat_message:
-                    if _msg := cls._fmt(msg, more_info, level):
-                        cls.write_to_file(_msg)
+                # for msg in cls.repeat_message:
+                #     if _msg := cls._fmt(msg, more_info, level):
+                #         cls.write_to_file(_msg)
                 # 输出当前消息
                 if msg := cls._fmt(message, more_info, level):
                     cls.write_to_file(msg)

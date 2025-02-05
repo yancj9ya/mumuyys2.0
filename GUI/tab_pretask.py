@@ -111,7 +111,8 @@ class AtomTask(ctk.CTkFrame):
             else:
                 self.toplevel_window.focus()
         elif self.setting_btn.cget("text") == "取消":
-            self.scheduler.task_ctrl.stop()
+            if self.scheduler.task_ctrl.state in ["RUNNING", "WAIT"]:
+                self.scheduler.task_ctrl.stop()
 
     @property
     def TabMaster(self):

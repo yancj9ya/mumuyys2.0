@@ -15,7 +15,7 @@ class Dg(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [dg_ready_ui, damo_ui, dg_fight_ui, dg_chose_ui]
+        self.uilist = [dg_ready_ui, damo_ui, sl_ui, dg_fight_ui, dg_chose_ui]
         self.main_ui_sleep = 0.5
         self.DG_TIME = None
         self.DG_SWITCH = True
@@ -227,6 +227,8 @@ class Dg(Click, ImageRec):
         match_result = self.match_ui(self.uilist)
         log.insert("2.1", f"Matched UI:{match_result}")
         match match_result:
+            case "sl_ui":
+                self.area_click(sl_ui[1])
             case "ready_ui":
                 self.dg_ready_ui()
             case "fight_ui":

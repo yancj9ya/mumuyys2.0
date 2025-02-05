@@ -17,7 +17,9 @@ from PIGEON.client import Client
 from GUI.tab_pretask import *
 from GUI.togglebuton import ToggleButton
 from GUI.tab_pretask import AtomTask
-from task.based.switchui.SwitchUI import SwitchUI
+
+# from task.based.switchui.SwitchUI import SwitchUI
+from page.page_switch import nav
 from task.based.soulchange.soulchange import SoulChange
 from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog
 from threading import Thread
@@ -144,12 +146,16 @@ class TaskManager:
                     task.set_state("ready")
                     self.wait_tasks.remove(task)
                     continue
+
             except Exception as e:
                 print(f"Error in {task.name} task: {e}")
                 continue
             finally:
-                sleep(0.5)
-                task.task_name.configure(fg_color="skyblue")
+                try:
+                    sleep(0.5)
+                    task.task_name.configure(fg_color="skyblue")
+                except:
+                    pass
 
     def classify(self, task: AtomTask):
         """
@@ -239,7 +245,7 @@ class TaskExecutor:
     def __init__(self):
         self.task_ctrl = MyEvent("task_ctrl")
         self.is_task_running = False
-        self.switch_ui = SwitchUI(running=self.task_ctrl)
+        self.switch_ui = nav  # SwitchUI(running=self.task_ctrl)
         self.soul_change = SoulChange(running=self.task_ctrl)
         pass
 
@@ -317,7 +323,6 @@ class TaskExecutor:
                 thread = Thread(target=self._sche_task_loop, kwargs={"task": task, "parms": task.parms})
                 thread.daemon = True
                 thread.start()
-                task.set_state("running")
 
         except Exception as e:
             log.error(f"执行任务时发生错误: {e}")
@@ -346,7 +351,7 @@ class TaskExecutor:
             self.soul_change.changeSoulTo(parms["change_soul"])
 
     def _task_need_switch_page(self, parms, page):
-        if parms.get(page):
+        if parms.get(page) and self.task_ctrl.is_set():
             self.switch_ui.switch_to(parms[page])
 
 
@@ -414,14 +419,17 @@ class Scheduler(TimeManager, TaskManager, TaskExecutor, ClientManager, GUIInterf
             self.is_ready_to_run()
             # 从就绪队列中取出任务，执行任务
             if self.task_ctrl.state == "STOP" and self.ready_tasks:
-                # 执行任务之前检查客户端是否启动
-                self._is_client_started()
+
                 if self.is_task_running:
+                    log.warning("已有任务正在执行")
                     continue
                 else:
                     # 取出任务并执行
                     current_task = self.ready_tasks.pop(0)
                     log.info(f"pop out {current_task.name} task.")
+                    current_task.set_state("running")
+                    # 执行任务之前检查客户端是否启动
+                    self._is_client_started()
                     self.execute(current_task)
 
             elif self.task_ctrl.state == "STOP" and not self.ready_tasks:  # 无任务运行，同时ready_tasks为空,此时关闭客户端
