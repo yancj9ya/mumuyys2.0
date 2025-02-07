@@ -2,42 +2,45 @@
 from collections import namedtuple
 from page.switcher import Page, JumpAction, PageNavigator
 
-BOARD = ["page/res/BOARD.bmp", (7, 345, 285, 461), "BOARD"]
-FENGMO = ["page/res/fengmo.bmp", (355, 148, 955, 596), "FENGMO"]
-SHADOW_GATE_TEXT = ["page/res/SHADOW_GATE_TEXT.bmp", (355, 148, 955, 596), "SHADOW_GATE"]
 
-step_ts = ["task/based/switchui/res/step_ts.bmp", [487, 169, 516, 196], "step_ts"]
-step_ts_1 = ["task/based/switchui/res/step_ts_1.bmp", [457, 182, 483, 206], "step_ts_1"]
-step_ts_2 = ["task/based/switchui/res/step_ts_2.bmp", [547, 147, 573, 173], "step_ts_2"]
-step_ts_3 = ["task/based/switchui/res/step_ts_3.bmp", [444, 236, 468, 283], "step_ts_3"]
+class IMG:
+    BOARD = ["page/res/BOARD.bmp", (7, 345, 285, 461), "BOARD"]
+    FENGMO = ["page/res/fengmo.bmp", (355, 148, 955, 596), "FENGMO"]
+    SHADOW_GATE_TEXT = ["page/res/SHADOW_GATE_TEXT.bmp", (355, 148, 955, 596), "SHADOW_GATE"]
 
-step_back_street = ["task/based/switchui/res/step_back_street.bmp", [575, 349, 599, 398], "step_back_street"]
-step_back_street_1 = ["task/based/switchui/res/step_back_street_1.bmp", [688, 322, 718, 370], "step_back_street_1"]
-step_back_street_2 = ["task/based/switchui/res/step_back_street_2.bmp", [717, 320, 743, 373], "step_back_street_2"]
-step_back_street_3 = ["task/based/switchui/res/step_back_street_3.bmp", [836, 238, 866, 280], "step_back_street_3"]
+    # 通过庭中的跳转,暂时使用不到
+    # step_BACK_street = ["tool/switchui/res/step_BACK_street.bmp", [575, 349, 599, 398], "step_BACK_street"]
+    # step_BACK_street_1 = ["tool/switchui/res/step_BACK_street_1.bmp", [688, 322, 718, 370], "step_BACK_street_1"]
+    # step_BACK_street_2 = ["tool/switchui/res/step_BACK_street_2.bmp", [717, 320, 743, 373], "step_BACK_street_2"]
+    # step_BACK_street_3 = ["tool/switchui/res/step_BACK_street_3.bmp", [836, 238, 866, 280], "step_BACK_street_3"]
+    # # 庭院到町中
+    # HOME_PAGEUNFOLD_TO_BACKSTREET = {
+    #     "HOME_PAGEUNFOLD_TO_BACKSTREET1": step_BACK_street,
+    #     "HOME_PAGEUNFOLD_TO_BACKSTREET2": step_BACK_street_1,
+    #     "HOME_PAGEUNFOLD_TO_BACKSTREET3": step_BACK_street_2,
+    #     "HOME_PAGEUNFOLD_TO_BACKSTREET4": step_BACK_street_3,
+    # }
 
-# 庭院到探索
-HOME_PAGEUNFOLD_TO_TS = {
-    "HOME_PAGEUNFOLD_TO_TS1": step_ts,
-    "HOME_PAGEUNFOLD_TO_TS2": step_ts_1,
-    "HOME_PAGEUNFOLD_TO_TS3": step_ts_2,
-    "HOME_PAGEUNFOLD_TO_TS4": step_ts_3,
-}
+    # 庭院到探索
+    step_ts = ["tool/switchui/res/step_ts.bmp", [487, 169, 516, 196], "step_ts"]
+    step_ts_1 = ["tool/switchui/res/step_ts_1.bmp", [457, 182, 483, 206], "step_ts_1"]
+    step_ts_2 = ["tool/switchui/res/step_ts_2.bmp", [547, 147, 573, 173], "step_ts_2"]
+    step_ts_3 = ["tool/switchui/res/step_ts_3.bmp", [444, 236, 468, 283], "step_ts_3"]
 
-# 庭院到町中
-HOME_PAGEUNFOLD_TO_BACKSTREET = {
-    "HOME_PAGEUNFOLD_TO_BACKSTREET1": step_back_street,
-    "HOME_PAGEUNFOLD_TO_BACKSTREET2": step_back_street_1,
-    "HOME_PAGEUNFOLD_TO_BACKSTREET3": step_back_street_2,
-    "HOME_PAGEUNFOLD_TO_BACKSTREET4": step_back_street_3,
-}
+    HOME_PAGEUNFOLD_TO_TS = {
+        "HOME_PAGEUNFOLD_TO_TS1": step_ts,
+        "HOME_PAGEUNFOLD_TO_TS2": step_ts_1,
+        "HOME_PAGEUNFOLD_TO_TS3": step_ts_2,
+        "HOME_PAGEUNFOLD_TO_TS4": step_ts_3,
+    }
 
-step_back = ["task/based/switchui/res/step_back.bmp", (11, 12, 183, 209), "step_back"]
-step_back_2 = ["task/based/switchui/res/step_back_2.bmp", (11, 12, 183, 209), "step_back_2"]
-step_back_3 = ["task/based/switchui/res/step_back_3.bmp", (11, 12, 183, 209), "step_back_3"]
+    # 返回的识图样式
+    BACK = ["tool/switchui/res/step_BACK.bmp", (11, 12, 183, 209), "step_BACK"]
+    BACK_2 = ["tool/switchui/res/step_BACK_2.bmp", (11, 12, 183, 209), "step_BACK_2"]
+    BACK_3 = ["tool/switchui/res/step_BACK_3.bmp", (11, 12, 183, 209), "step_BACK_3"]
 
-# 两种返回的识图样式
-BACK = {"BACK1": step_back, "BACK2": step_back_2, "BACK3": step_back_3}
+    BACK = {"BACK1": BACK, "BACK2": BACK_2, "BACK3": BACK_3}
+
 
 # ========== 初始化配置 ========== #
 # 创建页面导航实例
@@ -71,21 +74,21 @@ SERVER.add_action("选择服务器-庭院", JumpAction.CLICK_TYPE, (578, 587, 69
 # 阴界返回
 SHADOW_GATE.add_action("阴界-庭院", JumpAction.CLICK_TYPE, (69, 44, 102, 82), COURTYARD_UF)
 # 逢魔返回
-BOSS_DAILY.add_action("逢魔-庭院", JumpAction.IMAGE_TYPE, BACK, COURTYARD_UF)
+BOSS_DAILY.add_action("逢魔-庭院", JumpAction.IMAGE_TYPE, IMG.BACK, COURTYARD_UF)
 # 契灵返回
-SOUL_PET.add_action("契灵-探索", JumpAction.IMAGE_TYPE, BACK, EXPLORE)
+SOUL_PET.add_action("契灵-探索", JumpAction.IMAGE_TYPE, IMG.BACK, EXPLORE)
 # 式神录返回
-SHIKI_RECORD.add_action("式神录-庭院", JumpAction.IMAGE_TYPE, BACK, COURTYARD_UF)
+SHIKI_RECORD.add_action("式神录-庭院", JumpAction.IMAGE_TYPE, IMG.BACK, COURTYARD_UF)
 # 道馆跳转
-TEMPLE_CHOSE.add_action("道馆-神社", JumpAction.IMAGE_TYPE, BACK, SHRINE)
+TEMPLE_CHOSE.add_action("道馆-神社", JumpAction.IMAGE_TYPE, IMG.BACK, SHRINE)
 # 寄养跳转
 WARD.add_action("寄养-阴阳寮", JumpAction.CLICK_TYPE, (27, 27, 66, 65), YY_SHACK)
 # 地鬼跳转
 REGIONAL_DEMON_KING.add_action("地鬼-探索", JumpAction.CLICK_TYPE, (58, 40, 86, 79), EXPLORE)
 
 # 地藏日常跳转
-BOARD_DAILY.add_action("地藏像日常-逢魔", JumpAction.IMAGE_TYPE, FENGMO, BOSS_DAILY)
-BOARD_DAILY.add_action("地藏像日常-阴界", JumpAction.IMAGE_TYPE, SHADOW_GATE_TEXT, SHADOW_GATE)
+BOARD_DAILY.add_action("地藏像日常-逢魔", JumpAction.IMAGE_TYPE, IMG.FENGMO, BOSS_DAILY)
+BOARD_DAILY.add_action("地藏像日常-阴界", JumpAction.IMAGE_TYPE, IMG.SHADOW_GATE_TEXT, SHADOW_GATE)
 
 BOARD_DAILY.add_action("地藏日常-活动", JumpAction.CLICK_TYPE, (1109, 320, 1133, 407), BOARD_ACTIVITY)
 BOARD_DAILY.add_action("地藏像-庭院", JumpAction.CLICK_TYPE, (1135, 80, 1164, 109), COURTYARD_UF)
@@ -105,13 +108,13 @@ YY_SHACK.add_action("阴阳寮-神社", JumpAction.CLICK_TYPE, (883, 634, 925, 6
 YY_SHACK.add_action("阴阳寮-寄养", JumpAction.CLICK_TYPE, (1083, 638, 1112, 679), WARD)
 
 # 庭院展开跳转
-COURTYARD_UF.add_action("庭院展开-地藏像", JumpAction.IMAGE_TYPE, BOARD, BOARD_ACTIVITY)
-COURTYARD_UF.add_action("庭院展开-探索", JumpAction.IMAGE_TYPE, HOME_PAGEUNFOLD_TO_TS, EXPLORE)
+COURTYARD_UF.add_action("庭院展开-地藏像", JumpAction.IMAGE_TYPE, IMG.BOARD, BOARD_ACTIVITY)
+COURTYARD_UF.add_action("庭院展开-探索", JumpAction.IMAGE_TYPE, IMG.HOME_PAGEUNFOLD_TO_TS, EXPLORE)
 COURTYARD_UF.add_action("庭院展开-式神录", JumpAction.CLICK_TYPE, (1129, 628, 1162, 659), SHIKI_RECORD)
 COURTYARD_UF.add_action("庭院展开-阴阳寮", JumpAction.CLICK_TYPE, (567, 620, 595, 656), YY_SHACK)
 
 # 庭院收缩跳转
-COURTYARD_FOLD.add_action("庭院展开-探索", JumpAction.IMAGE_TYPE, HOME_PAGEUNFOLD_TO_TS, EXPLORE)
+COURTYARD_FOLD.add_action("庭院展开-探索", JumpAction.IMAGE_TYPE, IMG.HOME_PAGEUNFOLD_TO_TS, EXPLORE)
 COURTYARD_FOLD.add_action("庭院收缩-庭院展开", JumpAction.CLICK_TYPE, (1199, 631, 1240, 686), COURTYARD_UF)
 
 # 探索跳转
