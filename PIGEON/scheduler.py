@@ -18,10 +18,10 @@ from GUI.tab_pretask import *
 from GUI.togglebuton import ToggleButton
 from GUI.tab_pretask import AtomTask
 
-# from task.based.switchui.SwitchUI import SwitchUI
+# from tool.switchui.SwitchUI import SwitchUI
 from page.page_switch import nav
-from task.based.soulchange.soulchange import SoulChange
-from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog
+from tool.soulchange.soulchange import SoulChange
+from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog, ShadowGate
 from threading import Thread
 from datetime import datetime, timedelta
 from time import sleep
@@ -238,6 +238,7 @@ class TaskExecutor:
         "御魂": Yh,
         "道馆": Dg,
         "六道之门": SixGate,
+        "阴界之门": ShadowGate,
         "自动关机": AutoPowerOff,
         "对弈竞猜": Frog,
     }

@@ -1,11 +1,11 @@
-from task.based.Mytool.Click import Click
-from task.based.Mytool.imageRec import ImageRec
-from task.based.Mytool.Ocr import Ocr
-from task.based.base.res.base_img import *
+from tool.Mytool.Click import Click
+from tool.Mytool.imageRec import ImageRec
+from tool.Mytool.Ocr import Ocr
+from tool.based.base.res.base_img import *
 from task.ltp.res.img_info import *
 from time import sleep
 from PIGEON.log import log
-from task.based.Mytool.Counter import Counter
+from tool.Mytool.Counter import Counter
 from random import choices
 from time import time
 from win11toast import toast
@@ -58,7 +58,7 @@ class Ltp(Click, ImageRec):
 
     def run(self):
         sleep(self.ui_delay)
-        match_result = self.match_ui(self.uilist, accuracy=0.85)
+        match_result = self.match_ui(self.uilist, accuracy=0.8)
 
         log.insert("2.0", f"Matched UI:{match_result}")
         match match_result:

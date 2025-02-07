@@ -3,7 +3,8 @@ from collections import namedtuple
 from page.switcher import Page, JumpAction, PageNavigator
 
 BOARD = ["page/res/BOARD.bmp", (7, 345, 285, 461), "BOARD"]
-fengmo = ["page/res/fengmo.bmp", [365, 169, 434, 219], "fengmo"]
+FENGMO = ["page/res/fengmo.bmp", (355, 148, 955, 596), "FENGMO"]
+SHADOW_GATE_TEXT = ["page/res/SHADOW_GATE_TEXT.bmp", (355, 148, 955, 596), "SHADOW_GATE"]
 
 step_ts = ["task/based/switchui/res/step_ts.bmp", [487, 169, 516, 196], "step_ts"]
 step_ts_1 = ["task/based/switchui/res/step_ts_1.bmp", [457, 182, 483, 206], "step_ts_1"]
@@ -40,7 +41,7 @@ BACK = {"BACK1": step_back, "BACK2": step_back_2, "BACK3": step_back_3}
 
 # ========== 初始化配置 ========== #
 # 创建页面导航实例
-nav = PageNavigator(timeout=15, retry=3)
+nav = PageNavigator(timeout=30, retry=3)
 
 # 定义页面
 EXPLORE = Page("EXPLORE", ["page/res/EXPLORE.bmp", [1136, 123, 1176, 165], "EXPLORE"])
@@ -60,9 +61,15 @@ SOUL_PET = Page("SOUL_PET", ["page/res/SOUL_PET.bmp", [108, 22, 172, 63], "SOUL_
 BOARD_ACTIVITY = Page("BOARD_ACTIVITY", ["page/res/BOARD_ACTIVITY.bmp", [604, 66, 673, 104], "BOARD_ACTIVITY"])
 BOARD_DAILY = Page("BOARD_DAILY", ["page/res/BOARD_DAILY.bmp", [605, 65, 671, 103], "BOARD_DAILY"])
 BOSS_DAILY = Page("BOSS_DAILY", ["page/res/BOSS_DAILY.bmp", [1114, 691, 1158, 714], "BOSS_DAILY"])
+SHADOW_GATE = Page("SHADOW_GATE", ["page/res/SHADOW_GATE.bmp", [1087, 612, 1139, 669], "SHADOW_GATE"])
+SERVER = Page("SERVER", ["page/res/SERVER.bmp", (13, 371, 374, 684), "SERVER"])
 
 # 定义跳转逻辑
+# 选择服务器-庭院
+SERVER.add_action("选择服务器-庭院", JumpAction.CLICK_TYPE, (578, 587, 699, 609), COURTYARD_FOLD)
 
+# 阴界返回
+SHADOW_GATE.add_action("阴界-庭院", JumpAction.CLICK_TYPE, (69, 44, 102, 82), COURTYARD_UF)
 # 逢魔返回
 BOSS_DAILY.add_action("逢魔-庭院", JumpAction.IMAGE_TYPE, BACK, COURTYARD_UF)
 # 契灵返回
@@ -77,7 +84,9 @@ WARD.add_action("寄养-阴阳寮", JumpAction.CLICK_TYPE, (27, 27, 66, 65), YY_
 REGIONAL_DEMON_KING.add_action("地鬼-探索", JumpAction.CLICK_TYPE, (58, 40, 86, 79), EXPLORE)
 
 # 地藏日常跳转
-BOARD_DAILY.add_action("地藏像日常-逢魔", JumpAction.IMAGE_TYPE, fengmo, BOSS_DAILY)
+BOARD_DAILY.add_action("地藏像日常-逢魔", JumpAction.IMAGE_TYPE, FENGMO, BOSS_DAILY)
+BOARD_DAILY.add_action("地藏像日常-阴界", JumpAction.IMAGE_TYPE, SHADOW_GATE_TEXT, SHADOW_GATE)
+
 BOARD_DAILY.add_action("地藏日常-活动", JumpAction.CLICK_TYPE, (1109, 320, 1133, 407), BOARD_ACTIVITY)
 BOARD_DAILY.add_action("地藏像-庭院", JumpAction.CLICK_TYPE, (1135, 80, 1164, 109), COURTYARD_UF)
 
@@ -146,3 +155,5 @@ nav.register_page(SOUL_PET)
 nav.register_page(BOARD_ACTIVITY)
 nav.register_page(BOARD_DAILY)
 nav.register_page(BOSS_DAILY)
+nav.register_page(SHADOW_GATE)
+nav.register_page(SERVER)

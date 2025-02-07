@@ -1,5 +1,5 @@
-from task.based.Mytool.Click import Click
-from task.based.Mytool.imageRec import ImageRec
+from tool.Mytool.Click import Click
+from tool.Mytool.imageRec import ImageRec
 from task.frog.spider_info import DynamicCollector
 from PIGEON.reqai import ReqAI
 import asyncio, json

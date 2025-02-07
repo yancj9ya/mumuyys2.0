@@ -1,9 +1,9 @@
-from task.based.Mytool.windows import Windows
-from task.based.Mytool.Somenewidea import newidea
-from task.based.Mytool.bezier import BezierTrajectory
+from tool.Mytool.windows import Windows
+from tool.Mytool.Somenewidea import newidea
+from tool.Mytool.bezier import BezierTrajectory
 
-# from task.based.Mytool.random_coord import BezierTrajectory
-from task.based.Mytool.random_coord import RandomCoord
+# from tool.Mytool.random_coord import BezierTrajectory
+from tool.Mytool.random_coord import RandomCoord
 from time import sleep
 from random import randint
 from ctypes import windll

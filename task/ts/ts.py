@@ -1,18 +1,20 @@
-from task.based.Mytool.Click import Click
-from task.based.Mytool.imageRec import ImageRec
-from task.based.Mytool.Ocr import Ocr
-from task.based.Mytool.Counter import Counter
+from tool.Mytool.Click import Click
+from tool.Mytool.imageRec import ImageRec
+from tool.Mytool.Ocr import Ocr
+from tool.Mytool.Counter import Counter
 from task.ts.res.img_info import *
 from time import sleep, time, strftime, localtime
 from PIGEON.log import log
 
-from page.page_switch import nav
+
 from task.tp.tp import Tp
 from random import choices
 
 
 class Ts(Click, ImageRec):
     def __init__(self, **values):
+        from page.page_switch import nav
+
         Click.__init__(self)
         ImageRec.__init__(self)
         self.monster_counter = Counter(name="monster")

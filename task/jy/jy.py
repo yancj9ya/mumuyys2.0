@@ -1,11 +1,11 @@
-from task.based.Mytool.Click import Click
-from task.based.Mytool.imageRec import ImageRec
-from task.based.Mytool.Ocr import Ocr
+from tool.Mytool.Click import Click
+from tool.Mytool.imageRec import ImageRec
+from tool.Mytool.Ocr import Ocr
 from task.jy.res.img_info_auto_create import *
 from time import sleep
 from PIGEON.log import log
 from PIGEON.retry import retry
-from task.based.Mytool.Counter import Counter
+from tool.Mytool.Counter import Counter
 from random import choices
 from time import time
 import re

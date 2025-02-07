@@ -1,5 +1,5 @@
-from task.based.Mytool.Click import Click
-from task.based.Mytool.imageRec import ImageRec
+from tool.Mytool.Click import Click
+from tool.Mytool.imageRec import ImageRec
 
 from task.xz.res.others_img_info import *
 from time import sleep, time, strftime, localtime

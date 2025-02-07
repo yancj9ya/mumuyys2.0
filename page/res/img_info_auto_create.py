@@ -21,4 +21,8 @@ BOARD_ACTIVITY = Page("BOARD_ACTIVITY", ["page/res/BOARD_ACTIVITY.bmp", [604, 66
 BOARD_DAILY = Page("BOARD_DAILY", ["page/res/BOARD_DAILY.bmp", [605, 65, 671, 103], "BOARD_DAILY"])
 
 BOSS_DAILY = Page("BOSS_DAILY", ["page/res/BOSS_DAILY.bmp", [1114, 691, 1158, 714], "BOSS_DAILY"])
-fengmo=Page('fengmo',['page/res/fengmo.bmp', [365, 169, 434, 219], 'fengmo'])
+fengmo = Page("fengmo", ["page/res/fengmo.bmp", [365, 169, 434, 219], "fengmo"])
+SERVER = Page("SERVER", ["page/res/SERVER.bmp", (13, 371, 374, 684), "SERVER"])
+SHADOW_GATE=Page('SHADOW_GATE',['page/res/SHADOW_GATE.bmp', [367, 523, 432, 562], 'SHADOW_GATE'])
+SHADOW_GATE=Page('SHADOW_GATE',['page/res/SHADOW_GATE.bmp', [1087, 612, 1139, 669], 'SHADOW_GATE'])
+SHADOW_GATE_TEXT=Page('SHADOW_GATE_TEXT',['page/res/SHADOW_GATE_TEXT.bmp', [366, 526, 432, 563], 'SHADOW_GATE_TEXT'])

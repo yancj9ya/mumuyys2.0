@@ -1,7 +1,7 @@
 from collections import deque
 from PIGEON.log import log
-from task.based.Mytool.Click import Click
-from task.based.Mytool.imageRec import ImageRec
+from tool.Mytool.Click import Click
+from tool.Mytool.imageRec import ImageRec
 import time
 
 
@@ -35,7 +35,7 @@ class Page:
 
 
 class PageNavigator:
-    def __init__(self, timeout=10, retry=5, cooldown=1):
+    def __init__(self, timeout=30, retry=5, cooldown=1):
         self.cooldown = cooldown
         self.pages = {}
         self._current_page = None
@@ -60,7 +60,7 @@ class PageNavigator:
                 if isinstance(action.data, list):
                     if coords := self.IMG_REC.match_img(action.data):
                         # 针对一些特例处理
-                        if action.data[2] == "fengmo":
+                        if action.data[2] in ["FENGMO", "SHADOW_GATE"]:
                             coords = (coords[0] + 188, coords[1] + 12, coords[2] + 158, coords[3] + 7)
                         return tuple(coords)
                 elif isinstance(action.data, dict):
@@ -70,6 +70,41 @@ class PageNavigator:
             except Exception as e:
                 print(f"图像识别失败：{e}")
                 self.CLICK.win.del_cache()
+
+    def smart_goto(self, target_page):
+        """智能路径导航"""
+        current_retry = 0
+        while current_retry < self.retry:
+            try:
+                if path := self.find_path(target_page):
+                    while self.current_page.name != target_page:
+                        current_index = path.index(self.current_page)
+                        next_page = path[current_index + 1]
+                        transitions = self.graph[self.current_page.name].get(next_page, set())
+                        print(f"current:{self.current_page.name}->{next_page.name} by trans:{transitions}")
+                        for action_id in transitions:
+                            action = self.current_page.actions[action_id]
+                            try:
+                                if self._execute_jump(action):
+                                    print(f"成功跳转到 {next_page.name}")
+                                    success = True
+                                    break
+                            except Exception as e:
+                                print(f"跳转失败: {str(e)}")
+
+                        if not success:
+                            raise RuntimeError(f"无法到达 {next_page.name}")
+                        # 更新当前页面
+                        self.refresh_current_page()
+                    else:
+                        return True
+                else:
+                    raise ValueError("不存在有效路径")
+            except Exception as e:
+                log.info(f"第 {current_retry+1} 次尝试失败: {str(e)}")
+                current_retry += 1
+                time.sleep(self.cooldown * current_retry)  # 指数退避
+                continue
 
     def _execute_jump(self, action: JumpAction):
         current_tries = 0
@@ -89,18 +124,22 @@ class PageNavigator:
 
                 start = time.time()
                 while time.time() - start < self.timeout:
-                    time.sleep(0.2)
                     """检测页面是否跳转成功"""
-                    if (current := self.detect_page()) == self.current_page.name:  # 仍然处于原来的页面，未跳转成功
-                        raise f"仍处于原页面{current}，尝试重新执行跳转"  # 抛出异常触发重试机制
-                    elif not self.detect_page():  # 页面识别失败，返回None,可能位于页面跳转之中，等待0.2s之后再次检查页面
-                        time.sleep(0.2)
+                    time.sleep(0.5)
+                    current = self.detect_page()
+                    if current == None:  # 页面识别失败，返回None,可能位于页面跳转之中，等待0.2s之后再次检查页面
+                        time.sleep(1)
                         continue
-                    else:
+                    elif current == self.current_page.name:  # 仍然处于原来的页面，未跳转成功
+                        raise LookupError(f"仍处于原页面{current}，尝试重新执行跳转")  # 抛出异常触发重试机制
+                    elif current == action.target.name:  # 页面跳转成功
                         """页面跳转成功"""
                         log.info(f"跳转成功，当前页面：{current}")
                         return True
+                    elif current in self.graph.keys():  # 跳到其他已知页面需要重新规划路径
+                        return False
                 else:  ### 页面跳转超时，返回False
+                    print("页面跳转超时")
                     return False
             except Exception as e:
                 print(e)
@@ -154,13 +193,14 @@ class PageNavigator:
 
     def find_path(self, target_name):
         """使用BFS算法寻找最短路径"""
+
+        # 实时扫描当前页面状态
+        self.refresh_current_page()
+
         target = self.get_page_by_name(target_name)
         start_name = self.current_page
         visited = {start_name: None}
         queue = deque([start_name])
-
-        # 实时扫描当前页面状态
-        self.refresh_current_page()
 
         # 打印调试信息
         log.info("\n[路径搜索] 寻找路径: {} -> {}".format(start_name.name, target.name))
@@ -205,40 +245,6 @@ class PageNavigator:
 
     def switch_to(self, target):
         return self.smart_goto(target)
-
-    def smart_goto(self, target_page):
-        """智能路径导航"""
-        current_retry = 0
-        while current_retry < self.retry:
-            try:
-                if path := self.find_path(target_page):
-                    while self.current_page.name != target_page:
-                        current_index = path.index(self.current_page)
-                        next_page = path[current_index + 1]
-                        transitions = self.graph[self.current_page.name].get(next_page, set())
-                        print(f"current:{self.current_page.name}->{next_page.name} by trans:{transitions}")
-                        for action_id in transitions:
-                            action = self.current_page.actions[action_id]
-                            try:
-                                if self._execute_jump(action):
-                                    success = True
-                                    break
-                            except Exception as e:
-                                print(f"跳转失败: {str(e)}")
-
-                        if not success:
-                            raise RuntimeError(f"无法到达 {next_page.name}")
-                        # 更新当前页面
-                        self.refresh_current_page()
-                    else:
-                        return True
-                else:
-                    raise ValueError("不存在有效路径")
-            except Exception as e:
-                print(f"第 {current_retry+1} 次尝试失败: {str(e)}")
-                current_retry += 1
-                time.sleep(self.cooldown * current_retry)  # 指数退避
-                continue
 
 
 # 使用示例

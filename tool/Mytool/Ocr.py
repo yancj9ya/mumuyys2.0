@@ -1,4 +1,4 @@
-from task.based.Mytool.windows import Windows
+from tool.Mytool.windows import Windows
 from ppocronnx.predict_system import TextSystem
 import cv2, re
 from PIGEON.log import log

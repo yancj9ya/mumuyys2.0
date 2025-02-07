@@ -1,8 +1,8 @@
 from page.page_switch import nav
-from task.based.Mytool.Click import Click
-from task.based.Mytool.imageRec import ImageRec
+from tool.Mytool.Click import Click
+from tool.Mytool.imageRec import ImageRec
 from PIGEON.log import log
-from task.based.soulchange.res.img_info_auto_create import *
+from tool.soulchange.res.img_info_auto_create import *
 from time import sleep
 
 

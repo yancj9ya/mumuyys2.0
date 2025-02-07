@@ -1,4 +1,4 @@
-from task.based.Mytool.windows import Windows
+from tool.Mytool.windows import Windows
 from typing import List, Tuple, Optional, Dict, Union
 from PIGEON.log import log
 from random import randint

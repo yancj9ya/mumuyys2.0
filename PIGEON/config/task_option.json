@@ -13,7 +13,7 @@
         "task_id": "契灵",
         "times": "200",
         "start_ui": "SOUL_PET",
-        "end_ui": "SOUL_PET",
+        "end_ui": "COURTYARD_UF",
         "ui_delay": "0.5",
         "change_soul": "4.1",
         "run_time": "00:01-23:59"
@@ -37,7 +37,7 @@
     "地域鬼王": {
         "task_id": "地域鬼王",
         "start_ui": "REGIONAL_DEMON_KING",
-        "end_ui": "REGIONAL_DEMON_KING",
+        "end_ui": "COURTYARD_UF",
         "ui_delay": "0.5",
         "change_soul": "3.3",
         "run_time": "06:00-23:59"
@@ -45,20 +45,28 @@
     "结界寄养": {
         "task_id": "结界寄养",
         "start_ui": "WARD",
-        "end_ui": "WARD",
+        "end_ui": "COURTYARD_UF",
         "ui_delay": "0.5",
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-02-05 17:59:38"
+        "next_time": "after 2025-02-07 22:44:55"
     },
     "逢魔之时": {
         "task_id": "逢魔之时",
         "start_ui": "BOSS_DAILY",
-        "end_ui": "BOSS_DAILY",
+        "end_ui": "COURTYARD_UF",
         "ui_delay": "0.5",
         "change_soul": "3,1",
         "run_time": "17:00-23:59"
+    },
+    "阴界之门": {
+        "task_id": "阴界之门",
+        "start_ui": "SHADOW_GATE",
+        "end_ui": "SHADOW_GATE",
+        "ui_delay": "0.5",
+        "change_soul": "2,2",
+        "run_time": "19:00-20:59"
     },
     "自动关机": {
         "task_id": "自动关机",

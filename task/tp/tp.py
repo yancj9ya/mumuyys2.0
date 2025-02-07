@@ -1,8 +1,8 @@
-from task.based.Mytool.Click import Click
-from task.based.Mytool.imageRec import ImageRec
-from task.based.Mytool.Ocr import Ocr
-from task.based.Mytool.Counter import Counter
-from task.based.base.res.base_img import *
+from tool.Mytool.Click import Click
+from tool.Mytool.imageRec import ImageRec
+from tool.Mytool.Ocr import Ocr
+from tool.Mytool.Counter import Counter
+from tool.based.base.res.base_img import *
 from task.tp.res.img_info import *
 from time import sleep, time, strftime, localtime
 from PIGEON.log import Log

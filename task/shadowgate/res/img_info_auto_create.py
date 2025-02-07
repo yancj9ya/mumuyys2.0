@@ -7,3 +7,4 @@ challenge_confirm_btn = ["task/shadowgate/res/challenge_confirm_btn.bmp", [695, 
 shadow_gate_room = ["task/shadowgate/res/shadow_gate_room.bmp", [963, 641, 1060, 674], "shadow_gate_room"]
 room_challenge_btn = ["task/shadowgate/res/room_challenge_btn.bmp", [1189, 610, 1243, 665], "room_challenge_btn"]
 ready_btn = ["task/shadowgate/res/ready_btn.bmp", [1130, 555, 1226, 621], "ready_btn"]
+victory = ["task/shadowgate/res/victory.bmp", [427, 172, 484, 243], "victory"]
