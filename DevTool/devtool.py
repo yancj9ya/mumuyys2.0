@@ -92,7 +92,8 @@ class DevTool(ctk.CTk):
                 cropped_image = self.np_image[y1 - 4 : y2 - 4, x1 - 4 : x2 - 4]
                 cv2.imencode(".bmp", cropped_image)[1].tofile(path)
                 print("保存并格式化成功")
-                self.img_info = f"{img_name}=Page('{img_name}',['{path}', [{x1-4}, {y1-4}, {x2-4}, {y2-4}], '{img_name}'])"
+                ### page-format:::f"{img_name}=Page('{img_name}',['{path}', [{x1-4}, {y1-4}, {x2-4}, {y2-4}], '{img_name}'])"
+                self.img_info = f"{img_name}=['{path}', [{x1-4}, {y1-4}, {x2-4}, {y2-4}], '{img_name}']"
                 print(self.img_info)
                 if self.img_info:
                     if not os.path.exists(os.path.join(self.folder_path_entry.get(), "img_info_auto_create.py")):

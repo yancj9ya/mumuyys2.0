@@ -4,7 +4,7 @@ from page.switcher import Page, JumpAction, PageNavigator
 
 
 class IMG:
-    BOARD = ["page/res/BOARD.bmp", (7, 345, 285, 461), "BOARD"]
+    BOARD = ["page/res/BOARD.bmp", (12, 398, 521, 440), "BOARD"]  # (7, 345, 285, 461)
     FENGMO = ["page/res/fengmo.bmp", (355, 148, 955, 596), "FENGMO"]
     SHADOW_GATE_TEXT = ["page/res/SHADOW_GATE_TEXT.bmp", (355, 148, 955, 596), "SHADOW_GATE"]
 
@@ -25,7 +25,7 @@ class IMG:
     step_ts = ["tool/switchui/res/step_ts.bmp", [487, 169, 516, 196], "step_ts"]
     step_ts_1 = ["tool/switchui/res/step_ts_1.bmp", [457, 182, 483, 206], "step_ts_1"]
     step_ts_2 = ["tool/switchui/res/step_ts_2.bmp", [547, 147, 573, 173], "step_ts_2"]
-    step_ts_3 = ["tool/switchui/res/step_ts_3.bmp", [444, 236, 468, 283], "step_ts_3"]
+    step_ts_3 = ["tool/switchui/res/step_ts_3.bmp", (164, 258, 798, 303), "step_ts_3"]  # (164, 258,798, 303)
 
     HOME_PAGEUNFOLD_TO_TS = {
         "HOME_PAGEUNFOLD_TO_TS1": step_ts,
