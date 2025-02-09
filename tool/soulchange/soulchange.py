@@ -118,8 +118,10 @@ class SoulChange:
                 self.confirm_plan(plan)
             else:
                 log.info(f"御魂更换成功: 组{group} ,方案{plan}")
-                if self.imageRec.match_img(BACK_BTN):
-                    self.click.area_click(BACK_BTN[1])
+                # if self.imageRec.match_img(BACK_BTN):
+                #     self.click.area_click(BACK_BTN[1])
+                self.click.xclick()
+                sleep(1)
                 return True
         except Exception as e:
             log.error(f"御魂更换失败: {e}")

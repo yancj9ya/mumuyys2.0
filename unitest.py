@@ -2,6 +2,8 @@ from page.page_switch import nav
 from tool.soulchange.soulchange import SoulChange
 from tool.soulchange.res.img_info_auto_create import *
 from tool.Mytool.imageRec import ImageRec
+from tool.Mytool.windows import Windows
+import time
 
 if __name__ == "__main__":
     # IMAGE_REC = ImageRec()
@@ -17,5 +19,11 @@ if __name__ == "__main__":
     #     # print(CHECKED[2], res)
     #     print(f"{res}-{bool(res)}:{GROUP_LIST.index(group)}")
 
-    souL_C = SoulChange()
-    souL_C.confirm_plan("2")
+    wn = Windows()
+    print(wn.par_handle)
+    print(wn.handle)
+    # wn.mouseactivateX()
+    # wn.setcursorX()
+    wn.x_button_down(735, 547)
+    time.sleep(0.1)
+    wn.x_button_up(735, 547)

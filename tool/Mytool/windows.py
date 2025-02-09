@@ -231,15 +231,27 @@ class Windows:
     def get_window_rect(self) -> list:
         return win32gui.GetWindowRect(self.handle)
 
+    def mouseactivateX(self):
+        msg = WM_MOUSEACTIVATE
+        wparam = self.par_handle
+        Lparam = WM_XBUTTONDOWN << 16 | HTCLIENT
+        SendMessage(self.handle, msg, wparam, Lparam)
+
+    def setcursorX(self):
+        msg = WM_SERCURSOR
+        wparam = self.handle
+        Lparam = WM_XBUTTONDOWN << 16 | HTCLIENT
+        SendMessage(self.handle, msg, wparam, Lparam)
+
     def x_button_down(self, x, y):
         msg = WM_XBUTTONDOWN  # type: ignore
-        wparam = MK_XBUTTON1  # type: ignore
+        wparam = MK_XBUTTON1 | 0x00010000  # type: ignore
         Lparam = y << 16 | x
         PostMessage(self.handle, msg, wparam, Lparam)
 
     def x_button_up(self, x, y):
         msg = WM_XBUTTONUP  # type: ignore
-        wparam = MK_XBUTTON1  # type: ignore
+        wparam = MK_XBUTTON1 | 0x00010000  # type: ignore
         Lparam = y << 16 | x
         PostMessage(self.handle, msg, wparam, Lparam)
 

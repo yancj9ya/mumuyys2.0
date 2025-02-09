@@ -61,7 +61,7 @@ class Yh(Click, ImageRec):
             case "damo_ui":
                 self.random_probability_delay(0.03)  # 在100次里面随机3次范围在2-4的长时延迟
                 self.area_click([990, 462, 1125, 520])
-                self.yh_counter.increment()
+                self.yh_counter.increment(10)
                 log.insert("3.1", f"完成第{self.yh_counter.count}次挑战")
             case "yh_end_mark_ui":
                 if uniform(0, 1) <= 0.7:

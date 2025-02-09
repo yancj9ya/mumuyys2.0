@@ -44,7 +44,7 @@ class IMG:
 
 # ========== 初始化配置 ========== #
 # 创建页面导航实例
-nav = PageNavigator(timeout=30, retry=3)
+nav = PageNavigator(timeout=30, retry=5, cooldown=1)
 
 # 定义页面
 EXPLORE = Page("EXPLORE", ["page/res/EXPLORE.bmp", [1136, 123, 1176, 165], "EXPLORE"])
@@ -72,19 +72,19 @@ SERVER = Page("SERVER", ["page/res/SERVER.bmp", (13, 371, 374, 684), "SERVER"])
 SERVER.add_action("选择服务器-庭院", JumpAction.CLICK_TYPE, (578, 587, 699, 609), COURTYARD_FOLD)
 
 # 阴界返回
-SHADOW_GATE.add_action("阴界-庭院", JumpAction.CLICK_TYPE, (69, 44, 102, 82), COURTYARD_UF)
+SHADOW_GATE.add_action("阴界-庭院", JumpAction.XCLICK_TYPE, (69, 44, 102, 82), COURTYARD_UF)
 # 逢魔返回
 BOSS_DAILY.add_action("逢魔-庭院", JumpAction.IMAGE_TYPE, IMG.BACK, COURTYARD_UF)
 # 契灵返回
-SOUL_PET.add_action("契灵-探索", JumpAction.IMAGE_TYPE, IMG.BACK, EXPLORE)
+SOUL_PET.add_action("契灵-探索", JumpAction.XCLICK_TYPE, IMG.BACK, EXPLORE)
 # 式神录返回
-SHIKI_RECORD.add_action("式神录-庭院", JumpAction.IMAGE_TYPE, IMG.BACK, COURTYARD_UF)
+SHIKI_RECORD.add_action("式神录-庭院", JumpAction.XCLICK_TYPE, IMG.BACK, COURTYARD_UF)
 # 道馆跳转
-TEMPLE_CHOSE.add_action("道馆-神社", JumpAction.IMAGE_TYPE, IMG.BACK, SHRINE)
+TEMPLE_CHOSE.add_action("道馆-神社", JumpAction.XCLICK_TYPE, IMG.BACK, SHRINE)
 # 寄养跳转
-WARD.add_action("寄养-阴阳寮", JumpAction.CLICK_TYPE, (27, 27, 66, 65), YY_SHACK)
+WARD.add_action("寄养-阴阳寮", JumpAction.XCLICK_TYPE, (27, 27, 66, 65), YY_SHACK)
 # 地鬼跳转
-REGIONAL_DEMON_KING.add_action("地鬼-探索", JumpAction.CLICK_TYPE, (58, 40, 86, 79), EXPLORE)
+REGIONAL_DEMON_KING.add_action("地鬼-探索", JumpAction.XCLICK_TYPE, (58, 40, 86, 79), EXPLORE)
 
 # 地藏日常跳转
 BOARD_DAILY.add_action("地藏像日常-逢魔", JumpAction.IMAGE_TYPE, IMG.FENGMO, BOSS_DAILY)
@@ -100,7 +100,7 @@ BOARD_ACTIVITY.add_action("地藏像-日常", JumpAction.CLICK_TYPE, (1104, 170,
 
 # 神社跳转
 SHRINE.add_action("神社-道馆", JumpAction.CLICK_TYPE, (478, 212, 544, 262), TEMPLE_CHOSE)
-SHRINE.add_action("神社-阴阳寮", JumpAction.CLICK_TYPE, (33, 16, 69, 48), YY_SHACK)
+SHRINE.add_action("神社-阴阳寮", JumpAction.XCLICK_TYPE, (33, 16, 69, 48), YY_SHACK)
 
 # 阴阳寮跳转
 YY_SHACK.add_action("阴阳寮-庭院展开", JumpAction.CLICK_TYPE, (36, 22, 75, 63), COURTYARD_UF)
@@ -121,23 +121,23 @@ COURTYARD_FOLD.add_action("庭院收缩-庭院展开", JumpAction.CLICK_TYPE, (1
 EXPLORE.add_action("探索-困难挑战", JumpAction.CLICK_TYPE, (1084, 523, 1219, 569), HARD_28)
 EXPLORE.add_action("探索-地域鬼王", JumpAction.CLICK_TYPE, (654, 644, 688, 682), REGIONAL_DEMON_KING)
 EXPLORE.add_action("探索-契灵", JumpAction.CLICK_TYPE, (1047, 650, 1085, 683), SOUL_PET)
-EXPLORE.add_action("探索-庭院", JumpAction.CLICK_TYPE, (37, 41, 78, 81), COURTYARD_UF)
+EXPLORE.add_action("探索-庭院", JumpAction.XCLICK_TYPE, (37, 41, 78, 81), COURTYARD_UF)
 EXPLORE.add_action("探索-结界突破", JumpAction.CLICK_TYPE, (266, 648, 298, 678), ENCHANTMENT_1)
 
 # 困难挑战跳转
-HARD_28.add_action("困难挑战-探索", JumpAction.CLICK_TYPE, (1035, 132, 1072, 174), EXPLORE)
+HARD_28.add_action("困难挑战-探索", JumpAction.XCLICK_TYPE, (1035, 132, 1072, 174), EXPLORE)
 HARD_28.add_action("困难跳转-副本战斗", JumpAction.CLICK_TYPE, (915, 522, 982, 561), COMBAT_28)
 
 # 困28副本战斗跳转
 COMBAT_28.add_action("副本战斗-困难挑战", JumpAction.CLICK_TYPE, [(35, 44, 77, 86), (738, 391, 817, 423)], HARD_28)
 
 # 结界突破跳转
-ENCHANTMENT_1.add_action("结界突破-探索", JumpAction.CLICK_TYPE, (1192, 119, 1228, 154), EXPLORE)
+ENCHANTMENT_1.add_action("结界突破-探索", JumpAction.XCLICK_TYPE, (1192, 119, 1228, 154), EXPLORE)
 ENCHANTMENT_1.add_action("结界突破-寮突破", JumpAction.CLICK_TYPE, (1214, 374, 1247, 444), ENCHANTMENT_2)
 
 # 寮突破跳转
 ENCHANTMENT_2.add_action("寮突破-结界突破", JumpAction.CLICK_TYPE, (1216, 249, 1248, 324), ENCHANTMENT_1)
-ENCHANTMENT_2.add_action("寮突破-探索", JumpAction.CLICK_TYPE, (1192, 119, 1228, 154), EXPLORE)
+ENCHANTMENT_2.add_action("寮突破-探索", JumpAction.XCLICK_TYPE, (1192, 119, 1228, 154), EXPLORE)
 
 
 # 注册所有页面

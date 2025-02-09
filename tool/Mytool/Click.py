@@ -20,6 +20,12 @@ class Click:
     def __init__(self):
         self.win = Windows()
 
+    def xclick(self) -> None:
+        rand_x, rand_y = RandomCoord((10, 10, 1270, 710))
+        self.win.x_button_down(rand_x, rand_y)
+        sleep(0.1)
+        self.win.x_button_up(rand_x, rand_y)
+
     def click(self, x, y, press_time=0.2, animation_time=0.05) -> None:
         x, y = int(x), int(y)  # 缩放坐标
         # self.win.notifyparent(x, y)  # 通知父类

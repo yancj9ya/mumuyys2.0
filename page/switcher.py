@@ -10,6 +10,7 @@ class JumpAction:
 
     CLICK_TYPE = "coordinates"
     IMAGE_TYPE = "image_based"
+    XCLICK_TYPE = "xclick"
 
     def __init__(self, action_type, data, target_page):
         self.action_type = action_type
@@ -73,8 +74,8 @@ class PageNavigator:
 
     def smart_goto(self, target_page):
         """智能路径导航"""
-        current_retry = 0
-        while current_retry < self.retry:
+        current_retry = 1
+        while current_retry <= self.retry:
             try:
                 if path := self.find_path(target_page):
                     while self.current_page.name != target_page:
@@ -103,14 +104,25 @@ class PageNavigator:
             except Exception as e:
                 log.info(f"第 {current_retry+1} 次尝试失败: {str(e)}")
                 current_retry += 1
+                # if current_retry == 5:
+                # self._try_back()
                 time.sleep(self.cooldown * current_retry)  # 指数退避
                 continue
+
+    def _try_back(self):
+        """尝试回退到上一页面"""
+
+        pass
 
     def _execute_jump(self, action: JumpAction):
         current_tries = 0
         while current_tries < 3:
             try:
                 """执行单次跳转"""
+                if action.action_type == JumpAction.XCLICK_TYPE:
+                    self.CLICK.xclick()
+                    time.sleep(1)
+                    return True
                 coords = self._resolve_click(action)
                 if not coords:
                     return False
