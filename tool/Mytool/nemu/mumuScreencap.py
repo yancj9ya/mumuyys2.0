@@ -2,7 +2,6 @@ import ctypes
 import numpy as np
 import cv2
 from Mytool.nemu.mumuapi import MuMuApi
-from Mytool.Mylogger import logger
 
 MUMU_API_DLL_PATH = "\\shell\\sdk\\external_renderer_ipc.dll"
 
@@ -76,9 +75,7 @@ class MuMuScreenCap:
 
     def __buffer2bytes(self) -> np.ndarray:
         # 直接使用像素缓冲区并仅重塑一次
-        pixel_array = np.frombuffer(self.pixels, dtype=np.uint8).reshape(
-            (self.height.value, self.width.value, 4)
-        )
+        pixel_array = np.frombuffer(self.pixels, dtype=np.uint8).reshape((self.height.value, self.width.value, 4))
         flipped_rgb_pixel_array = pixel_array[::-1, :, [2, 1, 0]]
 
         # 采用Opencv方案编码
@@ -93,9 +90,9 @@ class MuMuScreenCap:
     def __del__(self):
         try:
             self.nemu.disconnect(self.handle)
-            logger.debug("mumu screencap released")
+            print("mumu screencap released")
         except Exception as e:
-            logger.error(f"释放资源时出错: {e}")
+            print(f"释放资源时出错: {e}")
 
 
 if __name__ == "__main__":
@@ -106,6 +103,6 @@ if __name__ == "__main__":
         cv2.imshow("mumu", img)
         cv2.waitKey(0)
     except Exception as e:
-        logger.error(f"出现错误: {e}")
+        print(f"出现错误: {e}")
     finally:
         cv2.destroyAllWindows()
