@@ -25,13 +25,15 @@ class IMG:
     step_ts = ["tool/switchui/res/step_ts.bmp", [487, 169, 516, 196], "step_ts"]
     step_ts_1 = ["tool/switchui/res/step_ts_1.bmp", [457, 182, 483, 206], "step_ts_1"]
     step_ts_2 = ["tool/switchui/res/step_ts_2.bmp", [547, 147, 573, 173], "step_ts_2"]
-    step_ts_3 = ["tool/switchui/res/step_ts_3.bmp", (164, 258, 798, 303), "step_ts_3"]  # (164, 258,798, 303)
+    step_ts_3 = ["tool/switchui/res/step_ts_3.bmp", (164, 258, 798, 303), "step_ts_3"]
+    STEP_TS_5 = ["page/res/STEP_TS_5.bmp", (416, 86, 744, 199), "STEP_TS_5"]  # (164, 258,798, 303)
 
     HOME_PAGEUNFOLD_TO_TS = {
         "HOME_PAGEUNFOLD_TO_TS1": step_ts,
         "HOME_PAGEUNFOLD_TO_TS2": step_ts_1,
         "HOME_PAGEUNFOLD_TO_TS3": step_ts_2,
         "HOME_PAGEUNFOLD_TO_TS4": step_ts_3,
+        "HOME_PAGEUNFOLD_TO_TS5": STEP_TS_5,
     }
 
     # 返回的识图样式
@@ -65,6 +67,8 @@ BOARD_ACTIVITY = Page("BOARD_ACTIVITY", ["page/res/BOARD_ACTIVITY.bmp", [604, 66
 BOARD_DAILY = Page("BOARD_DAILY", ["page/res/BOARD_DAILY.bmp", [605, 65, 671, 103], "BOARD_DAILY"])
 BOSS_DAILY = Page("BOSS_DAILY", ["page/res/BOSS_DAILY.bmp", [1114, 691, 1158, 714], "BOSS_DAILY"])
 SHADOW_GATE = Page("SHADOW_GATE", ["page/res/SHADOW_GATE.bmp", [1087, 612, 1139, 669], "SHADOW_GATE"])
+TEMPLE_ROOM = Page("TEMPLE_ROOM", ["page/res/TEMPLE_ROOM.bmp", [570, 16, 639, 57], "TEMPLE_ROOM"])
+HUNT_DEMON_KING = Page("HUNT_DEMON_KING", ["page/res/HUNT_DEMON_KING.bmp", [1165, 606, 1269, 639], "HUNT_DEMON_KING"])
 SERVER = Page("SERVER", ["page/res/SERVER.bmp", (13, 371, 374, 684), "SERVER"])
 
 # 定义跳转逻辑
@@ -94,6 +98,7 @@ COURTYARD_FOLD.add_action("庭院收缩-庭院展开", JumpAction.CLICK_TYPE, (1
 # 神社跳转
 SHRINE.add_action("神社-道馆", JumpAction.CLICK_TYPE, (478, 212, 544, 262), TEMPLE_CHOSE)
 SHRINE.add_action("神社-阴阳寮", JumpAction.XCLICK_TYPE, (33, 16, 69, 48), YY_SHACK)
+SHRINE.add_action("神社-狩猎战", JumpAction.CLICK_TYPE, (234, 445, 291, 521), HUNT_DEMON_KING)
 
 # 阴阳寮跳转
 YY_SHACK.add_action("阴阳寮-庭院展开", JumpAction.CLICK_TYPE, (36, 22, 75, 63), COURTYARD_UF)
@@ -107,7 +112,10 @@ EXPLORE.add_action("探索-地域鬼王", JumpAction.CLICK_TYPE, (654, 644, 688,
 EXPLORE.add_action("探索-契灵", JumpAction.CLICK_TYPE, (1047, 650, 1085, 683), SOUL_PET)
 EXPLORE.add_action("探索-庭院", JumpAction.XCLICK_TYPE, (37, 41, 78, 81), COURTYARD_UF)
 
-
+# 道馆返回
+TEMPLE_ROOM.add_action("道馆-庭院", JumpAction.CLICK_TYPE, [(35, 44, 77, 86), (738, 391, 817, 423)], COURTYARD_UF)
+# 狩猎战返回
+HUNT_DEMON_KING.add_action("狩猎战-神社", JumpAction.XCLICK_TYPE, (118, 16, 54, 48), SHRINE)
 # 阴界返回
 SHADOW_GATE.add_action("阴界-庭院", JumpAction.XCLICK_TYPE, (69, 44, 102, 82), COURTYARD_UF)
 # 逢魔返回
@@ -117,7 +125,7 @@ SOUL_PET.add_action("契灵-探索", JumpAction.XCLICK_TYPE, IMG.BACK, EXPLORE)
 # 式神录返回
 SHIKI_RECORD.add_action("式神录-庭院", JumpAction.XCLICK_TYPE, IMG.BACK, COURTYARD_UF)
 # 道馆跳转
-TEMPLE_CHOSE.add_action("道馆-神社", JumpAction.XCLICK_TYPE, IMG.BACK, SHRINE)
+TEMPLE_CHOSE.add_action("道馆-神社", JumpAction.IMAGE_TYPE, IMG.BACK, SHRINE)
 # 寄养跳转
 WARD.add_action("寄养-阴阳寮", JumpAction.XCLICK_TYPE, (27, 27, 66, 65), YY_SHACK)
 # 地鬼跳转
@@ -163,4 +171,6 @@ nav.register_page(BOARD_ACTIVITY)
 nav.register_page(BOARD_DAILY)
 nav.register_page(BOSS_DAILY)
 nav.register_page(SHADOW_GATE)
+nav.register_page(HUNT_DEMON_KING)
 nav.register_page(SERVER)
+nav.register_page(TEMPLE_ROOM)
