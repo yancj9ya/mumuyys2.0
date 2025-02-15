@@ -8,7 +8,7 @@
 # 实时任务的调度是最高优先级的
 # 与GUI的接口，调度器会将任务的状态反馈给GUI。
 # GUI通过调用调度器的接口，可以向调度器提交任务，并获取任务的状态。删除任务。
-import re
+import re, enum
 from PIGEON.config import task_option
 from PIGEON.log import log
 from PIGEON.threadsafelist import ThreadSafeList
@@ -21,11 +21,29 @@ from GUI.tab_pretask import AtomTask
 # from tool.switchui.SwitchUI import SwitchUI
 from page.page_switch import nav
 from tool.soulchange.soulchange import SoulChange
-from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog, ShadowGate
+from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog, ShadowGate, Hunt
 from threading import Thread
 from datetime import datetime, timedelta
 from time import sleep
 from win11toast import toast
+
+
+class Task(enum.Enum):
+    契灵 = Ql
+    智能 = Hd
+    绘卷 = Ts
+    御魂 = Yh
+    道馆 = Dg
+    寮突破 = Ltp
+    狩猎战 = Hunt
+    逢魔之时 = Fm
+    结界寄养 = Jy
+    结界突破 = Tp
+    地域鬼王 = Ad
+    六道之门 = SixGate
+    阴界之门 = ShadowGate
+    自动关机 = AutoPowerOff
+    对弈竞猜 = Frog
 
 
 class TimeManager:
@@ -237,6 +255,7 @@ class TaskExecutor:
         "绘卷": Ts,
         "御魂": Yh,
         "道馆": Dg,
+        "狩猎战": Hunt,
         "六道之门": SixGate,
         "阴界之门": ShadowGate,
         "自动关机": AutoPowerOff,
@@ -336,7 +355,9 @@ class TaskExecutor:
     def _create_task_instance(self, parms):
         try:
             log.info(f"Start {parms['task_id']} task.")
-            task_instance = self.F_MAP.get(parms["task_id"])(STOPSIGNAL=self.task_ctrl)
+            task_cls = Task[parms["task_id"]].value
+            assert task_cls is not None, f"未找到任务类 {parms['task_id']}"
+            task_instance = task_cls(STOPSIGNAL=self.task_ctrl)
             task_instance.set_parms(**parms)
             task_instance.loop()
             return getattr(task_instance, "next_time", None)

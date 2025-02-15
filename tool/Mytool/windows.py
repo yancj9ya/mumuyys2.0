@@ -153,7 +153,7 @@ class Windows:
 
         # 保存图像或返回处理后的图像
         if save_img:
-            timestamp = time.strftime("(%Y-%m-%d)  %H时%M分", time.localtime())
+            timestamp = time.strftime("%m月%d日 %a %H时%M分", time.localtime())
             path = f"task/dg/awards/{timestamp}.jpg"
             cv2.imencode(".jpg", img)[1].tofile(path)
             log.info(f"截图成功，保存路径为:\n{path}")

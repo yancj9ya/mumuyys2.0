@@ -27,7 +27,7 @@ class Counter:
         except Exception as e:
             log.error(f"Compare Error: {e}")
 
-    def increment(self, interval=4):
+    def increment(self, interval=10):
         try:
             current_time = time.time()
             if current_time - self.start_time > interval:

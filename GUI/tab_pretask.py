@@ -3,6 +3,7 @@ import json
 import tkinter.messagebox as messagebox
 from PIGEON.config import task_option
 from PIGEON.log import log
+from GUI.tasklib import TaskLib
 
 
 class SetOption(ctk.CTkFrame):
@@ -32,14 +33,15 @@ class TaskSettingWindow(ctk.CTkToplevel):
         "next_time": "下次执行时间",
     }
 
-    def __init__(self, task, *args, **kwargs):
+    def __init__(self, task, x, y, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        self.main_window = task.winfo_toplevel()
-        self.geometry("290x300+{}+{}".format(self.main_window.winfo_x() - 420, self.main_window.winfo_y()))
+        self.position_x = x
+        self.position_y = y
+        # self.main_window = task.winfo_toplevel()
+        self.geometry("290x300+{}+{}".format(self.position_x - 370, self.position_y))
         self.task = task
         self.title(f"{task.task_name.cget('text')}任务设置")
-        self.update_idletasks()
+        self.update_idletasks()  # 刷新窗口
         self.resizable(False, True)
 
         self.create_option()
@@ -91,7 +93,7 @@ class AtomTask(ctk.CTkFrame):
 
         self.grid_columnconfigure(0, minsize=90)
         self.grid_columnconfigure(1, minsize=80)
-        self.grid_columnconfigure([2, 3], minsize=55)
+        self.grid_columnconfigure([2, 3], minsize=60)
         self.task_name = ctk.CTkLabel(self, text=task_name, width=50, fg_color="skyblue", font=("微软雅黑", 11, "bold"), corner_radius=0)
         self.task_name.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
         self.task_state = ctk.CTkLabel(self, text="running", fg_color="green", corner_radius=0)
@@ -107,7 +109,12 @@ class AtomTask(ctk.CTkFrame):
     def set_task(self):
         if self.setting_btn.cget("text") == "设置":
             if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-                self.toplevel_window = TaskSettingWindow(self)
+                # 计算位置坐标
+                root_x, root_y = self.winfo_toplevel().winfo_x(), self.winfo_toplevel().winfo_y()
+                pre_tab = self.TabMaster
+                if pre_tab.toplevel_window is not None and pre_tab.toplevel_window.winfo_exists():
+                    root_x, root_y = pre_tab.toplevel_window.winfo_x(), pre_tab.toplevel_window.winfo_y()
+                self.toplevel_window = TaskSettingWindow(self, root_x, root_y)
             else:
                 self.toplevel_window.focus()
         elif self.setting_btn.cget("text") == "取消":
@@ -166,27 +173,47 @@ class PreTaskTab(ctk.CTkFrame):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.toplevel_window = None
         self.grid_rowconfigure(1, minsize=340)
-        self.grid_columnconfigure(0, minsize=80)
-        self.task_start = ctk.CTkButton(self, text="开始运行", command=self.scheduler_switch, width=20, corner_radius=30, font=("微软雅黑", 10, "bold"))
-        self.task_start.grid(row=0, column=1, padx=1, pady=2, sticky="w")
-        self.one_key_add_btn = ctk.CTkButton(self, text="一键日常", command=self.one_key_add, width=20, corner_radius=30, font=("微软雅黑", 10, "bold"))
-        self.one_key_add_btn.grid(row=0, column=2, padx=1, pady=2, sticky="w")
+        # self.grid_columnconfigure(0, minsize=80)
+        self.task_start = ctk.CTkButton(self, border_width=1, border_color="gray", fg_color="Green", text="START", width=40, command=self.scheduler_switch, corner_radius=30, font=("Consola", 12, "bold"))
+        self.task_start.grid(row=0, column=1, padx=1, pady=2, sticky="ew")
+        self.one_key_add_btn = ctk.CTkButton(self, fg_color="#6B8E23", text="一键日常", width=40, command=self.one_key_add, corner_radius=3, font=("微软雅黑", 10, "bold"))
+        self.one_key_add_btn.grid(row=0, column=2, padx=4, pady=2, sticky="ew")
 
         try:
-            self.task_frame_ = task_option.json
-            self.add_task_btn = ctk.CTkOptionMenu(self, values=list(self.task_frame_.keys()), command=self.add_task, width=90, corner_radius=2, anchor="center")
-            self.add_task_btn.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
+            # self.task_frame_ = task_option.json
+            # self.add_task_btn = ctk.CTkOptionMenu(self, values=list(self.task_frame_.keys()), command=self.add_task, width=90, corner_radius=2, anchor="center")
+            # self.add_task_btn.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
+            self.add_task_btn = ctk.CTkButton(self, fg_color="#6B8E23", text="添加任务", width=40, command=self.task_lib, corner_radius=3, font=("微软雅黑", 10, "bold"))
+            self.add_task_btn.grid(row=0, column=0, padx=4, pady=2, sticky="ew")
 
-            self.task_frame = ctk.CTkScrollableFrame(self, width=228, height=240, corner_radius=0)
-            self.task_frame.grid(row=1, column=0, columnspan=4, padx=1, pady=2, sticky="nsew")
+            self.task_frame = ctk.CTkScrollableFrame(self, width=230, height=240, corner_radius=0)
+            self.task_frame._scrollbar.configure(width=10)
+            self.task_frame.grid(row=1, column=0, columnspan=3, padx=1, pady=2, sticky="nesw")
         except FileNotFoundError:
             messagebox.showerror("错误", "任务列表文件未找到，请检查文件路径。")
         except json.JSONDecodeError:
             messagebox.showerror("错误", "任务列表文件内容不是有效的 JSON 格式。")
 
+    def task_lib(self):
+        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+            self.toplevel_window = TaskLib(self.winfo_toplevel(), self.add_task)
+        else:
+            self.toplevel_window.focus()
+        pass
+
     def one_key_add(self):
         task_add_list = ["结界寄养", "地域鬼王", "道馆", "逢魔之时", "寮突破"]
+        # 获取当前的星期数
+        import datetime
+
+        current_weekday = datetime.datetime.now().weekday()
+        if current_weekday in [4, 5, 6]:
+            task_add_list.append("阴界之门")
+        else:
+            task_add_list.append("狩猎战")
+
         try:
             for task_name in task_add_list:
                 self.add_task(task_name)
@@ -215,12 +242,12 @@ class PreTaskTab(ctk.CTkFrame):
 
     def scheduler_switch(self):
         try:
-            if self.task_start.cget("text") == "开始运行":
+            if self.task_start.cget("text") == "START":
                 AtomTask.scheduler.tab_frame = self
                 AtomTask.scheduler.start_scheduler()
-                self.task_start.configure(text="停止运行", fg_color="red")
+                self.task_start.configure(text="STOP", fg_color="#EF5350")
             else:
                 AtomTask.scheduler.stop_scheduler()
-                self.task_start.configure(text="开始运行", fg_color="green")
+                self.task_start.configure(text="START", fg_color="green")
         except Exception as e:
             messagebox.showerror("错误", f"操作失败: {e}")

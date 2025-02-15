@@ -26,6 +26,14 @@
         "change_soul": "1,2",
         "run_time": "21:00-6:00"
     },
+    "狩猎战": {
+        "task_id": "狩猎战",
+        "start_ui": "HUNT_DEMON_KING",
+        "end_ui": "COURTYARD_UF",
+        "ui_delay": "0.5",
+        "change_soul": "1,3",
+        "run_time": "19:05-21:00"
+    },
     "结界突破": {
         "task_id": "结界突破",
         "start_ui": "ENCHANTMENT_1",
@@ -45,12 +53,12 @@
     "结界寄养": {
         "task_id": "结界寄养",
         "start_ui": "WARD",
-        "end_ui": "COURTYARD_UF",
+        "end_ui": "WARD",
         "ui_delay": "0.5",
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-02-10 17:42:46"
+        "next_time": "after 2025-02-15 00:34:37"
     },
     "逢魔之时": {
         "task_id": "逢魔之时",
@@ -71,7 +79,7 @@
     "自动关机": {
         "task_id": "自动关机",
         "延迟时间": "0",
-        "run_time": "after 2025-02-03 06:01:00"
+        "run_time": "after 2025-02-13 00:52:51"
     },
     "对弈竞猜": {
         "task_id": "对弈竞猜",

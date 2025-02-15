@@ -1,10 +1,10 @@
-from Mytool.Click import Click
-from Mytool.imageRec import ImageRec
-from Mytool.Ocr import Ocr
-from Mytool.Counter import Counter
-from img.yqfy.img_info import *
+from tool.Mytool.Click import Click
+from tool.Mytool.imageRec import ImageRec
+from tool.Mytool.Ocr import Ocr
+from tool.Mytool.Counter import Counter
+from task.yqfy.res.img_info import *
 from time import sleep, time, strftime, localtime
-from Mytool.Mylogger import *
+from PIGEON.log import log
 from random import choices, uniform
 
 
@@ -31,7 +31,7 @@ class YQFY(Click, ImageRec):
     def run(self):
         sleep(self.ui_delay)
         match_res = self.match_ui(self.uilist)
-        logger.debug(f"MATCHED UI:{match_res}")
+        log.insert("2.1", f"MATCHED UI:{match_res}")
         match match_res:
             case "access_ui":
                 self.area_click(access_ui[1])

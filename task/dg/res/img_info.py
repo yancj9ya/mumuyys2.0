@@ -12,7 +12,7 @@ dg_chose_left_ui = ["task/dg/res/dg_chose_left_ui.bmp", [69, 93, 982, 613], "dg_
 dg_chose_ui = ["task/dg/res/dg_chose_ui.bmp", [45, 605, 102, 666], "chose_ui"]
 
 sl_ui = ["task/dg/res/sl_ui.bmp", [413, 128, 557, 281], "end_sl"]
-dg_fail_ui = ["task/dg/res/dg_fail_ui.bmp", [408, 130, 534, 237], "dgfail_ui"]
+dg_fail_ui = ["task/dg/res/dg_fail_ui.bmp", [408, 130, 534, 237], "dg_fail_ui"]
 damo_ui = ["task/dg/res/damo_ui.bmp", [562, 497, 685, 580], "damo_ui"]
 guanzhan = ["task/dg/res/guanzhan.bmp", [1109, 543, 1248, 680], "guanzhan"]
 tiaozhan = ["task/dg/res/tiaozhan.bmp", [1109, 543, 1248, 680], "tiaozhan"]

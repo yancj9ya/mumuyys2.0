@@ -68,10 +68,10 @@ class Fm(Click, ImageRec):
         pass
 
     def open_pack(self):
-        if not self.match_img(red_egg_done):
-            for _ in range(5):
-                self.area_click(real_fm[1])
-                sleep(2)
+        if not self.match_img(red_egg_done) and self.match_img(FOURTH_BOX):
+            self.area_click(real_fm[1])
+            sleep(4)
+        elif not self.match_img(red_egg_done) and not self.match_img(FOURTH_BOX):
             self.area_click(red_egg[1])
         else:
             self.has_4_pack_opened = True
@@ -80,14 +80,16 @@ class Fm(Click, ImageRec):
         if self.match_img(hard_boss, accuracy=0.8):
             self.area_click(hard_boss[1], double_click=True)
             sleep(1)
-            self.area_click(center_entrance[1])
+            if self.match_img(BOSS_SIGN):
+                self.area_click(center_entrance[1])
             sleep(1)
             if self.match_img(confirm_hard_boss):
                 self.area_click(confirm_hard_boss[1])
         elif self.match_img(normal_boss):
             self.area_click(normal_boss[1], double_click=True)
             sleep(1)
-            self.area_click(center_entrance[1])
+            if self.match_img(BOSS_SIGN):
+                self.area_click(center_entrance[1])
             sleep(1)
             if self.match_img(confirm_boss):
                 self.area_click(confirm_boss[1])

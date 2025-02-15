@@ -3,8 +3,9 @@ from tool.Mytool.imageRec import ImageRec
 from tool.Mytool.Ocr import Ocr
 from tool.Mytool.Counter import Counter
 from task.dg.res.img_info import *
+from task.dg.res.img_info_auto_create import *
 from time import sleep, time, strftime, localtime
-
+from win11toast import toast
 from PIGEON.log import Log
 import traceback, random
 
@@ -15,7 +16,7 @@ class Dg(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [dg_ready_ui, damo_ui, sl_ui, dg_fight_ui, dg_chose_ui]
+        self.uilist = [FINAL_FAIL, dg_ready_ui, dg_fail_ui, damo_ui, sl_ui, dg_fight_ui, dg_chose_ui]
         self.main_ui_sleep = 0.5
         self.DG_TIME = None
         self.DG_SWITCH = True
@@ -52,10 +53,25 @@ class Dg(Click, ImageRec):
                     break
                 sleep(1.5)
         elif self.DG_COUNT == 0:
+            sleep(2)
+            if self.match_img(FINAL_FAIL):
+                self.area_click(FINAL_FAIL[1])
+            self.xclick()
+            sleep(1)
+            self.area_click(EXIT_CONFIRM)
             self.DG_SWITCH = False
+
             log.insert("4.0", f"道馆结束，共进攻：{self.counter.get_record('last')}+{self.counter.count}={self.counter.count+self.counter.get_record('last')  if self.counter.get_record('last') else self.counter.count}次")
 
+    def _is_dg_build(self):
+        return self.match_color_img_by_hist(DG_BUILDED)
+
     def chose_dg(self):
+        if not self._is_dg_build():
+            log.warning("道馆未建立")
+            toast(f"道馆未建立，手动建立道馆")
+            self.DG_SWITCH = False
+            return
         try:
             match = Ocr.ocr_by_re([499, 625, 705, 671], "([0-2])次")
             if match:
@@ -69,8 +85,6 @@ class Dg(Click, ImageRec):
             else:
                 return
             for i in range(3):
-                # if not self.running.is_set():
-                #     return
                 assert self.running.is_set(), "接收到停止信号"
                 if res := self.match_duo_img(dg_coin_right_ui, accuracy=0.8):
                     for area in res:
@@ -202,31 +216,42 @@ class Dg(Click, ImageRec):
                     log.info(">>>开始执行dgsign()")
                     self.dgsign()  # 如果没识别到标记，则执行标记函数
                 return
-        elif self.match_img(damo_ui):
-            sleep(1)
-            self.win.screenshot([218, 132, 1233, 617], save_img=True)
-            log.info("结算界面：已经截图,返回准备界面")
-            sleep(0.5)
-            self.area_click([990, 462, 1125, 520])
-            return
-        elif self.match_img(sl_ui):
-            sleep(0.5)
-            self.area_click([990, 462, 1125, 520])
-            return
-        elif self.match_img(dg_fail_ui) != None:  # 战斗失败，返回准备界面
-            sleep(2)
-            self.win.screenshot([218, 132, 1233, 617], save_img=True)
-            log.info("进攻失败，返回准备界面")
-            sleep(0.5)
-            self.area_click([990, 462, 1125, 520])
-            return
+        # elif self.match_img(damo_ui):
+        #     sleep(1)
+        #     self.win.screenshot([218, 132, 1233, 617], save_img=True)
+        #     log.info("结算界面：已经截图,返回准备界面")
+        #     sleep(0.5)
+        #     self.area_click([990, 462, 1125, 520])
+        #     return
+        # elif self.match_img(sl_ui):
+        #     sleep(0.5)
+        #     self.area_click([990, 462, 1125, 520])
+        #     return
+        # elif self.match_img(dg_fail_ui) != None:  # 战斗失败，返回准备界面
+        #     sleep(2)
+        #     self.win.screenshot([218, 132, 1233, 617], save_img=True)
+        #     log.info("进攻失败，返回准备界面")
+        #     sleep(0.5)
+        #     self.area_click([990, 462, 1125, 520])
+        #     return
         pass
+
+    def _save_award_img(self):
+        sleep(1)
+        self.win.screenshot([218, 132, 1233, 617], save_img=True)
+        log.info("结算界面：已经截图,返回准备界面")
+        sleep(0.5)
+        self.area_click([990, 462, 1125, 520])
+        sleep(1)
+        return
 
     def run(self):
         sleep(self.main_ui_sleep)
         match_result = self.match_ui(self.uilist)
         log.insert("2.1", f"Matched UI:{match_result}")
         match match_result:
+            case "FINAL_FAIL":
+                self.area_click(FINAL_FAIL[1])
             case "sl_ui":
                 self.area_click(sl_ui[1])
             case "ready_ui":
@@ -235,13 +260,8 @@ class Dg(Click, ImageRec):
                 self.dg_fight_ui()
             case "chose_ui":
                 self.chose_dg()
-            case "damo_ui":
-                sleep(1)
-                self.win.screenshot([218, 132, 1233, 617], save_img=True)
-                log.info("结算界面：已经截图,返回准备界面")
-                sleep(0.5)
-                self.area_click([990, 462, 1125, 520])
-                return
+            case "damo_ui" | "dg_fail_ui":
+                self._save_award_img()
             case _:
                 pass
         pass
