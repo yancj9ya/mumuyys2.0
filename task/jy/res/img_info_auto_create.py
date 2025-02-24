@@ -16,3 +16,7 @@ confirm_jy_btn = ["task/jy/res/confirm_jy_btn.bmp", [665, 509, 806, 577], "confi
 exit_jy_page = ["task/jy/res/exit_jy_page.bmp", [25, 29, 56, 59], "exit_jy_page"]
 self_ward = ["task/jy/res/self_ward.bmp", (194, 368, 335, 576), "self_ward"]
 blank_seat_2 = ["task/jy/res/blank_seat_2.bmp", [1148, 85, 1221, 130], "blank_seat_2"]
+JY_BOX = ["task/jy/res/JY_BOX.bmp", [788, 131, 1021, 317], "JY_BOX"]
+JY_TG=['task/jy/res/JY_TG.bmp', [806, 148, 1022, 332], 'JY_TG']
+SELF_JY_END_TIME=(935, 261, 1018, 291)
+OCR_TYPE=(382, 101, 481, 144)

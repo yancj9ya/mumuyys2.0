@@ -46,9 +46,9 @@ class Ltp(Click, ImageRec):
         # 挑战失败，重新挑战，最多尝试5次
         self.fight_again_counter.increment()
         if self.fight_again_counter.count > 5:
-            self.times = 0
+            # self.times = 0
             log.info(f"已经连续{self.fight_again_counter.count}次挑战失败，请求人为介入")
-            toast("已经连续5次挑战失败，请人为介入")
+            toast("已经连续5次挑战失败，请人为介入", scenario="incomingCall")
             return
         self.area_click([828, 489, 899, 540])
         sleep(0.5)

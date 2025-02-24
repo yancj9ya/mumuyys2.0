@@ -3,6 +3,7 @@ from tool.Mytool.imageRec import ImageRec
 from tool.Mytool.Ocr import Ocr
 from tool.Mytool.Counter import Counter
 from task.areademon.res.img_info_auto_create import *
+from tool.based.base.res.base_img import FIGHTING
 from time import sleep, time, strftime, localtime
 from PIGEON.log import log
 from random import choices, uniform
@@ -12,7 +13,7 @@ class Ad(ImageRec, Click):
     def __init__(self, **values):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.ui_list = [ad_hot, ad_main_ui, challenge_start, ready_btn, challenge_win, challenge_dm]
+        self.ui_list = [FIGHTING, ad_hot, ad_main_ui, challenge_start, ready_btn, challenge_win, challenge_dm]
         self.running = values.get("STOPSIGNAL", True)
         self.challenged_list = [chanllenge_3, chanllenge_2, chanllenge_1]
         self.challenge_start_filter = True
@@ -26,6 +27,8 @@ class Ad(ImageRec, Click):
         res = self.match_ui(self.ui_list)
         log.insert("2.1", f"Matched UI: {res}")
         match res:
+            case "FIGHTING":
+                sleep(1)
             case "ad_main_ui":
                 self.area_click(ad_filtrate[1])
             case "ad_hot":

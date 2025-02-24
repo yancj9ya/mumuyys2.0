@@ -120,6 +120,8 @@ class AtomTask(ctk.CTkFrame):
         elif self.setting_btn.cget("text") == "取消":
             if self.scheduler.task_ctrl.state in ["RUNNING", "WAIT"]:
                 self.scheduler.task_ctrl.stop()
+            else:
+                self.destroy()
 
     @property
     def TabMaster(self):
@@ -204,7 +206,7 @@ class PreTaskTab(ctk.CTkFrame):
         pass
 
     def one_key_add(self):
-        task_add_list = ["结界寄养", "地域鬼王", "道馆", "逢魔之时", "寮突破"]
+        task_add_list = ["结界寄养", "地域鬼王", "道馆", "逢魔之时", "寮突破", "结界上卡"]
         # 获取当前的星期数
         import datetime
 

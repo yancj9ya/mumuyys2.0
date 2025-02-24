@@ -163,16 +163,16 @@ class DevTool(ctk.CTk):
 
     def write_to_file(self, save_type):
         try:
-            self.img_info = self.format_img(save_type)
-            self.log_print(self.img_info)
-            if self.img_info:
+            self._img_info = self.format_img(save_type)
+            self.log_print(self._img_info)
+            if self._img_info:
                 if not os.path.exists(os.path.join(self.folder_path_entry.get(), "img_info_auto_create.py")):
                     with open(os.path.join(self.folder_path_entry.get(), "img_info_auto_create.py"), "w") as file:
                         file.write(f"# this file is auto created by devtool at {datetime.now()}\n\n")  # 写入内容
                         self.log_print("创建文件成功")
 
                 with open(os.path.join(self.folder_path_entry.get(), "img_info_auto_create.py"), "a") as f:
-                    f.write(str(self.img_info) + "\n")  # 写入内容
+                    f.write(str(self._img_info) + "\n")  # 写入内容
                     self.log_print("写入文件成功")
             else:
                 self.log_print("没有图像信息或图像名称")

@@ -5,6 +5,9 @@ from page.switcher import Page, JumpAction, PageNavigator
 
 class IMG:
     BOARD = ["page/res/BOARD.bmp", (12, 398, 521, 440), "BOARD"]  # (7, 345, 285, 461)
+    BOARD_2 = ["page/res/BOARD_2.bmp", (144, 256, 395, 430), "BOARD_2"]
+    BOARD_SET = {"YJS": BOARD_2, "SSTY": BOARD}
+
     FENGMO = ["page/res/fengmo.bmp", (355, 148, 955, 596), "FENGMO"]
     SHADOW_GATE_TEXT = ["page/res/SHADOW_GATE_TEXT.bmp", (355, 148, 955, 596), "SHADOW_GATE"]
 
@@ -41,7 +44,7 @@ class IMG:
     BACK_2 = ["tool/switchui/res/step_BACK_2.bmp", (11, 12, 183, 209), "step_BACK_2"]
     BACK_3 = ["tool/switchui/res/step_BACK_3.bmp", (11, 12, 183, 209), "step_BACK_3"]
 
-    BACK = {"BACK1": BACK, "BACK2": BACK_2, "BACK3": BACK_3}
+    BACK_SET = {"BACK1": BACK, "BACK2": BACK_2, "BACK3": BACK_3}
 
 
 # ========== 初始化配置 ========== #
@@ -86,7 +89,7 @@ ENCHANTMENT_2.add_action("寮突破-探索", JumpAction.XCLICK_TYPE, (1192, 119,
 ENCHANTMENT_2.add_action("结界突破-式神录", JumpAction.CLICK_TYPE, (1218, 620, 1247, 652), SHIKI_RECORD)
 
 # 庭院展开跳转
-COURTYARD_UF.add_action("庭院展开-地藏像", JumpAction.IMAGE_TYPE, IMG.BOARD, BOARD_ACTIVITY)
+COURTYARD_UF.add_action("庭院展开-地藏像", JumpAction.IMAGE_TYPE, IMG.BOARD_SET, BOARD_ACTIVITY)
 COURTYARD_UF.add_action("庭院展开-探索", JumpAction.IMAGE_TYPE, IMG.HOME_PAGEUNFOLD_TO_TS, EXPLORE)
 COURTYARD_UF.add_action("庭院展开-式神录", JumpAction.CLICK_TYPE, (1129, 628, 1162, 659), SHIKI_RECORD)
 COURTYARD_UF.add_action("庭院展开-阴阳寮", JumpAction.CLICK_TYPE, (567, 620, 595, 656), YY_SHACK)
@@ -119,13 +122,13 @@ HUNT_DEMON_KING.add_action("狩猎战-神社", JumpAction.XCLICK_TYPE, (118, 16,
 # 阴界返回
 SHADOW_GATE.add_action("阴界-庭院", JumpAction.XCLICK_TYPE, (69, 44, 102, 82), COURTYARD_UF)
 # 逢魔返回
-BOSS_DAILY.add_action("逢魔-庭院", JumpAction.IMAGE_TYPE, IMG.BACK, COURTYARD_UF)
+BOSS_DAILY.add_action("逢魔-庭院", JumpAction.IMAGE_TYPE, IMG.BACK_SET, COURTYARD_UF)
 # 契灵返回
-SOUL_PET.add_action("契灵-探索", JumpAction.XCLICK_TYPE, IMG.BACK, EXPLORE)
+SOUL_PET.add_action("契灵-探索", JumpAction.XCLICK_TYPE, IMG.BACK_SET, EXPLORE)
 # 式神录返回
-SHIKI_RECORD.add_action("式神录-庭院", JumpAction.XCLICK_TYPE, IMG.BACK, COURTYARD_UF)
+SHIKI_RECORD.add_action("式神录-庭院", JumpAction.XCLICK_TYPE, IMG.BACK_SET, COURTYARD_UF)
 # 道馆跳转
-TEMPLE_CHOSE.add_action("道馆-神社", JumpAction.IMAGE_TYPE, IMG.BACK, SHRINE)
+TEMPLE_CHOSE.add_action("道馆-神社", JumpAction.IMAGE_TYPE, IMG.BACK_SET, SHRINE)
 # 寄养跳转
 WARD.add_action("寄养-阴阳寮", JumpAction.XCLICK_TYPE, (27, 27, 66, 65), YY_SHACK)
 # 地鬼跳转

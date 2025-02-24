@@ -33,7 +33,7 @@ class Hd(Click, ImageRec):
                 match btn_res[2]:
                     case "btn_yyh":
                         log.insert("5.1", f"识别模式：业原火")
-                        if ocr_res := Ocr.ocr([754, 23, 809, 60]):
+                        if ocr_res := Ocr.ocr([752, 24, 820, 62], range_color=["d8d6c5", (20, 50, 80)]):
                             if ocr_res[1] > 0.9:
                                 self.times = int(ocr_res[0])
                                 log.info(f"挑战次数为{self.times}")

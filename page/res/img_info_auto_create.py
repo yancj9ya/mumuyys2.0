@@ -30,3 +30,4 @@ HUNT_DEMON_KING = Page("HUNT_DEMON_KING", ["page/res/HUNT_DEMON_KING.bmp", [1165
 STEP_TS_5 = ["page/res/STEP_TS_5.bmp", [523, 129, 545, 149], "STEP_TS_5"]
 SECRET_PAGE = Page("SECRET_PAGE", ["page/res/SECRET_PAGE.bmp", [106, 30, 167, 64], "SECRET_PAGE"])
 TEMPLE_ROOM = Page("TEMPLE_ROOM", ["page/res/TEMPLE_ROOM.bmp", [570, 16, 639, 57], "TEMPLE_ROOM"])
+BOARD_2=['page/res/BOARD_2.bmp', [258, 339, 282, 378], 'BOARD_2']

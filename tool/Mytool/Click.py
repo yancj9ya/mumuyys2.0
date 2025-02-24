@@ -50,18 +50,26 @@ class Click:
             self.click(rand_x, rand_y, press_time, animation_time)
 
     def mouse_scroll(self, d_t: tuple[str, int], x: int, y: int) -> None:
+        """scroll mouse wheel"""
+        client_x, client_y = x, y
+        # 计算窗口坐标
         rect = self.win.get_window_rect()
         x += rect[0]
         y += rect[1]
+        # 发送移动鼠标消息
+        self.win.mouse_move(x, y)
+
         match d_t[0]:
             case "up":
                 for i in range(d_t[1]):
+                    self.win.send_wm_nchittest(x, y)
                     self.win.wheel_scroll(120, x, y)
-                    sleep(0.1)
+                    sleep(0.05)
             case "down":
                 for i in range(d_t[1]):
+                    self.win.send_wm_nchittest(x, y)
                     self.win.wheel_scroll(-120, x, y)
-                    sleep(0.1)
+                    sleep(0.05)
 
     def slide(self, start: list | tuple, end: list | tuple, move_time=0.5) -> None:
         # 如果长度为4则是rect，获取rect内的随机点坐标，以元组返回

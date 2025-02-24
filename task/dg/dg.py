@@ -69,11 +69,10 @@ class Dg(Click, ImageRec):
     def chose_dg(self):
         if not self._is_dg_build():
             log.warning("道馆未建立")
-            toast(f"道馆未建立，手动建立道馆")
-            self.DG_SWITCH = False
+            toast(f"道馆未建立，手动建立道馆", scenario="incomingCall", button="已建立，继续")
             return
         try:
-            match = Ocr.ocr_by_re([499, 625, 705, 671], "([0-2])次")
+            match = Ocr.ocr_by_re([499, 625, 705, 671], "([0-2])次", threshold=0.85)
             if match:
                 self.DG_COUNT = int(match.group(1))
                 if self.DG_COUNT == 0:
@@ -91,13 +90,14 @@ class Dg(Click, ImageRec):
                         sleep(random.uniform(0.1, 0.7))
                         assert self.running.is_set(), "接收到停止信号"
                         ocr_area = [area[0] + 35, area[1], area[2] + 43, area[3]]
-                        match = Ocr.ocr_by_re(ocr_area, "([0-9]{3})")
+                        match = Ocr.ocr_by_re(ocr_area, "([0-9]{3})", range_color=["efeeed", (20, 30, 50)])
                         if match:
                             dg_sj_num = int(match.group(1))
                             self.area_click(ocr_area)
+                            sleep(0.7)
                         else:
                             continue
-                        sleep(1)
+
                         if left_area := self.match_img(dg_chose_left_ui):  # 取得左边的道馆人数ui位置
                             left_ocr_area = [
                                 left_area[0] + 200,
@@ -105,7 +105,7 @@ class Dg(Click, ImageRec):
                                 left_area[0] + 292,
                                 left_area[1] + 60,
                             ]  # 根据左边的道馆ui，取得ocr识别的人数区域
-                            match = Ocr.ocr_by_re(left_ocr_area, "([1]?[0-9]{2})人")
+                            match = Ocr.ocr_by_re(left_ocr_area, "([1]?[0-9]{2})人", threshold=0.7)
                             if match:
                                 dg_rs = int(match.group(1))
                             else:
@@ -206,7 +206,7 @@ class Dg(Click, ImageRec):
         if self.match_img(dg_btn_ready):
             # sleep(0.5)
             self.area_click([1142, 553, 1221, 618], double_click=True)  # 点击准备按钮
-            self.counter.increment()
+            self.counter.increment(interval=4)
             log.insert("4.1", f" * 正在第{[f'{self.counter.get_record('last')}+' if self.counter.get_record('last')  else ''][0]}{self.counter.count}次进攻道馆*")
             sleep(1)
 
@@ -216,24 +216,6 @@ class Dg(Click, ImageRec):
                     log.info(">>>开始执行dgsign()")
                     self.dgsign()  # 如果没识别到标记，则执行标记函数
                 return
-        # elif self.match_img(damo_ui):
-        #     sleep(1)
-        #     self.win.screenshot([218, 132, 1233, 617], save_img=True)
-        #     log.info("结算界面：已经截图,返回准备界面")
-        #     sleep(0.5)
-        #     self.area_click([990, 462, 1125, 520])
-        #     return
-        # elif self.match_img(sl_ui):
-        #     sleep(0.5)
-        #     self.area_click([990, 462, 1125, 520])
-        #     return
-        # elif self.match_img(dg_fail_ui) != None:  # 战斗失败，返回准备界面
-        #     sleep(2)
-        #     self.win.screenshot([218, 132, 1233, 617], save_img=True)
-        #     log.info("进攻失败，返回准备界面")
-        #     sleep(0.5)
-        #     self.area_click([990, 462, 1125, 520])
-        #     return
         pass
 
     def _save_award_img(self):

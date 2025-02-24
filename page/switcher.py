@@ -2,6 +2,7 @@ from collections import deque
 from PIGEON.log import log
 from tool.Mytool.Click import Click
 from tool.Mytool.imageRec import ImageRec
+from win11toast import toast
 import time
 
 
@@ -90,8 +91,11 @@ class PageNavigator:
                                     print(f"成功跳转到 {next_page.name}")
                                     success = True
                                     break
+                                else:
+                                    print(f"无法执行跳转动作: {action_id}-{action.action_type}")
+                                    success = False
                             except Exception as e:
-                                print(f"跳转失败: {str(e)}")
+                                print(f"跳转出现错误: {str(e)}")
 
                         if not success:
                             raise RuntimeError(f"无法到达 {next_page.name}")
@@ -102,12 +106,14 @@ class PageNavigator:
                 else:
                     raise ValueError("不存在有效路径")
             except Exception as e:
-                log.info(f"第 {current_retry+1} 次尝试失败: {str(e)}")
+                log.info(f"第 {current_retry} 次尝试失败: {str(e)}")
                 current_retry += 1
                 # if current_retry == 5:
                 # self._try_back()
                 time.sleep(self.cooldown * current_retry)  # 指数退避
                 continue
+        else:
+            toast(f"无法到达 {target_page}，请检查页面配置", scenario="incomingCall")
 
     def _try_back(self):
         """尝试回退到上一页面"""

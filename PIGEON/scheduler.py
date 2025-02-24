@@ -21,7 +21,7 @@ from GUI.tab_pretask import AtomTask
 # from tool.switchui.SwitchUI import SwitchUI
 from page.page_switch import nav
 from tool.soulchange.soulchange import SoulChange
-from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog, ShadowGate, Hunt
+from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog, ShadowGate, Hunt, Jysk
 from threading import Thread
 from datetime import datetime, timedelta
 from time import sleep
@@ -44,6 +44,7 @@ class Task(enum.Enum):
     阴界之门 = ShadowGate
     自动关机 = AutoPowerOff
     对弈竞猜 = Frog
+    结界上卡 = Jysk
 
 
 class TimeManager:
@@ -304,7 +305,7 @@ class TaskExecutor:
         finally:
             if instance_return:
                 # 如果任务有下一次运行时间，则更新任务的 next_time 参数
-                pattern = r"^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$"
+                pattern = r"^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$"
                 if bool(re.match(pattern, instance_return)):
                     hour, minute, second = map(int, instance_return.split(":"))
                     target_time = datetime.now() + timedelta(hours=hour, minutes=minute, seconds=second)

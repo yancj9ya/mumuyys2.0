@@ -5,12 +5,14 @@
 import win32gui
 import win32ui
 import win32con
+import win32api
 import time
 import numpy as np
 import cv2
 from ctypes import windll
 from PIGEON.log import log
 from functools import cached_property
+from tool.Mytool.image_ver import ver  # type: ignore
 
 
 # from Mytool.nemu.mumuScreencap import MuMuScreenCap
@@ -37,7 +39,7 @@ FindWindowEx = win32gui.FindWindowEx
 IsWindow = win32gui.IsWindow
 
 
-class Windows:
+class Windows(ver):
     LOCK = False  # 主要是为了截图互斥，防止竞争设备上下文导致的错误
 
     # mumu_sc = MuMuScreenCap(
@@ -49,6 +51,7 @@ class Windows:
         return cls._instance
 
     def __init__(self):
+        super().__init__()
         # windows截图的方式,必须获取窗口句柄handle
         # log.debug("初始化Windows类")
         # log.debug(f"获取窗口句柄:{self.handle}")
@@ -115,7 +118,7 @@ class Windows:
                         # 获取位图数据并转换为图像数组
                         signedIntsArray = bmp.GetBitmapBits(True)
                         img = np.frombuffer(signedIntsArray, dtype="uint8").reshape(h, w, 4)
-                        img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+                        img = cv2.cvtColor(self.ver_img(img), cv2.COLOR_BGRA2BGR)
                         if debug:
                             cv2.imshow("截图", img)
                             cv2.waitKey(0)
@@ -254,6 +257,20 @@ class Windows:
         wparam = MK_XBUTTON1 | 0x00010000  # type: ignore
         Lparam = y << 16 | x
         PostMessage(self.handle, msg, wparam, Lparam)
+
+    def send_wm_nchittest(self, x, y):
+        """
+        向指定窗口发送 WM_NCHITTEST 消息
+        :param hwnd: 目标窗口句柄
+        :param x: 屏幕坐标 X
+        :param y: 屏幕坐标 Y
+        :return: 命中测试结果 (如 HTCAPTION、HTCLIENT 等)
+        """
+        # 将坐标打包为 lParam (低位 X, 高位 Y)
+        lparam = win32api.MAKELONG(x, y)
+        # 发送 WM_NCHITTEST 消息 (消息代码 0x0084)
+        result = win32gui.SendMessage(self.handle, win32con.WM_NCHITTEST, 0, lparam)
+        return result
 
 
 if __name__ == "__main__":

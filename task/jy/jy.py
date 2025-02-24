@@ -101,7 +101,7 @@ class Jy(Click, ImageRec):
             sleep(0.5)
             self.slide((190, 191), (195, 560), move_time=1)  # 下拉刷新同区好友
             self.area_click(diff_server_seat[1])
-            sleep(0.5)
+            sleep(1)
             self.slide((190, 191), (195, 560), move_time=1)  # 下拉刷新跨区好友
             self.area_click(same_server_seat[1])
             sleep(0.5)
@@ -115,7 +115,7 @@ class Jy(Click, ImageRec):
         if hasattr(self, "next_time"):
             return  # 如果已经设置了下一次运行时间说明已经蹲了结界，则不再继续查找
         self.area_click(area_type[1], double_click=True, double_click_time=0.2)
-        sleep(0.5)
+        sleep(0.2)
         log.info(f"Finding max number in {area_type[-1]}...")
         for _ in range(5):
             if serch_max_num := self.re_serch():
@@ -178,11 +178,9 @@ class Jy(Click, ImageRec):
         pattern = r"^[0][0-5]:[0-5][0-9]:[0-5][0-9]$"
         while True:
             sleep(1)
-            if res := self.ocr.ocr((1149, 128, 1237, 147)):
-                if res[1] > 0.8:
-                    if re_res := re.match(pattern, res[0].replace(" ", "").replace("：", ":")):
-                        log.info(f"JYH end time: {res[0]}")
-                        return re_res.group(0)
+            if res := self.ocr.ocr_by_re((1149, 128, 1237, 147), pattern=pattern, range_color=["c0baa9", (10, 10, 50)]):
+                log.info(f"JYH end time: {res.group()}")
+                return res.group()
 
     def run(self):
         """main logics of the program"""

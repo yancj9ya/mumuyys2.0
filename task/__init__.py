@@ -14,6 +14,7 @@ from task.hunt.hunt import Hunt
 from task.shutdown.auto_power_off import AutoPowerOff
 from task.frog.frog import Frog
 from task.areademon.areademon import Ad
+from task.jysk.jysk import Jysk
 
 
 import sys
