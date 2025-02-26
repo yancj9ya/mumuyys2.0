@@ -32,6 +32,9 @@ class Ad(ImageRec, Click):
             case "ad_main_ui":
                 self.area_click(ad_filtrate[1])
             case "ad_hot":
+                # 点击热门
+                self.area_click(ad_hot[1])
+                sleep(0.3)
                 if self.challenged_list and self.hot_challenge:
                     current_challenge = self.challenged_list.pop()
                     self.hot_challenge = False

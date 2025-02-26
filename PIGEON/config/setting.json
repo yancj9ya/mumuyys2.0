@@ -1,5 +1,5 @@
 {
-    "times": "2",
+    "times": "53",
     "tp_keep_level": true,
     "ui_delay": 0.55,
     "set_window_top": 1,
@@ -11,7 +11,7 @@
     "file_log": true,
     "cooperation_mission": true,
     "window_position": {
-        "x": 2202,
-        "y": 208
+        "x": 2199,
+        "y": 579
     }
 }

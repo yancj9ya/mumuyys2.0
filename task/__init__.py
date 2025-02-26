@@ -15,6 +15,7 @@ from task.shutdown.auto_power_off import AutoPowerOff
 from task.frog.frog import Frog
 from task.areademon.areademon import Ad
 from task.jysk.jysk import Jysk
+from task.superking.cgw import Cgw
 
 
 import sys

@@ -58,7 +58,7 @@
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-02-24 18:57:14"
+        "next_time": "after 2025-02-26 17:44:21"
     },
     "结界上卡": {
         "task_id": "结界上卡",
@@ -66,9 +66,9 @@
         "end_ui": "WARD",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-02-24 20:39:43",
-        "target_level": "5",
-        "target_count": "7"
+        "next_time": "after 2025-02-27 02:46:53",
+        "target_level": "5,6",
+        "target_count": "8,9"
     },
     "逢魔之时": {
         "task_id": "逢魔之时",
@@ -100,5 +100,10 @@
         "run_time": "right now",
         "repeat": "true",
         "next_time": "after 2025-02-04 23:55:20"
+    },
+    "超鬼王": {
+        "task_id": "超鬼王",
+        "times": "13",
+        "run_time": "00:00-23:59"
     }
 }

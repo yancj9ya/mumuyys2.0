@@ -21,7 +21,7 @@ from GUI.tab_pretask import AtomTask
 # from tool.switchui.SwitchUI import SwitchUI
 from page.page_switch import nav
 from tool.soulchange.soulchange import SoulChange
-from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog, ShadowGate, Hunt, Jysk
+from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog, ShadowGate, Hunt, Jysk, Cgw
 from threading import Thread
 from datetime import datetime, timedelta
 from time import sleep
@@ -45,6 +45,7 @@ class Task(enum.Enum):
     自动关机 = AutoPowerOff
     对弈竞猜 = Frog
     结界上卡 = Jysk
+    超鬼王 = Cgw
 
 
 class TimeManager:
@@ -374,7 +375,7 @@ class TaskExecutor:
             self.soul_change.changeSoulTo(parms["change_soul"])
 
     def _task_need_switch_page(self, parms, page):
-        if parms.get(page) and self.task_ctrl.is_set():
+        if parms.get(page, False) and self.task_ctrl.is_set():
             self.switch_ui.switch_to(parms[page])
 
 

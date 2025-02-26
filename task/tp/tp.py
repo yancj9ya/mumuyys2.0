@@ -59,7 +59,7 @@ class Tp(Click, ImageRec):
             if self.match_img(fail_ui):
                 # self.area_click(quit_fail)
                 self.challenge_again()
-                self.quit_count.increment()
+                self.quit_count.increment(interval=3)
                 log.info(f"quit_count:{self.quit_count.count}")
                 if self.quit_count.count == 4:
                     log.info(f"quit_count:end")
