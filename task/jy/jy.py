@@ -64,6 +64,13 @@ class Jy(Click, ImageRec):
             raise Exception("Failed to get right JJ number")
         sleep(1)  # Add a small delay to avoid infinite looping
 
+    def scroll_down(self):
+        """scroll down to bottom of the screen"""
+        self.area_click([439, 207, 503, 238])
+        self.mouse_scroll(("down", 6), 460, 224)
+        sleep(0.2)
+        pass
+
     def re_serch(self):
         """get the max number of same and diff server JY list"""
         temp_num_list = []
@@ -92,7 +99,8 @@ class Jy(Click, ImageRec):
             log.error(f"Error in re_serch: {e}")
             return None
         finally:
-            self.slide((517, 580), (557, 200), move_time=1)
+            # self.slide((517, 580), (557, 200), move_time=1)
+            self.scroll_down()
 
     def refresh_jy_list(self):
         """flash list of same and diff server by slide to bottom"""
@@ -108,7 +116,7 @@ class Jy(Click, ImageRec):
             self.has_refreshed = True
         else:
             log.info("Already refreshed")
-        sleep(1)
+        sleep(0.5)
 
     def find_max_number(self, area_type):
         """Find the max number from a given area (left or right)."""

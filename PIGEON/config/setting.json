@@ -7,11 +7,11 @@
     "dg_rs": 70,
     "tp_ticket_limit": 10,
     "monster_limit": 24,
-    "with_tp": false,
+    "with_tp": true,
     "file_log": true,
     "cooperation_mission": true,
     "window_position": {
-        "x": 2199,
-        "y": 579
+        "x": 2119,
+        "y": 274
     }
 }

@@ -88,7 +88,7 @@ class Ts(Click, ImageRec):
         log.insert("2.1", f" Matched ui:{ui_serch_result}")
         match ui_serch_result:
             case "ts_main_box":
-                self.switch_ui.switch_to("EXPLORE")  # 先切换到探索主界面
+                self.switch_ui.switch_to("EXPLORE", self.running)  # 先切换到探索主界面
                 if box_cor := self.match_img(ts_main_box):
                     self.area_click(box_cor)  # 点击box
             case "ts_main_ui":
@@ -118,13 +118,13 @@ class Ts(Click, ImageRec):
             match self.current_task:
                 case "TP":
                     log.info(f"开始突破...")
-                    if self.switch_ui.switch_to("ENCHANTMENT_1"):  # 切换到突破主界面
+                    if self.switch_ui.switch_to("ENCHANTMENT_1", self.running):  # 切换到突破主界面
                         log.insert("3.1", f"{' 突破进行中...':<27}")
                         self.tp.loop()  # 进入TP界面
                         self.tp_ticket_count.reset()  # 重置TP票数
                         self.current_task = "TS"
                 case "TS":
-                    if self.switch_ui.switch_to("EXPLORE"):
+                    if self.switch_ui.switch_to("EXPLORE", self.running):
                         log.info(f"开始探索...")  # 切换到探索主界面
                         while all([self.tp_ticket_count.count < self.tp_ticket_limit, self.monster_counter.count < self.monster_limit, self.running.is_set()]):
                             self.run()

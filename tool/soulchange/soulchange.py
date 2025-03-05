@@ -22,7 +22,16 @@ class SoulChange:
         """确认在御魂更换（式神录）的界面，防止出错"""
         _try_times = 3
         while not self.imageRec.match_img(SIKI_CONTENT):
-            self.switchUI.switch_to("SHIKI_RECORD")
+            match self.task_switch.state:
+                case "STOP":
+                    log.info("已停止御魂更换")
+                    return False
+                case "WAIT":
+                    log.info("暂停御魂更换")
+                    continue
+                case _:
+                    pass
+            self.switchUI.switch_to("SHIKI_RECORD", self.task_switch)
             _try_times -= 1
             if _try_times == 0:
                 log.error("无法跳转到式神录更换御魂")
@@ -35,9 +44,18 @@ class SoulChange:
     def confirm_preset(self):
         """确认预设正常展开"""
         while not self.imageRec.match_img(TEAM_PRESET):
+            match self.task_switch.state:
+                case "STOP":
+                    log.info("已停止御魂更换")
+                    return False
+                case "WAIT":
+                    log.info("暂停御魂更换")
+                    continue
+                case _:
+                    pass
             self.click.area_click(soul_preinstall, animation_time=0.5)
         else:
-            log.info("已确认预设正常展开")
+            log.info("已确认预设正常展开,滑动到顶部")
             sleep(0.5)
             self.click.slide((1168, 172, 1202, 207), (1161, 466, 1193, 517), move_time=0.3)
             sleep(0.5)
@@ -48,6 +66,15 @@ class SoulChange:
         match_area = self.GROUP_LIST[int(group) - 1]
         CHECKED[1] = match_area
         while not self.imageRec.match_color_img_by_hist(CHECKED):
+            match self.task_switch.state:
+                case "STOP":
+                    log.info("已停止御魂更换")
+                    return False
+                case "WAIT":
+                    log.info("暂停御魂更换")
+                    continue
+                case _:
+                    pass
             self.click.area_click(self.GROUP_BTN[int(group) - 1], animation_time=0.05)
             sleep(0.5)
         else:
@@ -66,6 +93,15 @@ class SoulChange:
         SUB_STR = ["契灵成功", "使用预设御魂", "装备御魂成功"]
         match_area = self.PLAN_BTN[int(plan) - 1]
         while True:
+            match self.task_switch.state:
+                case "STOP":
+                    log.info("已停止御魂更换")
+                    return False
+                case "WAIT":
+                    log.info("暂停御魂更换")
+                    continue
+                case _:
+                    pass
             self.click.area_click(match_area, animation_time=0.05)
             sleep(0.5)
             res = self.ocr.ocr((520, 228, 769, 260))
@@ -96,15 +132,25 @@ class SoulChange:
         plan = plan_str.split(",")[-1]
         return group, plan
 
-    def changeSoulTo(self, soul: str):
+    def changeSoulTo(self, soul: str, task_switch):
         """更换御魂"""
         self.CHANGE_SUCCESS = False
+        self.task_switch = task_switch
         try:
-            print(soul)
+            print(f"开始更换御魂: {soul}")
             # 解析御魂分组方案信息
             group, plan = self.parse_plan_str(soul)
-            log.info(f"开始切换御魂: 组{group} ,方案{plan}")
+            log.info(f"开始切换御魂: <组{group} ,方案{plan}>")
             while not self.CHANGE_SUCCESS:
+                match self.task_switch.state:
+                    case "STOP":
+                        log.info("已停止御魂更换")
+                        return False
+                    case "WAIT":
+                        log.info("暂停御魂更换")
+                        continue
+                    case _:
+                        pass
                 # 切换到御魂更换界面
                 self.confirm_page()
 

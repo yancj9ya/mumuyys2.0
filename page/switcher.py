@@ -73,11 +73,24 @@ class PageNavigator:
                 print(f"图像识别失败：{e}")
                 self.CLICK.win.del_cache()
 
-    def smart_goto(self, target_page):
+    def smart_goto(self, target_page, task_switch):
         """智能路径导航"""
         current_retry = 1
+        # 寻找路径
         while current_retry <= self.retry:
+            match task_switch.state:
+                case "STOP":
+                    log.info("已停止页面切换")
+                    return False
+                case "WAIT":
+                    log.info("暂停页面切换")
+                    continue
+                case "RUNNING":
+                    log.info(f"正在寻找路径，目标页面：{target_page}")
             try:
+                # 如果当前页面为目标页面，直接返回
+                if self.current_page.name == target_page:
+                    return True
                 if path := self.find_path(target_page):
                     while self.current_page.name != target_page:
                         current_index = path.index(self.current_page)
@@ -108,12 +121,12 @@ class PageNavigator:
             except Exception as e:
                 log.info(f"第 {current_retry} 次尝试失败: {str(e)}")
                 current_retry += 1
-                # if current_retry == 5:
-                # self._try_back()
                 time.sleep(self.cooldown * current_retry)  # 指数退避
+                if current_retry == 3:
+                    toast(f"无法到达 {target_page}，请检查页面配置", scenario="incomingCall", button="继续")
                 continue
         else:
-            toast(f"无法到达 {target_page}，请检查页面配置", scenario="incomingCall")
+            toast(f"最终尝试失败，无法到达 {target_page}，请检查页面配置")
 
     def _try_back(self):
         """尝试回退到上一页面"""
@@ -261,8 +274,8 @@ class PageNavigator:
         log.info(f"[路径回溯] 最终路径:{'→'.join([p.name for p in path[::-1]])}")
         return path[::-1]
 
-    def switch_to(self, target):
-        return self.smart_goto(target)
+    def switch_to(self, target, task_switch):
+        return self.smart_goto(target, task_switch)
 
 
 # 使用示例

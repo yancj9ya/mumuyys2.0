@@ -58,7 +58,7 @@
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-02-26 17:44:21"
+        "next_time": "after 2025-03-05 22:18:48"
     },
     "结界上卡": {
         "task_id": "结界上卡",
@@ -66,8 +66,8 @@
         "end_ui": "WARD",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-02-27 02:46:53",
-        "target_level": "5,6",
+        "next_time": "after 2025-03-06 13:07:00",
+        "target_level": "5",
         "target_count": "8,9"
     },
     "逢魔之时": {
@@ -76,7 +76,7 @@
         "end_ui": "COURTYARD_UF",
         "ui_delay": "0.5",
         "change_soul": "3,1",
-        "run_time": "18:30-21:59"
+        "run_time": "19:00-21:59"
     },
     "阴界之门": {
         "task_id": "阴界之门",
@@ -103,7 +103,7 @@
     },
     "超鬼王": {
         "task_id": "超鬼王",
-        "times": "13",
+        "times": "40",
         "run_time": "00:00-23:59"
     }
 }

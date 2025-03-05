@@ -31,8 +31,8 @@ class pre_hand_img:
         base_rgb = cls.hex_to_rgb(base_hex)
         base_hsv = cls.rgb_to_hsv(*base_rgb)
         h, s, v = map(int, base_hsv)
-        print(f"基准颜色: {base_hex}, HSV: {h}, {s}, {v}")
-        print(type(h), type(s), type(v))
+
+        # print(type(h), type(s), type(v))
         # 解包波动值并确保非负
         h_delta, s_delta, v_delta = (max(0, d) for d in delta_hsv)
 
@@ -43,7 +43,6 @@ class pre_hand_img:
         u_s = min(255, s + s_delta)
         l_v = max(0, v - v_delta)
         u_v = min(255, v + v_delta)
-        print(f"HSV范围: low:{l_h}, {l_s}, {l_v}, up:{u_h}, {u_s}, {u_v}")
 
         # 创建分割边界值
         lower_hsv = np.array([l_h, l_s, l_v], dtype=np.uint8)  # H最小值（OpenCV中H∈[0,180]）  # S最小值（S∈[0,255]）  # V最小值（V∈[0,255]）
@@ -55,6 +54,9 @@ class pre_hand_img:
         # 应用掩码
         result = cv2.bitwise_and(img, img, mask=mask)
         if DEBUG:
+            print(f"[DEBUG] 基准颜色: {base_hex}, HSV: {h}, {s}, {v}")
+            print(f"[DEBUG] HSV范围: low:{l_h}, {l_s}, {l_v}, up:{u_h}, {u_s}, {u_v}")
+
             cv2.imshow("Color Range Detection", result)
             cv2.waitKey(1)
         return result
@@ -98,7 +100,7 @@ class Ocr(pre_hand_img):
             # 图像识别
             ocr_result = cls.text_recognizer.ocr_single_line(ocr_img)
             if debug:
-                print(ocr_result)
+                print(f"[DEBUG] OCR识别结果: {ocr_result}")
                 cv2.imshow("ocr_img", ocr_img)
                 cv2.waitKey(500)
             if ocr_img is None:
@@ -111,7 +113,7 @@ class Ocr(pre_hand_img):
             return None
 
     @classmethod
-    def ocr_by_re(cls, area: list | tuple, pattern: str, threshold=0.9, try_times=5, range_color=None, debug=False):
+    def ocr_by_re(cls, area: list | tuple, pattern: str, threshold=0.8, try_times=5, range_color=None, debug=False):
         t_t = 0
         try:
             while t_t < try_times:

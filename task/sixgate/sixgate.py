@@ -175,11 +175,11 @@ class SixGate(Click, ImageRec):
 
         :return: coin数量
         """
-        ocr_res = self.ocr.ocr_by_re((1155, 22, 1238, 52), r"\d+")
+        ocr_res = self.ocr.ocr_by_re((1155, 22, 1238, 52), r"\d+", range_color=["afaa9f", (10, 16, 131)])
         if ocr_res:
             _coin = int(ocr_res[0])
             log.info(f"<award>:Current coin: {_coin}")
-            log.insert("3.0", f"Current coin: {_coin}")
+            log.insert("3.0", f"Current coin: {_coin+100}")
             return _coin
 
     def call_store(self):
@@ -210,7 +210,7 @@ class SixGate(Click, ImageRec):
             self.area_click(not_enough_coin[1])
         # 更新一下关卡数
         if self.get_step() == 0:
-            if ocr_res := self.ocr.ocr_by_re((1065, 233, 1094, 256), r"\d+"):
+            if ocr_res := self.ocr.ocr_by_re((1065, 233, 1094, 256), r"\d+", range_color=["eac15d", (20, 100, 100)]):
                 self.step_count.count = 20 - int(ocr_res[0])
 
         # 生成事件列表
@@ -238,15 +238,26 @@ class SixGate(Click, ImageRec):
         # 3.step条件
         step_10 = self.get_step() >= 10
         # 4.event 可跳过类型条件
-        skip_able_event = available_events_tuple[0] in ["event_store", " event_skip", "event_secret"]
+        SKIPPABLE_EVENTS = {"event_store", "event_secret", "event_skip"}
+        skip_able_event = available_events_tuple[0] in SKIPPABLE_EVENTS
         # 5.出现4个event 不可call store
         event_four = len(available_events) == 4
         # 6.buff等级不够5级
         buff_level_5 = self.buff_level.count < 5
+        # 7.直接跳过岛屿
+        island_skip = available_events_tuple[0] == "event_skip"
 
-        # 出现4个event 直接执行事件
+        # 直接跳过岛屿
+        if island_skip:
+            log.info(f"STEP-{self.get_step()}:island_skip, Skip event")
+            self.area_click(available_events_tuple[1])
+            # 关卡数+1
+            self.step_count.increment(interval=1.5)
+            return
+
+        # 出现4个event 不可召唤商店 直接执行事件
         if event_four:
-            log.info(f"event_four: normal run")
+            log.info(f"STEP-{self.get_step()}:event_four: normal run")
             self.area_click(available_events_tuple[1])
             # 关卡数+1
             self.step_count.increment(interval=1.5)
@@ -254,7 +265,7 @@ class SixGate(Click, ImageRec):
 
         # buff等级不够5级，直接执行
         if buff_level_5:
-            log.info(f"buff_level<5, normal run")
+            log.info(f"STEP-{self.get_step()}:buff_level<5, normal run")
             self.area_click(available_events_tuple[1])
             # 关卡数+1
             self.step_count.increment(interval=1.5)
@@ -264,41 +275,41 @@ class SixGate(Click, ImageRec):
         match (coin_300, coin_500, skill_1, step_10, skip_able_event):
             # 金币条件为false，则都不考虑
             case (False, _, _, _, _):
-                log.info(f"coin<300, normal run")
+                log.info(f"STEP-{self.get_step()}:coin<300, normal run")
                 self.area_click(available_events_tuple[1])
                 # 关卡数+1
                 self.step_count.increment(interval=1.5)
                 return
             # 在step<10时，不考虑快速跳过
             case (_, _, _, False, _):
-                log.info(f"step<10, normal run")
+                log.info(f"STEP-{self.get_step()}:step<10, normal run")
                 self.area_click(available_events_tuple[1])
                 # 关卡数+1
                 self.step_count.increment(interval=1.5)
                 return
-            # 可跳过事件，且技能大于1，则直接执行
-            case (_, _, True, _, True):
-                log.info(f"skill>1 and event skipable, Skip event")
+            # 可跳过事件，则直接执行
+            case (_, _, _, _, True):
+                log.info(f"STEP-{self.get_step()}:event skipable, Skip event")
                 self.area_click(available_events_tuple[1])
                 # 关卡数+1
                 self.step_count.increment(interval=1.5)
                 return
             # 技能小于1，但金币够500购买,step大于10,不可跳过事件
             case (_, True, False, True, False):
-                log.info(f"skill<1 and coin>500 and step>10, Call store")
+                log.info(f"STEP-{self.get_step()}:skill<1 and coin>500 and step>10, Call store")
                 self.call_store()
                 return
             # 技能大于1，且金币够300，step大于10,不可跳过类型事件
             case (True, _, True, True, False):
-                log.info(f"skill>1 and coin>300 and step>10, call store")
+                log.info(f"STEP-{self.get_step()}:skill>1 and coin>300 and step>10, call store")
                 self.call_store()
                 return
             # 技能小于1，金币不够300，step大于10,不可跳过类型事件
             case (False, _, False, True, False):
-                log.info(f"skill<1 and coin<300 and step>10, normal run")
+                log.info(f"STEP-{self.get_step()}:skill<1 and coin<300 and step>10, normal run")
                 self.area_click(available_events_tuple[1])
             case _:
-                log.info(f"No matched condition, normal run")
+                log.info(f"STEP-{self.get_step()}:No matched condition, normal run")
                 log.debug(f"{coin_300, coin_500, skill_1, step_10, skip_able_event}")
                 self.area_click(available_events_tuple[1])
 
@@ -309,6 +320,9 @@ class SixGate(Click, ImageRec):
         # 确认挑战
         if click_obj := self.match_img(event_ezbattle_challenge):
             self.area_click(click_obj)
+            # 每次战斗金币增加100
+            if hasattr(self, "coin_num"):
+                self.coin_num += 100
 
     def event_chaos_page(self):
         """混沌界面"""
@@ -322,6 +336,10 @@ class SixGate(Click, ImageRec):
             # 确认挑战
             if click_obj := self.match_img(event_ezbattle_challenge):
                 self.area_click(click_obj)
+                # 每次战斗金币增加100
+                if hasattr(self, "coin_num"):
+                    self.coin_num += 100
+
         pass
 
     def event_secret_page(self):
@@ -336,17 +354,17 @@ class SixGate(Click, ImageRec):
         """商店界面"""
         if self.match_img(event_store_page_exit):  # 页面加载完毕
             # 先获取金币数量
-            if ocr_res := self.ocr.ocr_by_re((1157, 21, 1239, 54), r"\d+"):
+            if ocr_res := self.ocr.ocr_by_re((1169, 26, 1224, 51), r"\d+", threshold=0.65):
                 self.coin_num = int(ocr_res[0])
         else:  # 页面未加载完毕
             return
         log.info(f"<store>:Current coin: {self.coin_num}")
         # 判断是否需要购买
-        if self.coin_num >= 200 and self.skill_level.count < 1:
+        if self.coin_num >= 200 and self.skill_level.count < 2:  # 金币够200，且技能小于2,则购买
             # sleep(2)
             for _ in range(3):
                 # 点击购买按钮
-                if click_obj := self.match_img(buy_store_thunder, accuracy=0.8):  # 特殊处理，最后一个部分区域点击不动
+                if click_obj := self.match_color_img_by_hist(buy_store_thunder, accuracy=0.8):  # 特殊处理，最后一个部分区域点击不动
                     x1, y1, x2, y2 = click_obj
                     if 1032 <= (x1 + x2) / 2 <= 1161 and 662 <= (y1 + y2) / 2 <= 699:
                         # 条件成立时执行的代码:
@@ -392,7 +410,7 @@ class SixGate(Click, ImageRec):
         """战斗结束奖励选择"""
         # 更新一下coin_num
         if res := self.update_award_coin():
-            self.coin_num = res
+            self.coin_num = res + 100
         # 先判断左侧有无需要的技能,有则选择
         if position := self.match_img(sg_skill_thunder):
             x1, y1, x2, y2 = position
@@ -410,7 +428,7 @@ class SixGate(Click, ImageRec):
             if click_obj := self.match_img(chose_buff_confirm):
                 # 更新一下buff_level
                 if self.buff_level.count == 0:
-                    if ocr_res := self.ocr.ocr_by_re((250, 235, 276, 259), r"\d+"):
+                    if ocr_res := self.ocr.ocr_by_re((250, 235, 276, 259), r"\d+", range_color=["f5efdb", (30, 15, 51)]):
                         self.buff_level.count = int(ocr_res[0])
                 self.area_click(click_obj)
                 self.buff_level.increment(2)

@@ -89,8 +89,8 @@ class Dg(Click, ImageRec):
                     for area in res:
                         sleep(random.uniform(0.1, 0.7))
                         assert self.running.is_set(), "接收到停止信号"
-                        ocr_area = [area[0] + 35, area[1], area[2] + 43, area[3]]
-                        match = Ocr.ocr_by_re(ocr_area, "([0-9]{3})", range_color=["efeeed", (20, 30, 50)])
+                        ocr_area = [area[0] + 35, area[1], area[2] + 63, area[3]]
+                        match = Ocr.ocr_by_re(ocr_area, "([0-9]{3})")
                         if match:
                             dg_sj_num = int(match.group(1))
                             self.area_click(ocr_area)

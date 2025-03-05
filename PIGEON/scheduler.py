@@ -297,6 +297,8 @@ class TaskExecutor:
         try:
             self._task_need_change_soul(parms)
             self._task_need_switch_page(parms, "start_ui")
+            if not self.task_ctrl.is_set():
+                return
             instance_return = self._create_task_instance(parms)
             self._task_need_switch_page(parms, "end_ui")
             log.file(f"instance_return: {instance_return}")
@@ -304,14 +306,17 @@ class TaskExecutor:
             log.info(f"_task function Error in {parms['task_id']} task: {e}")
 
         finally:
-            if instance_return:
-                # 如果任务有下一次运行时间，则更新任务的 next_time 参数
-                pattern = r"^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$"
-                if bool(re.match(pattern, instance_return)):
-                    hour, minute, second = map(int, instance_return.split(":"))
-                    target_time = datetime.now() + timedelta(hours=hour, minutes=minute, seconds=second)
-                    task_option[task.name]["next_time"] = f"after {target_time.strftime("%Y-%m-%d %H:%M:%S")}"
-                    task.TabMaster.add_task(task.name)
+            try:
+                if instance_return:
+                    # 如果任务有下一次运行时间，则更新任务的 next_time 参数
+                    pattern = r"^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$"
+                    if bool(re.match(pattern, instance_return)):
+                        hour, minute, second = map(int, instance_return.split(":"))
+                        target_time = datetime.now() + timedelta(hours=hour, minutes=minute, seconds=second)
+                        task_option[task.name]["next_time"] = f"after {target_time.strftime("%Y-%m-%d %H:%M:%S")}"
+                        task.TabMaster.add_task(task.name)
+            except:
+                pass
             task.set_state("done")
             task.TabMaster.sort_task()
             self.task_ctrl.stop()
@@ -372,11 +377,11 @@ class TaskExecutor:
 
     def _task_need_change_soul(self, parms):
         if parms.get("change_soul", "false") != "false":
-            self.soul_change.changeSoulTo(parms["change_soul"])
+            self.soul_change.changeSoulTo(parms["change_soul"], self.task_ctrl)
 
     def _task_need_switch_page(self, parms, page):
         if parms.get(page, False) and self.task_ctrl.is_set():
-            self.switch_ui.switch_to(parms[page])
+            self.switch_ui.switch_to(parms[page], self.task_ctrl)
 
 
 class ClientManager:

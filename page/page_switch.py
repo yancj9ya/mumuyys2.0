@@ -49,7 +49,7 @@ class IMG:
 
 # ========== 初始化配置 ========== #
 # 创建页面导航实例
-nav = PageNavigator(timeout=30, retry=5, cooldown=1)
+nav = PageNavigator(timeout=30, retry=5, cooldown=2)
 
 # 定义页面
 EXPLORE = Page("EXPLORE", ["page/res/EXPLORE.bmp", [1136, 123, 1176, 165], "EXPLORE"])
@@ -61,7 +61,7 @@ REGIONAL_DEMON_KING = Page("REGIONAL_DEMON_KING", ["page/res/REGIONAL_DEMON_KING
 COURTYARD_FOLD = Page("COURTYARD_FOLD", ["page/res/COURTYARD_FOLD.bmp", [54, 625, 89, 659], "COURTYARD_FOLD"])
 COURTYARD_UF = Page("COURTYARD_UF", ["page/res/COURTYARD_UF.bmp", [493, 13, 526, 50], "COURTYARD_UF"])
 YY_SHACK = Page("YY_SHACK", ["page/res/YY_SHACK.bmp", [1173, 616, 1239, 669], "YY_SHACK"])
-SHRINE = Page("SHRINE", ["page/res/SHRINE.bmp", [1184, 379, 1212, 450], "SHRINE"])
+SHRINE = Page("SHRINE", ["page/res/SHRINE.bmp", [1181, 381, 1211, 448], "SHRINE"])
 TEMPLE_CHOSE = Page("TEMPLE_CHOSE", ["page/res/TEMPLE_CHOSE.bmp", [98, 32, 227, 72], "TEMPLE_CHOSE"])
 SHIKI_RECORD = Page("SHIKI_RECORD", ["page/res/SHIKI_RECORD.bmp", [94, 20, 198, 65], "SHIKI_RECORD"])
 WARD = Page("WARD", ["page/res/WARD.bmp", (232, 401, 334, 515), "WARD"])
