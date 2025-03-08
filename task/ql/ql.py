@@ -47,7 +47,7 @@ class Ql(Click, ImageRec):
 
     def run(self):
         sleep(self.ui_delay)
-        match_result = self.match_ui(self.uilist, accuracy=0.9)
+        match_result = self.match_ui(self.uilist, accuracy=0.85)
         log.insert("2.1", f"@匹配结果:{match_result} ")
         match match_result:
             case "FIGHTING":

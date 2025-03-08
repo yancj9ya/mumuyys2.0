@@ -20,6 +20,7 @@ class SoulChange:
 
     def confirm_page(self):
         """确认在御魂更换（式神录）的界面，防止出错"""
+        print("confirm_page")
         _try_times = 3
         while not self.imageRec.match_img(SIKI_CONTENT):
             match self.task_switch.state:
@@ -31,10 +32,16 @@ class SoulChange:
                     continue
                 case _:
                     pass
-            self.switchUI.switch_to("SHIKI_RECORD", self.task_switch)
+            try:
+                self.switchUI.switch_to("SHIKI_RECORD", self.task_switch)
+            except Exception as e:
+                log.error(f"切换到式神录失败: {e}")
+                continue
+
+            print(f"confirm_page: {_try_times}")
             _try_times -= 1
             if _try_times == 0:
-                log.error("无法跳转到式神录更换御魂")
+                log.error(f"无法跳转到式神录更换御魂 {_try_times}and{self.task_switch.state}")
                 break
         else:
             log.info("已在御魂更换界面")
@@ -43,6 +50,7 @@ class SoulChange:
 
     def confirm_preset(self):
         """确认预设正常展开"""
+        print("confirm_preset")
         while not self.imageRec.match_img(TEAM_PRESET):
             match self.task_switch.state:
                 case "STOP":

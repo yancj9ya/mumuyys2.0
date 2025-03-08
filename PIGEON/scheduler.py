@@ -8,7 +8,7 @@
 # 实时任务的调度是最高优先级的
 # 与GUI的接口，调度器会将任务的状态反馈给GUI。
 # GUI通过调用调度器的接口，可以向调度器提交任务，并获取任务的状态。删除任务。
-import re, enum
+import re
 from PIGEON.config import task_option
 from PIGEON.log import log
 from PIGEON.threadsafelist import ThreadSafeList
@@ -21,31 +21,11 @@ from GUI.tab_pretask import AtomTask
 # from tool.switchui.SwitchUI import SwitchUI
 from page.page_switch import nav
 from tool.soulchange.soulchange import SoulChange
-from task import Xz, Tp, Dg, Ltp, Ql, Hd, Ts, Yh, Ad, Jy, Fm, SixGate, AutoPowerOff, Frog, ShadowGate, Hunt, Jysk, Cgw
+from task import *
 from threading import Thread
 from datetime import datetime, timedelta
 from time import sleep
 from win11toast import toast
-
-
-class Task(enum.Enum):
-    契灵 = Ql
-    智能 = Hd
-    绘卷 = Ts
-    御魂 = Yh
-    道馆 = Dg
-    寮突破 = Ltp
-    狩猎战 = Hunt
-    逢魔之时 = Fm
-    结界寄养 = Jy
-    结界突破 = Tp
-    地域鬼王 = Ad
-    六道之门 = SixGate
-    阴界之门 = ShadowGate
-    自动关机 = AutoPowerOff
-    对弈竞猜 = Frog
-    结界上卡 = Jysk
-    超鬼王 = Cgw
 
 
 class TimeManager:
@@ -298,6 +278,7 @@ class TaskExecutor:
             self._task_need_change_soul(parms)
             self._task_need_switch_page(parms, "start_ui")
             if not self.task_ctrl.is_set():
+                log.info(f"Stoped {task.name} task.")
                 return
             instance_return = self._create_task_instance(parms)
             self._task_need_switch_page(parms, "end_ui")

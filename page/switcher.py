@@ -88,8 +88,11 @@ class PageNavigator:
                 case "RUNNING":
                     log.info(f"正在寻找路径，目标页面：{target_page}")
             try:
+                # 刷新当前页面
+                self.refresh_current_page()
                 # 如果当前页面为目标页面，直接返回
                 if self.current_page.name == target_page:
+                    log.info(f"当前页面为目标页面，无需跳转")
                     return True
                 if path := self.find_path(target_page):
                     while self.current_page.name != target_page:
@@ -103,6 +106,7 @@ class PageNavigator:
                                 if self._execute_jump(action):
                                     print(f"成功跳转到 {next_page.name}")
                                     success = True
+                                    current_retry = 1  # 重置重试次数
                                     break
                                 else:
                                     print(f"无法执行跳转动作: {action_id}-{action.action_type}")
@@ -122,7 +126,7 @@ class PageNavigator:
                 log.info(f"第 {current_retry} 次尝试失败: {str(e)}")
                 current_retry += 1
                 time.sleep(self.cooldown * current_retry)  # 指数退避
-                if current_retry == 3:
+                if current_retry == self.retry - 1:
                     toast(f"无法到达 {target_page}，请检查页面配置", scenario="incomingCall", button="继续")
                 continue
         else:
