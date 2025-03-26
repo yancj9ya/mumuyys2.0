@@ -1,6 +1,7 @@
 from tool.Mytool.Click import Click
 from tool.Mytool.imageRec import ImageRec
 from tool.Mytool.Ocr import Ocr
+from tool.wxocr.wxocr import WxOcr
 from tool.Mytool.Counter import Counter
 from task.dg.res.img_info import *
 from task.dg.res.img_info_auto_create import *
@@ -16,7 +17,8 @@ class Dg(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [FINAL_FAIL, dg_ready_ui, dg_fail_ui, damo_ui, sl_ui, dg_fight_ui, dg_chose_ui]
+        self.ocr = WxOcr()
+        self.uilist = [FINAL_FAIL, dg_ready_ui, dg_fail_ui, VICTORY, damo_ui, dg_fight_ui, dg_chose_ui]
         self.main_ui_sleep = 0.5
         self.DG_TIME = None
         self.DG_SWITCH = True
@@ -72,7 +74,7 @@ class Dg(Click, ImageRec):
             toast(f"道馆未建立，手动建立道馆", scenario="incomingCall", button="已建立，继续")
             return
         try:
-            match = Ocr.ocr_by_re([499, 625, 705, 671], "([0-2])次", threshold=0.85)
+            match = self.ocr.ocr_by_re([499, 625, 705, 671], "([0-2])次", threshold=0.8)
             if match:
                 self.DG_COUNT = int(match.group(1))
                 if self.DG_COUNT == 0:
@@ -87,27 +89,29 @@ class Dg(Click, ImageRec):
                 assert self.running.is_set(), "接收到停止信号"
                 if res := self.match_duo_img(dg_coin_right_ui, accuracy=0.8):
                     for area in res:
-                        sleep(random.uniform(0.1, 0.7))
+                        sleep(random.uniform(0.1, 0.5))
                         assert self.running.is_set(), "接收到停止信号"
-                        ocr_area = [area[0] + 35, area[1], area[2] + 63, area[3]]
-                        match = Ocr.ocr_by_re(ocr_area, "([0-9]{3})")
+                        ocr_area = [area[0] + 25, area[1], area[2] + 73, area[3]]
+                        match = self.ocr.ocr_by_re(ocr_area, "([0-9]{3})", threshold=0.8, debug=False)
                         if match:
                             dg_sj_num = int(match.group(1))
                             self.area_click(ocr_area)
-                            sleep(0.7)
+                            sleep(0.8)
                         else:
                             continue
 
                         if left_area := self.match_img(dg_chose_left_ui):  # 取得左边的道馆人数ui位置
                             left_ocr_area = [
-                                left_area[0] + 200,
-                                left_area[1] + 40,
-                                left_area[0] + 292,
-                                left_area[1] + 60,
+                                left_area[0] + 225,
+                                left_area[1] + 35,
+                                left_area[0] + 280,
+                                left_area[1] + 65,
                             ]  # 根据左边的道馆ui，取得ocr识别的人数区域
-                            match = Ocr.ocr_by_re(left_ocr_area, "([1]?[0-9]{2})人", threshold=0.7)
+                            sleep(0.2)
+                            match = self.ocr.ocr_by_re(left_ocr_area, "([1]?[0-9]{2})人", threshold=0.7, debug=False)  # range_color=["ab3810", (100, 60, 100)],
                             if match:
                                 dg_rs = int(match.group(1))
+                                print(f"sj_num:{dg_sj_num}, dg_rs:{dg_rs}")
                             else:
                                 continue
                         else:
@@ -131,6 +135,7 @@ class Dg(Click, ImageRec):
                             self.DG_TIME = None
                             return
                 self.mouse_scroll(("down", 9), 1158, 310)
+                sleep(0.5)  # 等待滚动完成
                 log.info("mouse_scrolled")
             else:
                 log.info("未能找到合适的系数道馆，刷新重找")
@@ -234,14 +239,14 @@ class Dg(Click, ImageRec):
         match match_result:
             case "FINAL_FAIL":
                 self.area_click(FINAL_FAIL[1])
-            case "sl_ui":
-                self.area_click(sl_ui[1])
             case "ready_ui":
                 self.dg_ready_ui()
             case "fight_ui":
                 self.dg_fight_ui()
             case "chose_ui":
                 self.chose_dg()
+            case "VICTORY":
+                self.area_click(VICTORY[1])
             case "damo_ui" | "dg_fail_ui":
                 self._save_award_img()
             case _:

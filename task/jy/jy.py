@@ -49,20 +49,28 @@ class Jy(Click, ImageRec):
         """set parameters for the program,but not used in this program"""
         pass
 
-    @retry(max_retries=5, delay=1, exceptions=(Exception,))
+    @retry(max_retries=3, delay=1, exceptions=(Exception,))
     def get_right_jj_num(self):
         """get current JJ number from the right place"""
         ocr_res = self.ocr.ocr((795, 425, 977, 453))
         log.info(f"OCR result: {ocr_res[0]}")
+
+        # 处理点击过快，导致太鼓变成斗鱼或其他的情况
+        if "勾玉" not in ocr_res[0]:
+            return 0  # 返回0，最大不会被覆盖
+
         if ocr_res[1] > 0.6:
-            hand_res_str = re.sub(r"[^a-zA-Z0-9]", "", ocr_res[0])
+
+            # 清除字符串中的非数字部分，提取出结界卡的数量
+            hand_res_str = re.sub(r"[^0-9]", "", ocr_res[0])
+
+            # 如果结界卡是目标值，则返回结界卡数量
             if hand_res_str in ["76", "67", "59", "50"]:
                 return int(hand_res_str)
             else:
                 raise Exception("grt wrong number from OCR", ocr_res)
         else:
             raise Exception("Failed to get right JJ number")
-        sleep(1)  # Add a small delay to avoid infinite looping
 
     def scroll_down(self):
         """scroll down to bottom of the screen"""
@@ -146,6 +154,7 @@ class Jy(Click, ImageRec):
                 self.area_click(enter_jy[1])
                 log.info("Enter JY page")
             if self.match_img(jy_sure_page):
+                # todo:检查是否有空位寄养
                 if self.match_img(red_damo):
                     self.area_click(red_damo[1])
                     log.info("Red damo")
@@ -158,7 +167,15 @@ class Jy(Click, ImageRec):
             else:
                 self.area_click([630, 309, 648, 385])
                 log.info("Click center of JY page")
+
+            # 任务控制退出
+            if self.running.state == "STOP":
+                return
+
         while True:
+            # 任务控制退出
+            if self.running.state == "STOP":
+                return
             if self.match_img(confirm_jy_btn):
                 self.area_click(confirm_jy_btn[1])
             if self.match_img(exit_jy_page):

@@ -226,23 +226,6 @@ class TaskManager:
 
 
 class TaskExecutor:
-    F_MAP = {
-        "逢魔之时": Fm,
-        "结界寄养": Jy,
-        "结界突破": Tp,
-        "地域鬼王": Ad,
-        "寮突破": Ltp,
-        "契灵": Ql,
-        "智能": Hd,
-        "绘卷": Ts,
-        "御魂": Yh,
-        "道馆": Dg,
-        "狩猎战": Hunt,
-        "六道之门": SixGate,
-        "阴界之门": ShadowGate,
-        "自动关机": AutoPowerOff,
-        "对弈竞猜": Frog,
-    }
 
     def __init__(self):
         self.task_ctrl = MyEvent("task_ctrl")
@@ -256,7 +239,9 @@ class TaskExecutor:
         log.insert("1.0", f"{'━'*14}统计{'━'*14}\n\n\n\n\n{'━'*14}日志{'━'*14}\n", tags="sep")
         log.info(f"ui_delay : {parms.get('ui_delay'):.3f} seconds")
         # 创建task任务实例
-        task_instance = self.F_MAP.get(task.name)(STOPSIGNAL=self.task_ctrl, parms=parms)
+        task_cls = Task[task.name].value
+        assert task_cls is not None, f"未找到任务类 {task.name}"
+        task_instance = task_cls(STOPSIGNAL=self.task_ctrl)
         # 设置参数
         # print(f"parms: {parms}")
         task_instance.set_parms(**parms)
@@ -431,7 +416,7 @@ class Scheduler(TimeManager, TaskManager, TaskExecutor, ClientManager, GUIInterf
             if self.task_ctrl.state == "STOP" and self.ready_tasks:
 
                 if self.is_task_running:
-                    log.warning("已有任务正在执行")
+                    log.warning("已有任务正在执行：{}")
                     continue
                 else:
                     # 取出任务并执行

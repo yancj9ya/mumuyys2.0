@@ -129,10 +129,10 @@ class App(ctk.CTk):
         self.deiconify()
 
     def close_window(self):
-        close_or_not = messagebox.askyesno("提示", "是否要退出程序？")
-        if close_or_not:
-            self.save_profile()
-            self.destroy()
+        # close_or_not = messagebox.askyesno("提示", "是否要退出程序？")
+        # if close_or_not:
+        self.save_profile()
+        self.destroy()
 
     def save_profile(self):
         try:

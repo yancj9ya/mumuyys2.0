@@ -49,7 +49,9 @@ class IMG:
 
 # ========== 初始化配置 ========== #
 # 创建页面导航实例
-nav = PageNavigator(timeout=30, retry=5, cooldown=2)
+nav = PageNavigator(timeout=30, retry=6, cooldown=2)
+nav.back_list = IMG.BACK_SET
+
 
 # 定义页面
 EXPLORE = Page("EXPLORE", ["page/res/EXPLORE.bmp", [1136, 123, 1176, 165], "EXPLORE"])

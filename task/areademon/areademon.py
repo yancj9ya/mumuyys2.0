@@ -13,7 +13,7 @@ class Ad(ImageRec, Click):
     def __init__(self, **values):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.ui_list = [FIGHTING, ad_hot, ad_main_ui, challenge_start, ready_btn, challenge_win, challenge_dm]
+        self.ui_list = [FIGHTING, ad_hot, ad_main_ui, challenge_start, ready_btn, challenge_win, challenge_dm, BATTLE__FAIL]
         self.running = values.get("STOPSIGNAL", True)
         self.challenged_list = [chanllenge_3, chanllenge_2, chanllenge_1]
         self.challenge_start_filter = True
@@ -60,6 +60,10 @@ class Ad(ImageRec, Click):
                 while not self.match_img(challenge_start):
                     self.area_click(challenge_dm[1])
                     sleep(0.5)
+            case "BATTLE__FAIL":  # 战斗失败,重新挑战
+                self.area_click(BATTLE__FAIL[1])
+                sleep(0.5)
+                self.area_click(RE_CHALLENGE_CONFIRM)
             case _:
                 pass
         pass

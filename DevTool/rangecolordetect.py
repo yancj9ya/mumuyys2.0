@@ -64,6 +64,7 @@ def find_color_range(baseColor, area, want_res):
 
 
 if __name__ == "__main__":
+
     # 基准颜色
     baseColor = "f5efdb"
     area = (250, 235, 276, 259)

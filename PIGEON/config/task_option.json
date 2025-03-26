@@ -58,7 +58,7 @@
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-03-07 20:54:50"
+        "next_time": "after 2025-03-25 04:17:26"
     },
     "结界上卡": {
         "task_id": "结界上卡",
@@ -66,7 +66,7 @@
         "end_ui": "WARD",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-03-08 12:49:34",
+        "next_time": "after 2025-03-25 06:02:20",
         "target_level": "5",
         "target_count": "8,9"
     },
@@ -76,7 +76,7 @@
         "end_ui": "COURTYARD_UF",
         "ui_delay": "0.5",
         "change_soul": "3,1",
-        "run_time": "19:00-21:59"
+        "run_time": "17:00-21:59"
     },
     "阴界之门": {
         "task_id": "阴界之门",

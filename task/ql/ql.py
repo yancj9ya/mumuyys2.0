@@ -13,7 +13,7 @@ class Ql(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [FIGHTING, ql_sb_ui, damo_ui, btn_tz_ui, ql_main_ui, ql_cg_ui, ql_cg_t_ui, ql_sb_ui]
+        self.uilist = [FIGHTING, ql_sb_ui, damo_ui, btn_tz_ui, ql_main_ui, QL_CG_1, ql_cg_t_ui, ql_sb_ui]
         self.ui_delay = 0.5
         self.running = kwargs.get("STOPSIGNAL", True)
         self.cg_counter = Counter()
@@ -68,7 +68,7 @@ class Ql(Click, ImageRec):
                         self.area_click(full_pan_continue_confirm[1])
                     self.times_counter.increment()
                     log.insert("3.1", f"@第{self.times_counter.count:^3d}次挑战 ")
-            case "ql_cg_ui" | "ql_cg_t_ui":
+            case "QL_CG_1" | "ql_cg_t_ui":
                 self.cg_counter.increment()
                 # log.info(f'@捕获成功次数:{self.cg_counter.count}，概率：{self.cg_counter.count/self.times_counter.count*100:.2f}')
                 self.area_click([646, 194, 724, 288])

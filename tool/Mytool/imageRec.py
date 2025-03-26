@@ -248,6 +248,7 @@ class ImageRec:
         if color_similarity > color_simi_acc:
             return position
         else:
+            log.debug(f"颜色相似度不高，但仍然是<{color_similarity:.2f}>")
             return None
 
     def match_duo_img(self, img: list | tuple, accuracy=0.8, debug=False) -> list:

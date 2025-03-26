@@ -155,7 +155,7 @@ class Jysk:
         """获取剩余时间"""
         while True:
             pattern = r"^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$"
-            rest_time = self.ocr.ocr_by_re(OCR_TIME_A, pattern, threshold=0.9, range_color=["aa3810", (30, 120, 150)], debug=True)
+            rest_time = self.ocr.ocr_by_re(OCR_TIME_A, pattern, threshold=0.9, range_color=["aa3810", (30, 120, 150)], debug=False)
             if rest_time is not None:
                 return rest_time.group()
 

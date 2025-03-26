@@ -44,6 +44,7 @@ class PageNavigator:
         self.graph = {}  # 导航图谱 {source: {target: set(action_ids)}}
         self.timeout = timeout
         self.retry = retry
+        self.back_list = None
         self.CLICK = Click()
         self.IMG_REC = ImageRec()
 
@@ -124,6 +125,8 @@ class PageNavigator:
                     raise ValueError("不存在有效路径")
             except Exception as e:
                 log.info(f"第 {current_retry} 次尝试失败: {str(e)}")
+                if current_retry == 3:
+                    self._try_back()
                 current_retry += 1
                 time.sleep(self.cooldown * current_retry)  # 指数退避
                 if current_retry == self.retry - 1:
@@ -134,6 +137,16 @@ class PageNavigator:
 
     def _try_back(self):
         """尝试回退到上一页面"""
+        for back_img in self.back_list.values():
+            if coord := self.IMG_REC.match_img(back_img):
+                self.CLICK.area_click(coord)
+                break
+        else:
+            # 尝试执行鼠标后退
+            self.CLICK.xclick()
+
+        # 等待一秒的动画时间
+        time.sleep(1)
 
         pass
 

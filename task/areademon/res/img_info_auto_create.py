@@ -12,3 +12,5 @@ ready_btn = ["task/areademon/res/ready_btn.bmp", [1134, 653, 1216, 698], "ready_
 challenge_win = ["task/areademon/res/challenge_win.bmp", [439, 147, 514, 224], "challenge_win"]
 challenge_dm = ["task/areademon/res/challenge_dm.bmp", [585, 513, 675, 591], "challenge_dm"]
 challenge_exit = ["task/areademon/res/challenge_exit.bmp", [1193, 29, 1218, 63], "challenge_exit"]
+BATTLE__FAIL=['task/areademon/res/BATTLE__FAIL.bmp', [840, 493, 882, 533], 'BATTLE__FAIL']
+RE_CHALLENGE_CONFIRM=(701, 411, 816, 447)

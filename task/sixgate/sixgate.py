@@ -2,6 +2,7 @@
 from tool.Mytool.Click import Click
 from tool.Mytool.imageRec import ImageRec
 from tool.Mytool.Ocr import Ocr
+from tool.wxocr.wxocr import WxOcr
 from tool.Mytool.Counter import Counter
 from tool.based.base.res.base_img import *
 from task.sixgate.res.img_info_auto_create import *
@@ -18,7 +19,7 @@ class SixGate(Click, ImageRec):
         Click.__init__(self)
         ImageRec.__init__(self)
 
-        self.ocr = Ocr()
+        self.ocr = WxOcr()
         self.switch = True
 
         self.running = kwargs.get("STOPSIGNAL", None)
@@ -41,9 +42,9 @@ class SixGate(Click, ImageRec):
             init_buff_chose,  # 初始buff选择
             init_skill_chose,  # 初始技能选择
             full_buff,  # buff等级满了
+            MAP,  # 有的时候会点击过快，所以需要处理偶然进入map的事件
         ]
         self.ui_delay = 0.5
-        self.challenge_count = Counter("challenge_count")
 
         self.buff_level = Counter("buff_level")  # 初始buff等级
         self.skill_level = Counter("skill_level")  # 初始技能等级
@@ -108,9 +109,11 @@ class SixGate(Click, ImageRec):
                 self.team_confirm1()
             case "team_confirm2":
                 self.team_confirm2()
+            case "MAP":
+                self.area_click(BACK_BTN)
             case _:
                 log.insert("2.2", f"No matched UI:{match_result}")
-                log.insert("3.0", f"Current coin: {self.coin_num if hasattr(self, 'coin_num') else 'unknown'}")
+                log.insert("3.0", f"Current coin: {self.coin_num if hasattr(self, 'coin_num') else 'unknown' } Round:{self.challenge_count.count}")
                 log.insert("4.0", f"Buff level: {self.buff_level.count},Skill level: {self.skill_level.count},Step count: {self.step_count.count}")
         pass
 
@@ -175,11 +178,11 @@ class SixGate(Click, ImageRec):
 
         :return: coin数量
         """
-        ocr_res = self.ocr.ocr_by_re((1155, 22, 1238, 52), r"\d+", range_color=["afaa9f", (10, 16, 131)])
+        ocr_res = self.ocr.ocr_by_re((1160, 26, 1240, 51), r"\d+", range_color=["afaa9f", (10, 16, 131)])
         if ocr_res:
             _coin = int(ocr_res[0])
             log.info(f"<award>:Current coin: {_coin}")
-            log.insert("3.0", f"Current coin: {_coin+100}")
+            log.insert("3.0", f"Current coin: {_coin+100} Round:{self.challenge_count.count}")
             return _coin
 
     def call_store(self):
@@ -195,7 +198,7 @@ class SixGate(Click, ImageRec):
             self.area_click(call_store_confirm[1])
             log.info("<store>:call store")
             self.coin_num -= 300
-            log.insert("3.0", f"Current coin: {self.coin_num}")
+            log.insert("3.0", f"Current coin: {self.coin_num+100} Round:{self.challenge_count.count}")
 
         else:
             log.info("<store>:No call store confirm btn")
@@ -210,7 +213,7 @@ class SixGate(Click, ImageRec):
             self.area_click(not_enough_coin[1])
         # 更新一下关卡数
         if self.get_step() == 0:
-            if ocr_res := self.ocr.ocr_by_re((1065, 233, 1094, 256), r"\d+", range_color=["eac15d", (20, 100, 100)]):
+            if ocr_res := self.ocr.ocr_by_re((1074, 228, 1137, 258), r"\d+", range_color=["eac15d", (20, 100, 100)]):
                 self.step_count.count = 20 - int(ocr_res[0])
 
         # 生成事件列表
@@ -231,7 +234,7 @@ class SixGate(Click, ImageRec):
 
         # 构造多个条件判断
         # 1.coin条件
-        coin_300 = hasattr(self, "coin_num") and self.coin_num is not None and self.coin_num >= 300
+        coin_300 = bool(self.match_color_img_by_hist(event_chose_page, color_simi_acc=0.8))  # hasattr(self, "coin_num") and self.coin_num is not None and self.coin_num >= 300
         coin_500 = hasattr(self, "coin_num") and self.coin_num is not None and self.coin_num >= 500
         # 2.skill条件
         skill_1 = self.skill_level.count > 1
@@ -366,11 +369,11 @@ class SixGate(Click, ImageRec):
                 # 点击购买按钮
                 if click_obj := self.match_color_img_by_hist(buy_store_thunder, accuracy=0.8):  # 特殊处理，最后一个部分区域点击不动
                     x1, y1, x2, y2 = click_obj
-                    if 1032 <= (x1 + x2) / 2 <= 1161 and 662 <= (y1 + y2) / 2 <= 699:
+                    if 1047 <= (x1 + x2) / 2 <= 1155 and 577 <= (y1 + y2) / 2 <= 672:  # (1047, 577, 1155, 672)
                         # 条件成立时执行的代码:
                         self.area_click((1029, 592, 1043, 666))
                     else:
-                        self.area_click(click_obj)
+                        self.area_click([x1, y1 + 50, x2, y2 + 50])
                     sleep(1)
                     log.info("<store>:Buying Thunder in Store")
                 else:
@@ -387,7 +390,7 @@ class SixGate(Click, ImageRec):
                 if click_obj := self.match_img(buy_store_thunder_confirm):
                     self.area_click(click_obj)
                     self.coin_num -= 300
-                    self.skill_level.increment()
+                    self.skill_level.increment(1)
                     log.insert("4.0", f"Buff level: {self.buff_level.count},Skill level: {self.skill_level.count}")
                     return
         else:
@@ -416,7 +419,7 @@ class SixGate(Click, ImageRec):
             x1, y1, x2, y2 = position
             chose_position = (x1, y1 + 274, x2, y2 + 274)
             self.area_click(chose_position)
-            self.skill_level.increment()
+            self.skill_level.increment(2)
             log.insert("4.0", f"Buff level: {self.buff_level.count},Skill level: {self.skill_level.count}")
         else:
             # 无需要的技能，则强化舞技力量
@@ -428,12 +431,12 @@ class SixGate(Click, ImageRec):
             if click_obj := self.match_img(chose_buff_confirm):
                 # 更新一下buff_level
                 if self.buff_level.count == 0:
-                    if ocr_res := self.ocr.ocr_by_re((250, 235, 276, 259), r"\d+", range_color=["f5efdb", (30, 15, 51)]):
+                    if ocr_res := self.ocr.ocr_by_re((247, 225, 279, 264), r"\d+", threshold=0.65):
                         self.buff_level.count = int(ocr_res[0])
                 self.area_click(click_obj)
                 self.buff_level.increment(2)
                 log.insert("4.0", f"Buff level: {self.buff_level.count},Skill level: {self.skill_level.count}")
-            elif self.match_img(full_buff):
+            elif self.match_img(BUFF_FULL):
                 self.buff_level.count = 10
                 log.insert("4.0", f"Buff level: {self.buff_level.count},Skill level: {self.skill_level.count}")
                 self.area_click((780, 504, 869, 534))
@@ -453,10 +456,6 @@ class SixGate(Click, ImageRec):
         self.step_count.reset()
         if hasattr(self, "coin_num"):
             del self.coin_num
-        self.challenge_count.increment()
-        log.debug(f"<challenge>:Challenge count: {self.challenge_count.count}")
-        if self.challenge_count.count >= self.times:
-            self.switch = False
 
     def final_award(self):
         """使用双倍奖励"""
@@ -466,6 +465,10 @@ class SixGate(Click, ImageRec):
         else:
             # 点击下方空白处跳过奖励
             self.area_click((580, 564, 825, 641))
+            self.challenge_count.increment()
+            log.debug(f"<challenge>:Challenge count: {self.challenge_count.count}")
+            if self.challenge_count.count >= self.times:
+                self.switch = False
 
         pass
 

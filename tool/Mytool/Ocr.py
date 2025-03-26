@@ -117,7 +117,7 @@ class Ocr(pre_hand_img):
         t_t = 0
         try:
             while t_t < try_times:
-                sleep(0.2)
+                sleep(0.1)
                 res = cls.ocr(area, range_color=range_color, debug=debug)
                 log.file(f"尝试次数: {t_t}, 识别结果: {res}")
                 if res[1] < threshold:

@@ -118,7 +118,7 @@ class Windows(ver):
                         # 获取位图数据并转换为图像数组
                         signedIntsArray = bmp.GetBitmapBits(True)
                         img = np.frombuffer(signedIntsArray, dtype="uint8").reshape(h, w, 4)
-                        img = cv2.cvtColor(self.ver_img(img), cv2.COLOR_BGRA2BGR)
+                        img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)  # self.ver_img(img)
                         if debug:
                             cv2.imshow("截图", img)
                             cv2.waitKey(0)
