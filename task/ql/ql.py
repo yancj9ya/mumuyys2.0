@@ -1,6 +1,6 @@
 from tool.Mytool.Click import Click
 from tool.Mytool.imageRec import ImageRec
-from tool.Mytool.Ocr import Ocr
+from tool.wxocr.wxocr import WxOcr
 from tool.Mytool.Counter import Counter
 from tool.based.base.res.base_img import *
 from task.ql.res.img_info import *
@@ -13,37 +13,76 @@ class Ql(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [FIGHTING, ql_sb_ui, damo_ui, btn_tz_ui, ql_main_ui, QL_CG_1, ql_cg_t_ui, ql_sb_ui]
+        self.uilist = [FIGHTING, ql_sb_ui, damo_ui, btn_tz_ui, ql_main_ui, QL_CG_1, ql_cg_t_ui]
         self.ui_delay = 0.5
+        self.ocr = WxOcr()
         self.running = kwargs.get("STOPSIGNAL", True)
         self.cg_counter = Counter()
         self.times_counter = Counter()
         self.times = 0
-        self.call_fire_times = 0
         self.task_switch = True
+        self.first_call = True
 
     def call_fire(self):
         if not self.match_img(ql_main_ui):
             return
         else:
-            for call_times in range(5):
-                log.debug(f"@第{call_times+1}次召唤 ")
-                self.area_click([1171, 475, 1201, 504])
-                sleep(0.5)
-                if call_times == 0:
-                    self.area_click([933, 279, 1044, 405])
-                self.area_click([1149, 611, 1219, 658])
-                sleep(1)
-            self.call_fire_times += 5
+            log.debug(f"@开始召唤契灵")
+            # 点击召唤契灵入口
+            self.area_click(CALL_ENTRANCE)
+            sleep(1)
+            # 选择镇墓兽
+            self.area_click(CALL_TYPE_4)
+            # 最大化数量
+            self.area_click(CALL_NUM_MAX)
+            # 点击召唤
+            self.area_click(CALL_BTN)
+            sleep(1)
+            # 确认召唤
+            self.area_click(CALL_CONFIRM)
         pass
 
     def main_ui(self):
+        if self.first_call:
+            self.first_call = False
+            self.call_fire()
+            log.debug(f"首次召唤完成 ")
+
         if res := self.match_img(ql_fire):
             self.area_click(res)
         else:
             log.debug(f"契灵未找到，开始召唤 ")
             self.call_fire()
-            log.debug(f"召唤完成，共召唤{self.call_fire_times}次 ")
+            log.debug(f"召唤完成 ")
+
+    def get_ball_num(self):
+        """
+        获取低级盘子的数量
+        """
+        if res := self.ocr.ocr((494, 22, 621, 57))["text"]:
+            return int(res.split("/")[0])
+
+    def challenge(self):
+        """
+        挑战页面的操作
+        """
+        if res := self.match_img(btn_tz_ui):  # 确保在挑战页面
+            # 获取低级盘子的数量
+            low_ball_num = self.get_ball_num()
+            if self.times_counter.compare(self.times) or low_ball_num == 0:
+                self.task_switch = False
+                log.insert("2.2", f"@任务结束条件满足，退出任务 ")
+                return
+            else:
+                # 点击挑战按钮
+                self.area_click(res)
+                log.insert("3.1", f"@第{self.times_counter.count:^3d}次挑战 ")
+
+            # 处理提示弹窗
+            sleep(1)
+            if self.match_img(full_pan_continue_confirm):
+                self.area_click(full_pan_continue_confirm[1])
+            self.times_counter.increment()
 
     def run(self):
         sleep(self.ui_delay)
@@ -57,17 +96,7 @@ class Ql(Click, ImageRec):
             case "ql_main_ui":
                 self.main_ui()
             case "btn_tz_ui":
-                if res := self.match_img(btn_tz_ui):
-                    if self.times_counter.compare(self.times):
-                        self.task_switch = False
-                        log.insert("2.2", f"@挑战次数已达{self.times}次，退出任务 ")
-                        return
-                    self.area_click(res)
-                    sleep(1)
-                    if self.match_img(full_pan_continue_confirm):
-                        self.area_click(full_pan_continue_confirm[1])
-                    self.times_counter.increment()
-                    log.insert("3.1", f"@第{self.times_counter.count:^3d}次挑战 ")
+                self.challenge()
             case "QL_CG_1" | "ql_cg_t_ui":
                 self.cg_counter.increment()
                 # log.info(f'@捕获成功次数:{self.cg_counter.count}，概率：{self.cg_counter.count/self.times_counter.count*100:.2f}')

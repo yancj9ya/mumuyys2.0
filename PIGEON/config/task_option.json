@@ -48,6 +48,7 @@
         "end_ui": "COURTYARD_UF",
         "ui_delay": "0.5",
         "change_soul": "3.3",
+        "mode": "extra",
         "run_time": "06:00-23:59"
     },
     "结界寄养": {
@@ -58,7 +59,7 @@
         "change_soul": "false",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-03-25 04:17:26"
+        "next_time": "after 2025-04-11 18:40:13"
     },
     "结界上卡": {
         "task_id": "结界上卡",
@@ -66,7 +67,7 @@
         "end_ui": "WARD",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-03-25 06:02:20",
+        "next_time": "after 2025-04-12 08:40:54",
         "target_level": "5",
         "target_count": "8,9"
     },

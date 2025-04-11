@@ -38,7 +38,7 @@ class Click:
         # self.setcursor()
         # self.mouse_move(x, y)
 
-    def area_click(self, area: list | tuple, press_time=0.2, double_click=False, double_click_time=0.05, animation_time=0.05) -> None:
+    def area_click(self, area: list | tuple, press_time=0.1, double_click=False, double_click_time=0.05, animation_time=0.05) -> None:
         # rand_x = randint(area[0], area[2])
         # rand_y = randint(area[1], area[3])
         rand_x, rand_y = RandomCoord(area)
@@ -51,7 +51,7 @@ class Click:
 
     def mouse_scroll(self, d_t: tuple[str, int], x: int, y: int) -> None:
         """scroll mouse wheel"""
-        client_x, client_y = x, y
+
         # 计算窗口坐标
         rect = self.win.get_window_rect()
         x += rect[0]

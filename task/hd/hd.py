@@ -1,6 +1,7 @@
 from tool.Mytool.Click import Click
 from tool.Mytool.imageRec import ImageRec
 from tool.Mytool.Ocr import Ocr
+from tool.wxocr.wxocr import WxOcr
 from tool.Mytool.Counter import Counter
 from task.hd.res.img_info import *
 from time import sleep, time, strftime, localtime
@@ -13,6 +14,7 @@ class Hd(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
+        self.ocr = WxOcr()
         self.BTN_TZ = None
         self.ui_delay = 0.5
         self.hd_counter = Counter()
@@ -33,9 +35,9 @@ class Hd(Click, ImageRec):
                 match btn_res[2]:
                     case "btn_yyh":
                         log.insert("5.1", f"识别模式：业原火")
-                        if ocr_res := Ocr.ocr([752, 24, 820, 62], range_color=["d8d6c5", (20, 50, 80)]):
-                            if ocr_res[1] > 0.9:
-                                self.times = int(ocr_res[0])
+                        if ocr_res := self.ocr.ocr([750, 23, 834, 61]):
+                            if ocr_res["rate"] > 0.9:
+                                self.times = int(ocr_res["text"])
                                 log.info(f"挑战次数为{self.times}")
 
                     case "btn_mw":
@@ -45,8 +47,14 @@ class Hd(Click, ImageRec):
                     case "btn_yl":
                         log.insert("5.1", f"识别模式：御灵挑战")
                         self.need_stat_reward = True
-                    case _:
+                    case "btn_hd":
                         log.insert("5.1", f"识别模式：版本活动")
+                        if ocr_res := self.ocr.ocr((643, 6, 1225, 67)):
+                            if ocr_res["rate"] > 0.9:
+                                self.times = int(ocr_res["text"])
+                                log.info(f"挑战次数为{self.times}")
+                    case _:
+                        log.insert("5.0", f"其他类型，识别结果：{btn_res}")
                         pass
         except Exception as e:
             log.error("未找到按钮,{e}")
@@ -107,7 +115,7 @@ class Hd(Click, ImageRec):
                     log.info(f"挑战次数达到{self.times}，退出循环")
                     self.task_switch = False
                     return
-                self.area_click(self.BTN_TZ[1], double_click=True)
+                self.area_click(self.BTN_TZ[1], double_click=False)
                 sleep(1.5)
                 self.hd_counter.increment()
                 # log.insert("3.1", f"开始第{self.hd_counter.count}次挑战")

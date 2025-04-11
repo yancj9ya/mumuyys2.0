@@ -15,12 +15,27 @@ class Ad(ImageRec, Click):
         ImageRec.__init__(self)
         self.ui_list = [FIGHTING, ad_hot, ad_main_ui, challenge_start, ready_btn, challenge_win, challenge_dm, BATTLE__FAIL]
         self.running = values.get("STOPSIGNAL", True)
-        self.challenged_list = [chanllenge_3, chanllenge_2, chanllenge_1]
+        self.challenged_list = {tuple(chanllenge_3[1]): False, tuple(chanllenge_2[1]): False, tuple(chanllenge_1[1]): False}
         self.challenge_start_filter = True
-        self.hot_challenge = True
         self.ui_delay = 0.5
         self.stop_task = False
+        self.mode = "extra"
         pass
+
+    def chose_challenge(self):
+        for chanllge, state in self.challenged_list.items():
+            if not state:
+                return chanllge
+        return None
+
+    def select_mode(self, mode: str):
+        is_extra = not self.match_img(EXTRA)
+        if (is_extra and mode == "extra") or (not is_extra and mode == "normal"):
+            return
+        else:
+            self.area_click(EXTRA[1])
+            sleep(0.5)
+            log.debug(f"切换模式: {mode}")
 
     def run(self):
         sleep(self.ui_delay)
@@ -35,15 +50,16 @@ class Ad(ImageRec, Click):
                 # 点击热门
                 self.area_click(ad_hot[1])
                 sleep(0.3)
-                if self.challenged_list and self.hot_challenge:
-                    current_challenge = self.challenged_list.pop()
-                    self.hot_challenge = False
-                    self.area_click(current_challenge[1])
+                # 获取挑战对象
+                self.current_challenge = self.chose_challenge()
+                if self.current_challenge:
+                    self.area_click(self.current_challenge)
                 else:
                     log.info(f"no more challenge")
-                    log.info(f"{self.challenged_list} and {self.hot_challenge}")
+                    # log.info(f"{self.challenged_list} and {self.hot_challenge}")
                     self.stop_task = True
             case "challenge_start":
+                self.select_mode(self.mode)
                 if self.challenge_start_filter:
                     self.area_click(challenge_start[1])
                 else:
@@ -52,7 +68,7 @@ class Ad(ImageRec, Click):
             case "ready_btn":
                 self.area_click(ready_btn[1])
                 self.challenge_start_filter = False
-                self.hot_challenge = True
+                self.challenged_list[self.current_challenge] = True
             case "challenge_win":
                 self.area_click(challenge_win[1])
             case "challenge_dm":
@@ -85,4 +101,5 @@ class Ad(ImageRec, Click):
 
     def set_parms(self, **values):
         self.ui_delay = float(values.get("ui_delay", 0.5))
+        self.mode = values.get("mode", "extra")
         pass

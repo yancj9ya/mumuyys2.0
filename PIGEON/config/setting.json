@@ -1,5 +1,5 @@
 {
-    "times": "53",
+    "times": "50",
     "tp_keep_level": true,
     "ui_delay": 0.55,
     "set_window_top": 1,
@@ -7,11 +7,11 @@
     "dg_rs": 70,
     "tp_ticket_limit": 10,
     "monster_limit": 24,
-    "with_tp": true,
+    "with_tp": false,
     "file_log": true,
     "cooperation_mission": true,
     "window_position": {
-        "x": 2219,
-        "y": 281
+        "x": 2210,
+        "y": 316
     }
 }

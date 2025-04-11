@@ -357,7 +357,7 @@ class SixGate(Click, ImageRec):
         """商店界面"""
         if self.match_img(event_store_page_exit):  # 页面加载完毕
             # 先获取金币数量
-            if ocr_res := self.ocr.ocr_by_re((1169, 26, 1224, 51), r"\d+", threshold=0.65):
+            if ocr_res := self.ocr.ocr_by_re((1155, 10, 1238, 70), r"\d+", threshold=0.99):
                 self.coin_num = int(ocr_res[0])
         else:  # 页面未加载完毕
             return
