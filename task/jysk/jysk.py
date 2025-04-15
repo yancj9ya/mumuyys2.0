@@ -3,6 +3,7 @@
 from tool.Mytool.Click import Click
 from tool.Mytool.imageRec import ImageRec
 from tool.Mytool.Ocr import Ocr
+from tool.wxocr.wxocr import WxOcr
 from task.jysk.res.img_info_auto_create import *
 from time import sleep
 from PIGEON.log import log
@@ -59,7 +60,9 @@ class Jysk:
 
     def set_parms(self, *args, **kwargs):
         """设置参数"""
-        self.target_level = [int(i) for i in kwargs.get("target_level", "5,6").split(",")]
+        self.target_type, self.target_level = kwargs.get("target_level").split("@")
+        self.target_type = int(self.target_type)
+        self.target_level = [int(i) for i in self.target_level.split(",")]
         self.target_count = [int(i) for i in kwargs.get("target_count", "8,9").split(",")]
         print(f"target_level: {self.target_level}, target_count: {self.target_count}")
         pass
@@ -113,13 +116,22 @@ class Jysk:
         """搜索并更换结界卡"""
         # 循环搜索并更换结界卡
         while True:
-            serch_area = self.image_rec.match_duo_img(SIX_GY)
+            if self.target_type == 1:
+                serch_area = self.image_rec.match_duo_img(SIX_GY, accuracy=0.5)
+            elif self.target_type == 2:
+                serch_area = self.image_rec.match_duo_img(SIX_DY, accuracy=0.5)
+            print(f"serch_area: {len(serch_area)}")
             for rect in serch_area:
                 level = self.get_star_level(rect)
+                print(f"get_star_level: {level}")
                 if level in self.target_level:
                     # 获取数量识别ocr区域
-                    count_area = [rect[0] + 113, rect[1] - 8, rect[2] + 132, rect[3] + 8]
-                    count_str = self.ocr.ocr_by_re(count_area, r"^勾玉\s*\+([7-9])/h$", threshold=0.8).group(1)
+                    count_area = [rect[0] + 113, rect[1] - 10, rect[2] + 140, rect[3] + 8]
+                    if self.target_type == 1:
+                        count_str = self.ocr.ocr_by_re(count_area, r"^勾玉\s*\+([7-9])/h$", threshold=0.8).group(1)
+                    elif self.target_type == 2:
+                        count_str = self.ocr.ocr_by_re(count_area, r"^体力\s*\+(1[6-8])/h$", threshold=0.8).group(1)
+                    print(f"get_count_str: {count_str}")
                     if int(count_str) in self.target_count:
                         # 点击结界卡
                         self.click.area_click(rect)
@@ -142,14 +154,22 @@ class Jysk:
 
     def get_star_level(self, rect):
         """获取星级"""
-        IMG_5STAR = [FIVE_GY[0], rect, FIVE_GY[2]]
-        IMG_6STAR = [SIX_GY[0], rect, SIX_GY[2]]
-        if self.image_rec.match_img_by_hist(IMG_5STAR, accuracy=0.8):
-            return 5
-        elif self.image_rec.match_img_by_hist(IMG_6STAR, accuracy=0.8):
-            return 6
-        else:
-            return 0
+        rect = [rect[0] - 10, rect[1] - 10, rect[2] + 10, rect[3] + 10]
+        if self.target_type == 1:
+            IMG_5STAR = [FIVE_GY[0], rect, FIVE_GY[2]]
+            IMG_6STAR = [SIX_GY[0], rect, SIX_GY[2]]
+            if self.image_rec.match_color_img_by_hist(IMG_5STAR, accuracy=0.8, color_simi_acc=0.7):
+                return 5
+            elif self.image_rec.match_color_img_by_hist(IMG_6STAR, accuracy=0.8, color_simi_acc=0.7):
+                return 6
+            else:
+                return 0
+        elif self.target_type == 2:
+            IMG_6STAR = [SIX_DY[0], rect, SIX_DY[2]]
+            if self.image_rec.match_color_img_by_hist(IMG_6STAR, accuracy=0.8, color_simi_acc=0.7):
+                return 6
+            else:
+                return 0
 
     def get_rest_time(self):
         """获取剩余时间"""
@@ -163,12 +183,16 @@ class Jysk:
         """切换卡池"""
         while True:
             # 先识别出卡池类型，再点击切换按钮
-            type_str = self.ocr.ocr_by_re(OCR_TYPE_A, r"^太鼓|全部$", threshold=0.9).group()
+            type_str = self.ocr.ocr_by_re(OCR_TYPE_A, r"^太鼓|斗鱼|全部$", threshold=0.9).group()
             if type_str == "全部":
                 self.click.area_click(OCR_TYPE_A)
                 sleep(0.5)
-                self.click.area_click([386, 251, 491, 289])  # 选择太鼓卡池
-            elif type_str == "太鼓":
+                if self.target_type == 1:
+                    self.click.area_click([386, 251, 491, 289])  # 选择太鼓卡池
+                elif self.target_type == 2:
+                    self.click.area_click([389, 315, 489, 352])  # 选择斗鱼卡池
+
+            elif type_str in ["太鼓", "斗鱼"]:
                 return
 
         pass

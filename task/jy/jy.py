@@ -47,6 +47,12 @@ class Jy(Click, ImageRec):
 
     def set_parms(self, *args, **kwargs):
         """set parameters for the program,but not used in this program"""
+        self.target_type, self.target_level = kwargs.get("target_level").split("@")
+        self.target_type = int(self.target_type)
+        self.target_level = [int(i) for i in self.target_level.split(",")]
+        self.target_count = [int(i) for i in kwargs.get("target_count", "59-76").split("-")]
+        print(f"target_level: {self.target_level}, target_count: {self.target_count}")
+
         pass
 
     @retry(max_retries=3, delay=1, exceptions=(Exception,))
@@ -56,7 +62,8 @@ class Jy(Click, ImageRec):
         log.info(f"OCR result: {ocr_res[0]}")
 
         # 处理点击过快，导致太鼓变成斗鱼或其他的情况
-        if "勾玉" not in ocr_res[0]:
+        keyword = "勾玉" if self.target_type == 1 else "体力"
+        if keyword not in ocr_res[0]:
             return 0  # 返回0，最大不会被覆盖
 
         if ocr_res[1] > 0.6:
@@ -65,7 +72,7 @@ class Jy(Click, ImageRec):
             hand_res_str = re.sub(r"[^0-9]", "", ocr_res[0])
 
             # 如果结界卡是目标值，则返回结界卡数量
-            if hand_res_str in ["76", "67", "59", "50"]:
+            if min(self.target_count) <= int(hand_res_str) <= max(self.target_count):
                 return int(hand_res_str)
             else:
                 raise Exception("grt wrong number from OCR", ocr_res)
@@ -79,15 +86,23 @@ class Jy(Click, ImageRec):
         sleep(0.2)
         pass
 
+    def get_target_pos(self):
+        """get the position of target area"""
+        if self.target_type == 1:
+            six_star = self.match_duo_img(six_star_img, 0.8)
+            five_star = self.match_duo_img(five_star_img, 0.8)
+            log.info(f"Found 6-star: {len(six_star)}, 5-star: {len(five_star)}")
+            return six_star + five_star if six_star and five_star else six_star or five_star
+        elif self.target_type == 2:
+            six_dy = self.match_duo_img(six_dy_img, 0.8)
+            log.info(f"Found 6-dy: {len(six_dy)}")
+            return six_dy
+
     def re_serch(self):
         """get the max number of same and diff server JY list"""
         temp_num_list = []
         sleep(1)
-        six_star = self.match_duo_img(six_star_img, 0.8)
-        five_star = self.match_duo_img(five_star_img, 0.8)
-        log.info(f"Found 6-star: {len(six_star)}, 5-star: {len(five_star)}")
-        rec_list = six_star + five_star if six_star and five_star else six_star or five_star
-
+        rec_list = self.get_target_pos()
         try:
             for area in rec_list:
                 log.info(f"found {len(rec_list)} target in this page")
@@ -95,7 +110,7 @@ class Jy(Click, ImageRec):
                 sleep(1)
                 temp_num = self.get_right_jj_num()
                 if temp_num:
-                    if temp_num == 76 or (hasattr(self, "finally_number") and temp_num == self.finally_number):
+                    if temp_num == max(self.target_count) or (hasattr(self, "finally_number") and temp_num == self.finally_number):
                         self.get_in_to_jy()
                         self.finally_number = temp_num
                         self.next_time = "06:00:00"
@@ -132,7 +147,7 @@ class Jy(Click, ImageRec):
             return  # 如果已经设置了下一次运行时间说明已经蹲了结界，则不再继续查找
         self.area_click(area_type[1], double_click=True, double_click_time=0.2)
         sleep(0.2)
-        log.info(f"Finding max number in {area_type[-1]}...")
+        log.info(f"Finding max number in {area_type[-1]}...\n left_max: {self.left_max}, right_max: {self.right_max}")
         for _ in range(5):
             if serch_max_num := self.re_serch():
                 if isinstance(serch_max_num, int):

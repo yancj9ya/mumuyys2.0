@@ -74,7 +74,7 @@ class Dg(Click, ImageRec):
             toast(f"道馆未建立，手动建立道馆", scenario="incomingCall", button="已建立，继续")
             return
         try:
-            match = self.ocr.ocr_by_re([499, 625, 705, 671], "([0-2])次", threshold=0.8)
+            match = self.ocr.ocr_by_re([499, 625, 705, 671], "([0-2])次", threshold=0.8, debug=True)
             if match:
                 self.DG_COUNT = int(match.group(1))
                 if self.DG_COUNT == 0:
@@ -92,7 +92,7 @@ class Dg(Click, ImageRec):
                         sleep(random.uniform(0.1, 0.5))
                         assert self.running.is_set(), "接收到停止信号"
                         ocr_area = [area[0] + 25, area[1], area[2] + 73, area[3]]
-                        match = self.ocr.ocr_by_re(ocr_area, "([0-9]{3})", threshold=0.8, debug=False)
+                        match = self.ocr.ocr_by_re(ocr_area, "([0-9]{3})万", threshold=0.7, debug=True)
                         if match:
                             dg_sj_num = int(match.group(1))
                             self.area_click(ocr_area)
@@ -108,7 +108,7 @@ class Dg(Click, ImageRec):
                                 left_area[1] + 65,
                             ]  # 根据左边的道馆ui，取得ocr识别的人数区域
                             sleep(0.2)
-                            match = self.ocr.ocr_by_re(left_ocr_area, "([1]?[0-9]{2})人", threshold=0.7, debug=False)  # range_color=["ab3810", (100, 60, 100)],
+                            match = self.ocr.ocr_by_re(left_ocr_area, "([1]?[0-9]{2})人", range_color=["ab3810", (100, 60, 100)], threshold=0.7, debug=True)  # range_color=["ab3810", (100, 60, 100)],
                             if match:
                                 dg_rs = int(match.group(1))
                                 print(f"sj_num:{dg_sj_num}, dg_rs:{dg_rs}")

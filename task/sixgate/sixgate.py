@@ -237,7 +237,7 @@ class SixGate(Click, ImageRec):
         coin_300 = bool(self.match_color_img_by_hist(event_chose_page, color_simi_acc=0.8))  # hasattr(self, "coin_num") and self.coin_num is not None and self.coin_num >= 300
         coin_500 = hasattr(self, "coin_num") and self.coin_num is not None and self.coin_num >= 500
         # 2.skill条件
-        skill_1 = self.skill_level.count > 1
+        skill_1 = self.skill_level.count >= 1
         # 3.step条件
         step_10 = self.get_step() >= 10
         # 4.event 可跳过类型条件
@@ -363,7 +363,7 @@ class SixGate(Click, ImageRec):
             return
         log.info(f"<store>:Current coin: {self.coin_num}")
         # 判断是否需要购买
-        if self.coin_num >= 200 and self.skill_level.count < 2:  # 金币够200，且技能小于2,则购买
+        if self.coin_num >= 200 and self.skill_level.count < 1:  # 金币够200，且技能小于2,则购买
             # sleep(2)
             for _ in range(3):
                 # 点击购买按钮

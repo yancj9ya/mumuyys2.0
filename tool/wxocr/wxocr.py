@@ -148,17 +148,18 @@ class WxOcr:
             print(f"re识别出错：{e}")
             return None
 
-    def ocr(self, area, range_color=None):
+    def ocr(self, area, range_color=None, debug=None):
         while True:
             # 截图
             scr_img = self.win.screenshot(area)
             # 预处理
             if range_color:
-                scr_img = pre_hand_img.range_img(scr_img, *range_color, DEBUG=True)
+                scr_img = pre_hand_img.range_img(scr_img, *range_color, DEBUG=debug)
             # 保存截图
             save_img_path = os.path.join(current_file_dir, "temp.png")
             if retval := cv2.imwrite(save_img_path, scr_img):
                 # 识别
+                sleep(0.05)
                 result = self.get_ocr_result(save_img_path)
                 # print(f"识别结果：{result}")
                 break
