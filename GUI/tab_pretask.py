@@ -71,7 +71,7 @@ class TaskSettingWindow(ctk.CTkToplevel):
                 if isinstance(set, SetOption):
                     print(set.name, set.set_option_value.get())
                     task_option.get(task_name)[reversed_option_map.get(set.name, set.name)] = set.set_option_value.get()
-
+            task_option.save_all_config()
         except FileNotFoundError:
             messagebox.showerror("错误", "文件未找到，请检查文件路径。")
         except json.JSONDecodeError:

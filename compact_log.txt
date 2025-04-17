@@ -1,2 +1,2 @@
-2025-02-16T03:03:16.268215200Z : ready compact 'H:\MuMu Player 12\vms\MuMuPlayer-12.0-0\data.vdi'
-this time is dry-run, total blocks: 30124, used blocks: 27283, fragment ratio: 0.0478686
+2025-04-16T03:49:04.318325100Z : ready compact 'H:\MuMu Player 12\vms\MuMuPlayer-12.0-0\data.vdi'
+this time is dry-run, total blocks: 41025, used blocks: 32128, fragment ratio: 0.0549054
