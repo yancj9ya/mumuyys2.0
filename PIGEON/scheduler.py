@@ -129,7 +129,9 @@ class TaskManager:
         判断是否有实时任务可以立即执行。
         """
         for task in self.wait_tasks:
-            # log.insert("5.1", f"wait_tasks={[task.name for task in self.wait_tasks]}")
+            # 判断调度器是否运行
+            if not self.scheduler_ctrl.is_set():
+                return
             try:
                 task.task_name.configure(fg_color="#4a86e8")
                 if task.parms.get("next_time"):
@@ -138,14 +140,14 @@ class TaskManager:
                         task.set_state("ready")
                         self.wait_tasks.remove(task)
                         print(f"{task.name} is ready to run.next_time: {task.parms.get('next_time')}")
-                        continue
+                        return
                 elif self.is_time_valid(task.parms.get("run_time")):
                     if not self.task_ctrl.is_set():
                         log.info_nof(f"{task.name} is ready at {task.parms.get('run_time')}.")
                     self.ready_tasks.append(task)
                     task.set_state("ready")
                     self.wait_tasks.remove(task)
-                    continue
+                    return
 
             except Exception as e:
                 print(f"Error in {task.name} task: {e}")
@@ -410,8 +412,7 @@ class Scheduler(TimeManager, TaskManager, TaskExecutor, ClientManager, GUIInterf
         while self.scheduler_ctrl.is_set():
             sleep(1)
             # self.tab_frame.state_loop()
-            # 检查等待任务队列是否有任务符合执行的时间条件
-            self.is_ready_to_run()
+
             # 从就绪队列中取出任务，执行任务
             if self.task_ctrl.state == "STOP" and self.ready_tasks:
 
@@ -430,6 +431,9 @@ class Scheduler(TimeManager, TaskManager, TaskExecutor, ClientManager, GUIInterf
             elif self.task_ctrl.state == "STOP" and not self.ready_tasks:  # 无任务运行，同时ready_tasks为空,此时关闭客户端
                 self.client.client_stop()  # 关闭客户端
                 pass
+
+            # 检查等待任务队列是否有任务符合执行的时间条件
+            self.is_ready_to_run()
 
         pass
 

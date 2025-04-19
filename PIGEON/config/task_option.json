@@ -7,7 +7,7 @@
         "change_soul": "1,1",
         "dg_xs": "1:4.7",
         "dg_rs": "70",
-        "run_time": "00:00-23:59"
+        "run_time": "00:00-23:00"
     },
     "契灵": {
         "task_id": "契灵",
@@ -57,9 +57,9 @@
         "end_ui": "WARD",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-04-17 17:06:15",
-        "target_level": "1@5,6",
-        "target_count": "59-76"
+        "next_time": "after 2025-04-19 15:16:03",
+        "target_level": "2@6",
+        "target_count": "134-151"
     },
     "结界上卡": {
         "task_id": "结界上卡",
@@ -67,9 +67,9 @@
         "end_ui": "WARD",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-04-18 07:28:51",
+        "next_time": "after 2025-04-19 16:05:36",
         "target_level": "2@6",
-        "target_count": "17,18"
+        "target_count": "18"
     },
     "逢魔之时": {
         "task_id": "逢魔之时",
@@ -90,7 +90,7 @@
     "自动关机": {
         "task_id": "自动关机",
         "延迟时间": "0",
-        "run_time": "after 2025-02-13 00:52:51"
+        "run_time": "after 2025-04-19 00:07:58"
     },
     "对弈竞猜": {
         "task_id": "对弈竞猜",
