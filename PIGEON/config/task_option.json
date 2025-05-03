@@ -57,7 +57,7 @@
         "end_ui": "WARD",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-05-03 03:10:12",
+        "next_time": "after 2025-05-03 23:18:13",
         "target_level": "2@6",
         "target_count": "134-151"
     },
@@ -67,7 +67,7 @@
         "end_ui": "COURTYARD_UF",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-05-03 15:00:39",
+        "next_time": "after 2025-05-04 17:01:56",
         "target_level": "2@6",
         "target_count": "17,18"
     },

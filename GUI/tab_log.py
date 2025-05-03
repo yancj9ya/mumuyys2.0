@@ -14,11 +14,14 @@ class LogTab(ctk.CTkFrame):
         # 绑定变量到ToggleButton类
         ToggleButton.values.update({"file_log": self.file_log})
         # Create widgets
-        self.file_log_switch = ctk.CTkSwitch(self, text="File Log", width=100, height=20, variable=self.file_log, command=self.switch_file_log)
-        self.open_log_file = ctk.CTkButton(self, width=70, text="log.txt", command=self.open_log_file_func)
+        # 顶部水平排列
+        self.line1 = ctk.CTkFrame(self, corner_radius=5)
+        self.file_log_switch = ctk.CTkSwitch(self.line1, text="写入文件", width=100, height=20, variable=self.file_log, command=self.switch_file_log)
+        self.open_log_file = ctk.CTkButton(self.line1, width=70, text="log.txt", command=self.open_log_file_func, corner_radius=5)
         # add widgets to layout
-        self.file_log_switch.grid(row=0, column=0, padx=10, pady=10)
-        self.open_log_file.grid(row=0, column=1, padx=10, pady=10)
+        self.file_log_switch.pack(side="left", padx=10, expand=True)
+        self.open_log_file.pack(side="right", padx=2, pady=1, expand=True)
+        self.line1.pack(fill="x", pady=0)
 
     def switch_file_log(self, *args, **kwargs):
         Log_to_file.is_open = self.file_log.get()

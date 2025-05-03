@@ -19,28 +19,34 @@ class SettingTab(ctk.CTkFrame):
         # 绑定变量到ToggleButton类
         ToggleButton.values.update({"tp_keep_level": self.keep_level_var, "ui_delay": self.ui_delay_var, "set_window_top": self.set_window_top_var, "cooperation_mission": self.cooperation_mission_var})
 
-        # create widgets
-        self.cooperation_mission = ctk.CTkSwitch(self, text="协助邀请", variable=self.cooperation_mission_var, command=self.set_cooperation, onvalue=True, offvalue=False)
-        self.keep_level_check = ctk.CTkSwitch(self, text="突破保级", variable=self.keep_level_var, onvalue=True, offvalue=False)
-        self.set_window_top_check = ctk.CTkSwitch(self, text="置顶窗口", variable=self.set_window_top_var, onvalue=1, offvalue=0, command=self.set_window_top)
-        self.ui_delay_combox = ctk.CTkComboBox(self, values=["0.2", "0.5", "0.7"], justify="center", variable=self.ui_delay_var, width=10, height=20, command=self.ui_delay_slider_value)
-        self.ui_delay_combox.set("0.5")
-        self.ui_delay_slider = ctk.CTkSlider(
-            self,
-            from_=0.1,
-            to=1,
-            number_of_steps=20,
-            orientation="horizontal",
-            width=120,
-            command=self.ui_delay_slider_value,
-        )
+        # create layout
+        self.group0 = ctk.CTkScrollableFrame(self, label_text="探索设置", height=10)
+        self.group0._scrollbar.configure(width=0)
+        self.group0.pack(fill="both", pady=2)
+        self.line1 = ctk.CTkFrame(self.group0, fg_color="transparent")
+        self.line1.pack(fill="x", pady=5)
+        self.line2 = ctk.CTkFrame(self.group0, fg_color="transparent")
+        self.line2.pack(fill="x", pady=5)
+        self.line3 = ctk.CTkFrame(self.group0, fg_color="transparent")
+        self.line3.pack(fill="x", pady=5)
 
-        # add widgets to layout
-        self.ui_delay_combox.grid(row=0, column=0, columnspan=2, padx=0, pady=0, sticky="ew")
-        self.keep_level_check.grid(row=1, column=1, padx=0, pady=2)
-        self.ui_delay_slider.grid(row=0, column=2, columnspan=3, padx=0, pady=0, sticky="w")
-        self.set_window_top_check.grid(row=1, column=2, padx=0, pady=2)
-        self.cooperation_mission.grid(row=2, column=0, columnspan=2, padx=0, pady=2)
+        # create widgets
+        self.cooperation_mission = ctk.CTkSwitch(self.line2, text="协助邀请", variable=self.cooperation_mission_var, command=self.set_cooperation, onvalue=True, offvalue=False)
+        self.cooperation_mission.pack(side="left", padx=2)
+
+        self.keep_level_check = ctk.CTkSwitch(self.line2, text="突破保级", variable=self.keep_level_var, onvalue=True, offvalue=False)
+        self.keep_level_check.pack(side="left", padx=2, expand=True)
+
+        self.set_window_top_check = ctk.CTkSwitch(self.line3, text="置顶窗口", variable=self.set_window_top_var, onvalue=1, offvalue=0, command=self.set_window_top)
+        self.set_window_top_check.pack(side="left", padx=2)
+
+        self.ui_delay_combox = ctk.CTkComboBox(self.line1, values=["0.2", "0.5", "0.7"], width=80, justify="center", variable=self.ui_delay_var, height=20, command=self.ui_delay_slider_value)
+        self.ui_delay_combox.set("0.5")
+        self.ui_delay_combox.pack(side="left", padx=2)
+
+        self.ui_delay_slider = ctk.CTkSlider(self.line1, from_=0.1, to=1, number_of_steps=20, orientation="horizontal", width=240, command=self.ui_delay_slider_value)
+        self.ui_delay_slider.set(0.5)
+        self.ui_delay_slider.pack(side="left", padx=2, expand=True, fill="x")
 
     def set_cooperation(self, *args):
         cooperation_mission = self.cooperation_mission_var.get()

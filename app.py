@@ -11,5 +11,5 @@ if __name__ == "__main__":
     AtomTask.scheduler = scheduler
     ToggleButton.toggle_command = scheduler.submit_task
     app = App()
-    Log.log_emit = app.log_area
+    Log.log_emit = app.tab_view.log_area
     app.mainloop()

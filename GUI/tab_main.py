@@ -12,34 +12,47 @@ class MainTab(ctk.CTkFrame):
         # create variables here
         self.times_value = ctk.StringVar()
         ToggleButton.values.update({"times": self.times_value})  # 绑定变量到ToggleButton类
+        # layout
+        self.group0 = ctk.CTkFrame(self)
+        self.line1 = ctk.CTkFrame(self.group0, fg_color="transparent")
+        self.line2 = ctk.CTkFrame(self.group0, fg_color="transparent")
+        self.group1 = ctk.CTkFrame(self)
+        self.line3 = ctk.CTkFrame(self.group1, fg_color="transparent")
+        self.line4 = ctk.CTkFrame(self.group1, fg_color="transparent")
 
         # add widgets here
         # buttons
-        self.yh_btn = ToggleButton(self, text_off="御魂", name="御魂")
-        self.ql_btn = ToggleButton(self, text_off="契灵", name="契灵")
-        self.hd_btn = ToggleButton(self, text_off="智能", name="智能")
-        self.tp_btn = ToggleButton(self, text_off="结界突破", name="结界突破")
-        self.ltp_btn = ToggleButton(self, text_off="寮突破", name="寮突破")
-        self.dg_btn = ToggleButton(self, text_off="六道之门", name="六道之门")
+        self.yh_btn = ToggleButton(self.line3, text_off="御魂", name="御魂")
+        self.yh_btn.pack(side="left", expand=True, padx=5, pady=5)
+        self.ql_btn = ToggleButton(self.line3, text_off="契灵", name="契灵")
+        self.ql_btn.pack(side="left", expand=True, padx=5, pady=5)
+        self.hd_btn = ToggleButton(self.line3, text_off="智能", name="智能")
+        self.hd_btn.pack(side="left", expand=True, padx=5, pady=5)
+        self.tp_btn = ToggleButton(self.line4, text_off="结界突破", name="结界突破")
+        self.tp_btn.pack(side="left", expand=True, padx=5, pady=5)
+        self.ltp_btn = ToggleButton(self.line4, text_off="寮突破", name="寮突破")
+        self.ltp_btn.pack(side="left", expand=True, padx=5, pady=5)
+        self.dg_btn = ToggleButton(self.line4, text_off="六道之门", name="六道之门")
+        self.dg_btn.pack(side="left", expand=True, padx=5, pady=5)
         # text
-        self.text_times = ctk.CTkLabel(self, text="执行次数:", font=("微软雅黑", 14))
+        self.text_times = ctk.CTkLabel(self.line1, text="执行次数:", font=("微软雅黑", 14))
+        self.text_times.pack(side="left", fill="x", padx=1, pady=5, expand=True)
         # combobox
-        self.times = ctk.CTkComboBox(self, values=["10", "30", "50", "80", "500", "999"], width=80, height=20, command=self.times_slider_value, justify="center", variable=self.times_value)
+        self.times = ctk.CTkComboBox(self.line1, values=["10", "30", "50", "80", "500", "999"], width=80, height=25, command=self.times_slider_value, justify="center", variable=self.times_value)
         self.times.set("30")  # set default value
+        self.times.pack(padx=15, pady=5, side="left", fill="x", expand=True)
         # slider
-        self.times_slider = ctk.CTkSlider(self, from_=0, to=300, command=self.times_slider_value, number_of_steps=300)
+        self.times_slider = ctk.CTkSlider(self.line2, width=240, from_=0, to=300, command=self.times_slider_value, number_of_steps=300)
+        self.times_slider.set(30)  # set default value
+        self.times_slider.pack(padx=0, pady=5)
 
         # add widgets to layout
-        self.yh_btn.grid(row=0, column=0, padx=5, pady=2, sticky="ew")
-        self.ql_btn.grid(row=0, column=1, padx=5, pady=0, sticky="ew")
-        self.hd_btn.grid(row=0, column=2, padx=5, pady=2, sticky="ew")
-        self.tp_btn.grid(row=1, column=0, padx=5, pady=2, sticky="ew")
-        self.ltp_btn.grid(row=1, column=1, padx=5, pady=2, sticky="ew")
-        self.dg_btn.grid(row=1, column=2, padx=5, pady=2, sticky="ew")
-
-        self.text_times.grid(row=2, column=0, padx=5, pady=0, sticky="nsew")
-        self.times.grid(row=2, column=1, columnspan=2, padx=5, pady=0, sticky="ew")
-        self.times_slider.grid(row=3, column=0, columnspan=4, padx=5, pady=0, sticky="ew")
+        self.line1.pack(fill="x")
+        self.line2.pack(fill="x")
+        self.line3.pack(fill="x")
+        self.line4.pack(fill="x")
+        self.group0.pack(fill="x", pady=5)
+        self.group1.pack(fill="x", pady=5)
 
     # synchronize the values of times_value and times_slider
     def times_slider_value(self, value):

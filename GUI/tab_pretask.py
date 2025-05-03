@@ -177,22 +177,22 @@ class PreTaskTab(ctk.CTkFrame):
         super().__init__(*args, **kwargs)
         self.toplevel_window = None
         self.grid_rowconfigure(1, minsize=340)
-        # self.grid_columnconfigure(0, minsize=80)
-        self.task_start = ctk.CTkButton(self, border_width=1, border_color="gray", fg_color="Green", text="START", width=40, command=self.scheduler_switch, corner_radius=30, font=("Consola", 12, "bold"))
+        self.line1 = ctk.CTkFrame(self)
+
+        self.task_start = ctk.CTkButton(self.line1, border_width=1, border_color="gray", fg_color="Green", text="START", width=80, command=self.scheduler_switch, corner_radius=30, font=("Consola", 12, "bold"))
         self.task_start.grid(row=0, column=1, padx=1, pady=2, sticky="ew")
-        self.one_key_add_btn = ctk.CTkButton(self, fg_color="#6B8E23", text="一键日常", width=40, command=self.one_key_add, corner_radius=3, font=("微软雅黑", 10, "bold"))
-        self.one_key_add_btn.grid(row=0, column=2, padx=4, pady=2, sticky="ew")
+        self.one_key_add_btn = ctk.CTkButton(self.line1, fg_color="#6B8E23", text="一键日常", width=75, command=self.one_key_add, corner_radius=3, font=("微软雅黑", 10, "bold"))
+        self.one_key_add_btn.grid(row=0, column=2, padx=4, pady=4, sticky="ew")
 
         try:
-            # self.task_frame_ = task_option.json
-            # self.add_task_btn = ctk.CTkOptionMenu(self, values=list(self.task_frame_.keys()), command=self.add_task, width=90, corner_radius=2, anchor="center")
-            # self.add_task_btn.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
-            self.add_task_btn = ctk.CTkButton(self, fg_color="#6B8E23", text="添加任务", width=40, command=self.task_lib, corner_radius=3, font=("微软雅黑", 10, "bold"))
-            self.add_task_btn.grid(row=0, column=0, padx=4, pady=2, sticky="ew")
+            self.add_task_btn = ctk.CTkButton(self.line1, fg_color="#6B8E23", text="添加任务", width=75, command=self.task_lib, corner_radius=3, font=("微软雅黑", 10, "bold"))
+            self.add_task_btn.grid(row=0, column=0, padx=4, pady=4, sticky="ne")
 
-            self.task_frame = ctk.CTkScrollableFrame(self, width=230, height=240, corner_radius=0)
+            self.line1.pack(pady=0, fill="x")
+
+            self.task_frame = ctk.CTkScrollableFrame(self, width=240, height=240, corner_radius=0)
             self.task_frame._scrollbar.configure(width=10)
-            self.task_frame.grid(row=1, column=0, columnspan=3, padx=1, pady=2, sticky="nesw")
+            self.task_frame.pack(pady=0, fill="both", expand=True)
         except FileNotFoundError:
             messagebox.showerror("错误", "任务列表文件未找到，请检查文件路径。")
         except json.JSONDecodeError:
