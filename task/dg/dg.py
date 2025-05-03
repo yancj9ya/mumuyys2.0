@@ -18,7 +18,7 @@ class Dg(Click, ImageRec):
         Click.__init__(self)
         ImageRec.__init__(self)
         self.ocr = WxOcr()
-        self.uilist = [FINAL_FAIL, dg_ready_ui, dg_fail_ui, VICTORY, damo_ui, dg_fight_ui, dg_chose_ui]
+        self.uilist = [FULL_MSG_BOX, FINAL_FAIL, dg_ready_ui, dg_fail_ui, VICTORY, damo_ui, dg_fight_ui, dg_chose_ui]
         self.main_ui_sleep = 0.5
         self.DG_TIME = None
         self.DG_SWITCH = True
@@ -224,6 +224,15 @@ class Dg(Click, ImageRec):
         pass
 
     def _save_award_img(self):
+        # 先检测是否有结界卡溢出提醒
+        if self.match_img(FULL_MSG_BOX):
+            # 勾选今日忽略
+            while not self.match_img(CHECK_IGNORE_NOTION):
+                self.area_click(CHECK_IGNORE_NOTION[1])
+                sleep(0.5)
+            else:
+                log.info("结界卡溢出提醒：已勾选今日忽略")
+                self.area_click(CANCEL_NOTION)
         sleep(1)
         self.win.screenshot([218, 132, 1233, 617], save_img=True)
         log.info("结算界面：已经截图,返回准备界面")
@@ -232,11 +241,23 @@ class Dg(Click, ImageRec):
         sleep(1)
         return
 
+    def full_of_card(self):
+        log.info("结界卡溢出提醒：开始处理")
+        # 检查是否勾选今日忽略
+        if self.match_img(CHECK_IGNORE_NOTION):
+            log.info("结界卡溢出提醒：已勾选今日忽略")
+            self.area_click(CANCEL_NOTION)
+        else:
+            self.area_click(CHECK_IGNORE_NOTION[1])
+            sleep(0.5)
+
     def run(self):
         sleep(self.main_ui_sleep)
         match_result = self.match_ui(self.uilist)
         log.insert("2.1", f"Matched UI:{match_result}")
         match match_result:
+            case "FULL_MSG_BOX":
+                self.full_of_card()
             case "FINAL_FAIL":
                 self.area_click(FINAL_FAIL[1])
             case "ready_ui":

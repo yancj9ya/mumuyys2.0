@@ -4,6 +4,7 @@ from tool.Mytool.Ocr import Ocr
 from tool.Mytool.Counter import Counter
 from tool.based.base.res.base_img import *
 from task.tp.res.img_info import *
+from task.tp.res.img_info_auto_create import *
 from time import sleep, time, strftime, localtime
 from PIGEON.log import Log
 from random import shuffle
@@ -16,8 +17,9 @@ class Tp(Click, ImageRec):
     def __init__(self, **kwargs):
         Click.__init__(self)
         ImageRec.__init__(self)
-        self.uilist = [FIGHTING, damo_ui, tp_main_ui, end_mark_ui, fail_ui]
+        self.uilist = [FIGHTING, DAMO369, damo_ui, tp_main_ui, end_mark_ui, fail_ui]
         self.keep_57_flag = False
+        self.task_switch = True
         self.ocr = Ocr()
         self.counter = Counter("tp")
         self.quit_count = Counter("tp_quit_count")
@@ -123,13 +125,15 @@ class Tp(Click, ImageRec):
             case "FIGHTING":
                 sleep(1)
             case "tp_main_ui":
+                if self.counter.compare(self.times):
+                    self.task_switch = False
+                    return
                 self.tp_main_ui()
-            case "damo_ui":
+            case "damo_ui" | "DAMO369":
                 self.stat_award()
                 self.counter.increment()
                 log.info(f"第{self.counter.count}次突破进攻Done！")
                 self.area_click(damo_ui[1])
-
                 sleep(0.5)
                 self.area_click([990, 462, 1125, 520])
             case "end_mark_ui":
@@ -142,16 +146,16 @@ class Tp(Click, ImageRec):
     def loop(self):
         if ocr_result := Ocr.ocr([1138, 12, 1234, 48]):
             if ocr_result[1] > 0.8:
-                times = int(ocr_result[0].split("/")[0])
-                log.info(f"突破卷：{times}")
+                self.times = int(ocr_result[0].split("/")[0])
+                log.info(f"突破卷：{self.times}")
             else:
-                times = 0
-        while self.counter.count < times:
+                self.times = 0
+        while self.task_switch:
             # print(f"state:{self.running.state}")
             match self.running.state:
                 case "RUNNING":
                     self.run()
-                    log.insert("5.1", f"突破进度 {self.counter.count}/{times}")
+                    log.insert("5.1", f"突破进度 {self.counter.count}/{self.times}")
                 case "STOP":
                     log.insert("2.1", f"@任务已停止 ")
                     self.counter.reset()

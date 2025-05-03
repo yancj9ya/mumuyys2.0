@@ -57,19 +57,19 @@
         "end_ui": "WARD",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-04-19 15:16:03",
+        "next_time": "after 2025-05-03 03:10:12",
         "target_level": "2@6",
         "target_count": "134-151"
     },
     "结界上卡": {
         "task_id": "结界上卡",
         "start_ui": "WARD",
-        "end_ui": "WARD",
+        "end_ui": "COURTYARD_UF",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-04-19 16:05:36",
+        "next_time": "after 2025-05-03 15:00:39",
         "target_level": "2@6",
-        "target_count": "18"
+        "target_count": "17,18"
     },
     "逢魔之时": {
         "task_id": "逢魔之时",
@@ -82,7 +82,7 @@
     "阴界之门": {
         "task_id": "阴界之门",
         "start_ui": "SHADOW_GATE",
-        "end_ui": "SHADOW_GATE",
+        "end_ui": "COURTYARD_UF",
         "ui_delay": "0.5",
         "change_soul": "2,2",
         "run_time": "19:00-20:59"
@@ -90,7 +90,7 @@
     "自动关机": {
         "task_id": "自动关机",
         "延迟时间": "0",
-        "run_time": "after 2025-04-19 00:07:58"
+        "run_time": "after 2025-04-25 02:43:56"
     },
     "对弈竞猜": {
         "task_id": "对弈竞猜",

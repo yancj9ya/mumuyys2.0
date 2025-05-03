@@ -132,6 +132,7 @@ class TaskManager:
             # 判断调度器是否运行
             if not self.scheduler_ctrl.is_set():
                 return
+            # 判断任务是否可以立即执行
             try:
                 task.task_name.configure(fg_color="#4a86e8")
                 if task.parms.get("next_time"):

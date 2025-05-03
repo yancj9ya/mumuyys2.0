@@ -49,7 +49,7 @@ class IMG:
 
 # ========== 初始化配置 ========== #
 # 创建页面导航实例
-nav = PageNavigator(timeout=30, retry=6, cooldown=2)
+nav = PageNavigator(timeout=30, retry=6, cooldown=1)
 nav.back_list = IMG.BACK_SET
 
 
@@ -81,7 +81,7 @@ SERVER = Page("SERVER", ["page/res/SERVER.bmp", (13, 371, 374, 684), "SERVER"])
 SERVER.add_action("选择服务器-庭院", JumpAction.CLICK_TYPE, (578, 587, 699, 609), COURTYARD_FOLD)
 
 # 结界突破跳转
-ENCHANTMENT_1.add_action("结界突破-探索", JumpAction.XCLICK_TYPE, (1192, 119, 1228, 154), EXPLORE)
+ENCHANTMENT_1.add_action("结界突破-探索", JumpAction.CLICK_TYPE, (1192, 119, 1228, 154), EXPLORE)
 ENCHANTMENT_1.add_action("结界突破-寮突破", JumpAction.CLICK_TYPE, (1214, 374, 1247, 444), ENCHANTMENT_2)
 ENCHANTMENT_1.add_action("结界突破-式神录", JumpAction.CLICK_TYPE, (1218, 620, 1247, 652), SHIKI_RECORD)
 

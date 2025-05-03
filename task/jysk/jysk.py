@@ -116,41 +116,45 @@ class Jysk:
         """搜索并更换结界卡"""
         # 循环搜索并更换结界卡
         while True:
-            if self.target_type == 1:
-                serch_area = self.image_rec.match_duo_img(SIX_GY, accuracy=0.5)
-            elif self.target_type == 2:
-                serch_area = self.image_rec.match_duo_img(SIX_DY, accuracy=0.5)
-            print(f"serch_area: {len(serch_area)}")
-            for rect in serch_area:
-                level = self.get_star_level(rect)
-                print(f"get_star_level: {level}")
-                if level in self.target_level:
-                    # 获取数量识别ocr区域
-                    count_area = [rect[0] + 113, rect[1] - 10, rect[2] + 140, rect[3] + 8]
-                    if self.target_type == 1:
-                        count_str = self.ocr.ocr_by_re(count_area, r"^勾玉\s*\+([7-9])/h$", threshold=0.8).group(1)
-                    elif self.target_type == 2:
-                        count_str = self.ocr.ocr_by_re(count_area, r"^体力\s*\+(1[6-8])/h$", threshold=0.8).group(1)
-                    print(f"get_count_str: {count_str}")
-                    if int(count_str) in self.target_count:
-                        # 点击结界卡
-                        self.click.area_click(rect)
-                        # 点击确认按钮
-                        log.info(f"level: {level}, count: {count_str}")
-                        self.click.area_click(ACTIVE_CARD)
-                        sleep(2)
-                        self.click.area_click(ACTIVE_CARD_CONFIRM)
-                        return
-                else:
-                    continue
+            try:
+                if self.target_type == 1:
+                    serch_area = self.image_rec.match_duo_img(SIX_GY, accuracy=0.5)
+                elif self.target_type == 2:
+                    serch_area = self.image_rec.match_duo_img(SIX_DY, accuracy=0.5)
+                print(f"serch_area: {len(serch_area)}")
+                for rect in serch_area:
+                    level = self.get_star_level(rect)
+                    print(f"get_star_level: {level}")
+                    if level in self.target_level:
+                        # 获取数量识别ocr区域
+                        count_area = [rect[0] + 113, rect[1], rect[2] + 140, rect[3] + 8]
+                        if self.target_type == 1:
+                            count_str = self.ocr.ocr_by_re(count_area, r"^勾玉\s*\+([7-9])/h$", threshold=0.8).group(1)
+                        elif self.target_type == 2:
+                            count_str = self.ocr.ocr_by_re(count_area, r"^体力\s*\+(1[1-8])/h$", threshold=0.8).group(1)
+                        print(f"get_count_str: {count_str}")
+                        if int(count_str) in self.target_count:
+                            # 点击结界卡
+                            self.click.area_click(rect)
+                            # 点击确认按钮
+                            log.info(f"level: {level}, count: {count_str}")
+                            self.click.area_click(ACTIVE_CARD)
+                            sleep(2)
+                            self.click.area_click(ACTIVE_CARD_CONFIRM)
+                            return
+                    else:
+                        pass
 
-            self.list_down()
+                self.list_down()
+            except Exception as e:
+                print(f"search_replace_sk error: {e}")
 
     def list_down(self):
         """下拉列表"""
-        self.click.click(367, 235)
-        self.click.mouse_scroll(("down", 6), 367, 235)
+        self.click.click(436, 164)
+        self.click.mouse_scroll(("down", 6), 436, 164)
         sleep(0.2)
+        print("list_down")
 
     def get_star_level(self, rect):
         """获取星级"""

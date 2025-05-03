@@ -120,7 +120,9 @@ class Ts(Click, ImageRec):
                     log.info(f"开始突破...")
                     if self.switch_ui.switch_to("ENCHANTMENT_1", self.running):  # 切换到突破主界面
                         log.insert("3.1", f"{' 突破进行中...':<27}")
+                        self.tp.task_switch = True  # 开启TP任务
                         self.tp.loop()  # 进入TP界面
+                        self.tp.counter.reset()  # 重置TP次数
                         self.tp_ticket_count.reset()  # 重置TP票数
                         self.current_task = "TS"
                 case "TS":
@@ -141,12 +143,8 @@ class Ts(Click, ImageRec):
         self.monster_limit = values.get("monster_limit", 200)
 
         # create tp instance
-        self.tp = Tp(
-            STOPSIGNAL=self.running,
-        )
-        self.tp.set_parms(
-            ui_delay=values.get("ui_delay", 0.5),
-        )
+        self.tp = Tp(STOPSIGNAL=self.running)
+        self.tp.set_parms(ui_delay=values.get("ui_delay", 0.5))
         self.tp.stat_award = self.reward_confirm
         log.debug(f"set_parms: \n突破卷限制{self.tp_ticket_limit} \n怪物限制{self.monster_limit}")
         pass

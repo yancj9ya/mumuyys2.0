@@ -155,21 +155,23 @@ class PageNavigator:
         while current_tries < 3:
             try:
                 """执行单次跳转"""
-                if action.action_type == JumpAction.XCLICK_TYPE:
-                    self.CLICK.xclick()
-                    time.sleep(1)
-                    return True
-                coords = self._resolve_click(action)
-                if not coords:
-                    return False
-                if isinstance(coords, tuple):
-                    self.CLICK.area_click(coords)
-                    time.sleep(0.5)
-                elif isinstance(coords, list):
-                    for coor in coords:
-                        self.CLICK.area_click(coor)
-                        time.sleep(0.5)
+                match action.action_type:
+                    case JumpAction.XCLICK_TYPE:
+                        self.CLICK.xclick()
+                    case JumpAction.CLICK_TYPE | JumpAction.IMAGE_TYPE:
+                        coords = self._resolve_click(action)
+                        if not coords:
+                            return False
+                        if isinstance(coords, tuple):
+                            self.CLICK.area_click(coords)
+                        elif isinstance(coords, list):
+                            for coor in coords:
+                                self.CLICK.area_click(coor)
+                                time.sleep(0.5)
+                # 等待页面跳转成功
+                time.sleep(0.5)
 
+                # 检测页面是否跳转成功
                 start = time.time()
                 while time.time() - start < self.timeout:
                     """检测页面是否跳转成功"""
