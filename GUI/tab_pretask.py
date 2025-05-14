@@ -176,8 +176,8 @@ class PreTaskTab(ctk.CTkFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.toplevel_window = None
-        self.grid_rowconfigure(1, minsize=340)
         self.line1 = ctk.CTkFrame(self)
+        self.line1.pack(pady=0, fill="x")
 
         self.task_start = ctk.CTkButton(self.line1, border_width=1, border_color="gray", fg_color="Green", text="START", width=80, command=self.scheduler_switch, corner_radius=30, font=("Consola", 12, "bold"))
         self.task_start.grid(row=0, column=1, padx=1, pady=2, sticky="ew")
@@ -187,8 +187,6 @@ class PreTaskTab(ctk.CTkFrame):
         try:
             self.add_task_btn = ctk.CTkButton(self.line1, fg_color="#6B8E23", text="添加任务", width=75, command=self.task_lib, corner_radius=3, font=("微软雅黑", 10, "bold"))
             self.add_task_btn.grid(row=0, column=0, padx=4, pady=4, sticky="ne")
-
-            self.line1.pack(pady=0, fill="x")
 
             self.task_frame = ctk.CTkScrollableFrame(self, width=240, height=240, corner_radius=0)
             self.task_frame._scrollbar.configure(width=10)

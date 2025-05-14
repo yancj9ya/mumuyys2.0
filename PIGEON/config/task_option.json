@@ -57,7 +57,7 @@
         "end_ui": "WARD",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-05-03 23:18:13",
+        "next_time": "after 2025-05-14 23:32:11",
         "target_level": "2@6",
         "target_count": "134-151"
     },
@@ -67,9 +67,9 @@
         "end_ui": "COURTYARD_UF",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-05-04 17:01:56",
+        "next_time": "after 2025-05-15 18:38:54",
         "target_level": "2@6",
-        "target_count": "17,18"
+        "target_count": "16,17"
     },
     "逢魔之时": {
         "task_id": "逢魔之时",

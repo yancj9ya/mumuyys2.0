@@ -79,14 +79,14 @@ class Pystray:
                         callback()
         return win32gui.DefWindowProc(hwnd, msg, wparam, lparam)
 
-    def run(self):
+    def tray_run(self):
         self.create_tray_icon()
         while True:
             time.sleep(0.1)
             win32gui.PumpWaitingMessages()
 
     def run_detached(self):
-        t = Thread(target=self.run)
+        t = Thread(target=self.tray_run)
         t.daemon = True
         t.start()
 

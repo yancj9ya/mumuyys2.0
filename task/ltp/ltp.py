@@ -94,15 +94,15 @@ class Ltp(Click, ImageRec):
                         self.reward_dict[reward] = 1
                     else:
                         self.reward_dict[reward] += 1
-                log.info(f"*" * 16)
+                # log.info(f"*" * 16)
                 for key, value in self.reward_dict.items():
                     log.info(f" {key:^10}: {value:^2}")
-                    award_str += f"{k_to_t[key]}x{value} "
-                log.info(f"*" * 16)
+                    award_str += f"{k_to_t[key.lower()]}x{value} "
+                # log.info(f"*" * 16)
                 log.insert("4.0", f"{award_str}")
 
     def loop(self):
-        log.insert("5.0", "$开始寮突破")
+        log.insert("5.0", "开始寮突破")
         while self.times:
             match self.running.state:
                 case "RUNNING":

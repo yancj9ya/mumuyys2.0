@@ -5,6 +5,7 @@ import sys
 from time import sleep
 import numpy as np
 
+
 # 导入自定义模块
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(path)
@@ -126,11 +127,14 @@ class WxOcr:
             print(f"解析结果出错：{e} and result:{result}")
             return None
 
-    def ocr_by_re(self, area, pattern, threshold=0.9, range_color=None, debug=False):
+    def ocr_by_re(self, area, pattern, threshold=0.9, pre_hand=None, range_color=None, debug=False):
+        if not pre_hand and range_color:
+            pre_hand = {"range_color": range_color}
+
         try_times = 0
         try:
             while try_times < 3:
-                result = self.ocr(area)
+                result = self.ocr(area, debug=debug, pre_hand=pre_hand)
                 if result["rate"] < threshold:
                     try_times += 1
                     sleep(0.5)
@@ -148,40 +152,70 @@ class WxOcr:
             print(f"re识别出错：{e}")
             return None
 
-    def ocr(self, area, range_color=None, debug=None):
+    def _pre_hand_img(self, scr_img: np.ndarray, hand_img_parms: dict) -> np.ndarray:
+        """
+        预处理截图
+        :param hand_img_parms: 预处理参数
+        :return: 预处理后的图像
+        """
+        # 颜色范围滤色
+        if "range_color" in hand_img_parms:
+            range_color = hand_img_parms["range_color"]
+            scr_img = pre_hand_img.range_img(scr_img, *range_color, DEBUG=False)
+        # 二值化
+        if hand_img_parms.get("binary", False):
+            # 尝试二值化提高识别率
+            scr_img = cv2.cvtColor(scr_img, cv2.COLOR_BGR2GRAY)
+            _, scr_img = cv2.threshold(scr_img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        # 放大图像
+        if hand_img_parms.get("enlarge", False):
+            scale_times = hand_img_parms.get("enlarge")
+            scr_img = cv2.resize(scr_img, None, fx=scale_times, fy=scale_times, interpolation=cv2.INTER_CUBIC)
+
+        return scr_img
+
+    def ocr(self, area, pre_hand=None, debug=None):
         while True:
             # 截图
             scr_img = self.win.screenshot(area)
             # 预处理
-            if range_color:
-                scr_img = pre_hand_img.range_img(scr_img, *range_color, DEBUG=debug)
-            # 保存截图
+            if pre_hand:
+                scr_img = self._pre_hand_img(scr_img, pre_hand)
+
+            # 保存图片
             save_img_path = os.path.join(current_file_dir, "temp.png")
             if retval := cv2.imwrite(save_img_path, scr_img):
                 # 识别
                 sleep(0.05)
                 result = self.get_ocr_result(save_img_path)
-                # print(f"识别结果：{result}")
+                if __name__ == "__main__":
+                    import json
+
+                    result = json.dumps(result, ensure_ascii=False, indent=2)
+                    print(f"识别结果：{result}")
+                    result = json.loads(result)
                 break
             else:
                 print(f"保存截图失败：{retval}")
                 continue
 
         parse = self.parse_result(result)
-        print(f"识别结果：{parse}")
-        # cv2.rectangle(scr_img, (parse["coor"][0], parse["coor"][1]), (parse["coor"][2], parse["coor"][3]), (0, 255, 0), 2)
-        # cv2.putText(scr_img, parse["text"], (parse["coor"][0], parse["coor"][1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        # cv2.imshow("scr_img", scr_img)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        # print(f"识别结果：{parse}")
+        if debug:
+            cv2.rectangle(scr_img, (parse["coor"][0], parse["coor"][1]), (parse["coor"][2], parse["coor"][3]), (0, 255, 0), 2)
+            cv2.putText(scr_img, parse["text"], (parse["coor"][0], parse["coor"][1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.imshow("scr_img", scr_img)
+            print(f"识别结果：{parse["text"]}")
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
         return parse
         pass
 
 
 if __name__ == "__main__":
     wx_ocr = WxOcr()
-    area = (494, 22, 621, 57)
-    for _ in range(20):
+    area = (614, 484, 646, 518)
+    for _ in range(1):
         result = wx_ocr.ocr(area)
         sleep(0.1)
-        print(result["text"].split("/")[0])
+        print(f"{result=}")

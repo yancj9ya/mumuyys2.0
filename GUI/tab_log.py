@@ -21,7 +21,7 @@ class LogTab(ctk.CTkFrame):
         # add widgets to layout
         self.file_log_switch.pack(side="left", padx=10, expand=True)
         self.open_log_file.pack(side="right", padx=2, pady=1, expand=True)
-        self.line1.pack(fill="x", pady=0)
+        self.line1.pack(fill="x", pady=0, ipady=2)
 
     def switch_file_log(self, *args, **kwargs):
         Log_to_file.is_open = self.file_log.get()

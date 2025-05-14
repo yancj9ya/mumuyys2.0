@@ -7,9 +7,13 @@ from PIGEON.log import Log
 from PIGEON.scheduler import scheduler
 
 
-if __name__ == "__main__":
+def main():
     AtomTask.scheduler = scheduler
     ToggleButton.toggle_command = scheduler.submit_task
     app = App()
     Log.log_emit = app.tab_view.log_area
     app.mainloop()
+
+
+if __name__ == "__main__":
+    main()

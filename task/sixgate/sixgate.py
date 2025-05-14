@@ -114,7 +114,7 @@ class SixGate(Click, ImageRec):
             case _:
                 log.insert("2.2", f"No matched UI:{match_result}")
                 log.insert("3.0", f"Current coin: {self.coin_num if hasattr(self, 'coin_num') else 'unknown' } Round:{self.challenge_count.count}")
-                log.insert("4.0", f"Buff level: {self.buff_level.count},Skill level: {self.skill_level.count},Step count: {self.step_count.count}")
+                log.insert("4.0", f"Buff: {self.buff_level.count},Skill: {self.skill_level.count},Step: {self.step_count.count}")
         pass
 
     def dyn_event_priority(self):
@@ -124,11 +124,11 @@ class SixGate(Click, ImageRec):
         :return: 事件优先级列表
         """
         if (self.buff_level.count > 4 or self.step_count.count >= 10) and self.skill_level.count >= 1:
-            return ["event_secret", "event_store", "event_chaos", "event_ezbattle"]
+            return ["event_skip", "event_secret", "event_store", "event_chaos", "event_ezbattle"]
         elif self.buff_level.count > 4 and self.skill_level.count < 1:
-            return ["event_store", "event_secret", "event_chaos", "event_ezbattle"]
+            return ["event_skip", "event_store", "event_secret", "event_chaos", "event_ezbattle"]
         else:
-            return ["event_ezbattle", "event_chaos", "event_secret", "event_store"]
+            return ["event_skip", "event_ezbattle", "event_chaos", "event_secret", "event_store"]
 
     def event_sort(self, event_dict: dict):
         """
@@ -178,7 +178,7 @@ class SixGate(Click, ImageRec):
 
         :return: coin数量
         """
-        ocr_res = self.ocr.ocr_by_re((1160, 26, 1240, 51), r"\d+", range_color=["afaa9f", (10, 16, 131)])
+        ocr_res = self.ocr.ocr_by_re((1160, 26, 1240, 51), r"\d+", pre_hand={"enlarge": 5, "binary": True})
         if ocr_res:
             _coin = int(ocr_res[0])
             log.info(f"<award>:Current coin: {_coin}")
@@ -213,7 +213,8 @@ class SixGate(Click, ImageRec):
             self.area_click(not_enough_coin[1])
         # 更新一下关卡数
         if self.get_step() == 0:
-            if ocr_res := self.ocr.ocr_by_re((1074, 228, 1137, 258), r"\d+", range_color=["eac15d", (20, 100, 100)]):
+            pre_hand_img = {"enlarge": 5}
+            if ocr_res := self.ocr.ocr_by_re((1074, 228, 1137, 278), r"\d+", pre_hand=pre_hand_img):
                 self.step_count.count = 20 - int(ocr_res[0])
 
         # 生成事件列表
@@ -221,7 +222,7 @@ class SixGate(Click, ImageRec):
 
         # 找到界面上存在的事件
         available_events = self.find_duo_img(event_list, (51, 89, 1249, 650))
-        log.file(f"Available events: {available_events}")
+        log.file(f"Available events: {available_events.keys() if available_events else 'None'} at {self.step_count.count=}")
 
         # 按动态的优先级排序
         if not available_events:
@@ -230,7 +231,7 @@ class SixGate(Click, ImageRec):
         else:
             # 按动态的优先级排序
             available_events_tuple = self.event_sort(available_events)
-            log.insert("5.0", f"Events: {available_events_tuple[0]}")
+            log.insert("5.0", f"Sorted events1: {available_events_tuple[0]}")
 
         # 构造多个条件判断
         # 1.coin条件
@@ -431,7 +432,7 @@ class SixGate(Click, ImageRec):
             if click_obj := self.match_img(chose_buff_confirm):
                 # 更新一下buff_level
                 if self.buff_level.count == 0:
-                    if ocr_res := self.ocr.ocr_by_re((247, 225, 279, 264), r"\d+", threshold=0.65):
+                    if ocr_res := self.ocr.ocr_by_re(((252, 238, 271, 259)), r"\d+", threshold=0.65, pre_hand={"enlarge": 5, "binary": False}):
                         self.buff_level.count = int(ocr_res[0])
                 self.area_click(click_obj)
                 self.buff_level.increment(2)

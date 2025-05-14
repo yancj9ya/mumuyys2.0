@@ -1,11 +1,9 @@
 from tool.Mytool.windows import Windows
-from tool.Mytool.Somenewidea import newidea
 from tool.Mytool.bezier import BezierTrajectory
 
 # from tool.Mytool.random_coord import BezierTrajectory
 from tool.Mytool.random_coord import RandomCoord
 from time import sleep
-from random import randint
 from ctypes import windll
 
 windll.user32.SetProcessDPIAware()

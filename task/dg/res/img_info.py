@@ -7,7 +7,7 @@ dg_sign = ["task/dg/res/dg_sign.bmp", [176, 255, 265, 350], "dg_sign"]
 dg_btn_ready = ["task/dg/res/dg_btn_ready.bmp", [1132, 637, 1230, 694], "dg_btn_ready"]
 dg_fight_ui = ["task/dg/res/dg_fight_ui.bmp", [113, 53, 247, 136], "fight_ui"]
 dg_zaiz_ui = ["task/dg/res/dg_zaiz.bmp", [1183, 244, 1242, 312], "dg_zaiz_ui"]
-dg_coin_right_ui = ["task/dg/res/dg_coin_ui.bmp", [1120, 19, 1155, 599], "dg_coin_ui"]
+dg_coin_right_ui = ["task/dg/res/dg_coin_ui.bmp", [1115, 16, 1158, 607], "dg_coin_ui"]
 dg_chose_left_ui = ["task/dg/res/dg_chose_left_ui.bmp", [69, 93, 982, 613], "dg_coin_ui"]
 dg_chose_ui = ["task/dg/res/dg_chose_ui.bmp", [45, 605, 102, 666], "chose_ui"]
 

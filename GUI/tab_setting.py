@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from GUI.togglebuton import ToggleButton
-from threading import Thread
+from GUI.tab_dg import DgTab
+from threading import Thread, Event
 from task import Xz
 
 
@@ -8,30 +9,43 @@ class SettingTab(ctk.CTkFrame):
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
-        self.thread_created = False
+        self.event = Event()
         # create viriables
-        self.cooperation_mission_var = ctk.BooleanVar(value=True)
-        self.cooperation_mission_var.trace_add("write", self.set_cooperation)
+        self.Guard_process_var = ctk.BooleanVar(value=True)
+        self.Guard_process_var.trace_add("write", self.Guard_process)
         self.keep_level_var = ctk.BooleanVar(value=True)
         self.set_window_top_var = ctk.IntVar(value=1)
         self.set_window_top_var.trace_add("write", self.set_window_top)
         self.ui_delay_var = ctk.DoubleVar(value=0.5)
         # 绑定变量到ToggleButton类
-        ToggleButton.values.update({"tp_keep_level": self.keep_level_var, "ui_delay": self.ui_delay_var, "set_window_top": self.set_window_top_var, "cooperation_mission": self.cooperation_mission_var})
+        ToggleButton.values.update(
+            {
+                "tp_keep_level": self.keep_level_var,
+                "ui_delay": self.ui_delay_var,
+                "set_window_top": self.set_window_top_var,
+                "cooperation_mission": self.Guard_process_var,
+            }
+        )
 
         # create layout
-        self.group0 = ctk.CTkScrollableFrame(self, label_text="探索设置", height=10)
-        self.group0._scrollbar.configure(width=0)
-        self.group0.pack(fill="both", pady=2)
-        self.line1 = ctk.CTkFrame(self.group0, fg_color="transparent")
-        self.line1.pack(fill="x", pady=5)
-        self.line2 = ctk.CTkFrame(self.group0, fg_color="transparent")
-        self.line2.pack(fill="x", pady=5)
-        self.line3 = ctk.CTkFrame(self.group0, fg_color="transparent")
-        self.line3.pack(fill="x", pady=5)
+        self.group0 = ctk.CTkScrollableFrame(self, label_text="Setting", height=300, label_font=("Arial", 16, "bold"))
+        self.group0._scrollbar.configure(width=10)
+        self.group0.pack(fill="both", pady=0)
+        self.group1 = ctk.CTkFrame(self.group0, fg_color="transparent")
+        self.group1.pack(pady=1)
+        self.line1 = ctk.CTkFrame(self.group1, fg_color="transparent")
+        self.line1.pack(fill="x", pady=1)
+        self.line2 = ctk.CTkFrame(self.group1, fg_color="transparent")
+        self.line2.pack(fill="x", pady=1)
+        self.line3 = ctk.CTkFrame(self.group1, fg_color="transparent")
+        self.line3.pack(fill="x", pady=1)
+
+        # create dg_setting
+        self.dg_setting = DgTab(self.group0, width=240)
+        self.dg_setting.pack(side="left", fill="x", padx=5, pady=1, expand=True)
 
         # create widgets
-        self.cooperation_mission = ctk.CTkSwitch(self.line2, text="协助邀请", variable=self.cooperation_mission_var, command=self.set_cooperation, onvalue=True, offvalue=False)
+        self.cooperation_mission = ctk.CTkSwitch(self.line2, text="协助邀请", variable=self.Guard_process_var, onvalue=True, offvalue=False)
         self.cooperation_mission.pack(side="left", padx=2)
 
         self.keep_level_check = ctk.CTkSwitch(self.line2, text="突破保级", variable=self.keep_level_var, onvalue=True, offvalue=False)
@@ -42,25 +56,32 @@ class SettingTab(ctk.CTkFrame):
 
         self.ui_delay_combox = ctk.CTkComboBox(self.line1, values=["0.2", "0.5", "0.7"], width=80, justify="center", variable=self.ui_delay_var, height=20, command=self.ui_delay_slider_value)
         self.ui_delay_combox.set("0.5")
-        self.ui_delay_combox.pack(side="left", padx=2)
+        self.ui_delay_combox.pack(side="left", padx=2, pady=5)
 
-        self.ui_delay_slider = ctk.CTkSlider(self.line1, from_=0.1, to=1, number_of_steps=20, orientation="horizontal", width=240, command=self.ui_delay_slider_value)
+        self.ui_delay_slider = ctk.CTkSlider(self.line1, from_=0.1, to=1, number_of_steps=20, orientation="horizontal", command=self.ui_delay_slider_value)
         self.ui_delay_slider.set(0.5)
         self.ui_delay_slider.pack(side="left", padx=2, expand=True, fill="x")
 
-    def set_cooperation(self, *args):
-        cooperation_mission = self.cooperation_mission_var.get()
-        if cooperation_mission and not self.thread_created:
-            auto_accept_invitation = Thread(target=Xz.cooperation_mission_start, kwargs={"STOPSIGNAL": self.cooperation_mission_var})
-            auto_accept_invitation.daemon = True
-            auto_accept_invitation.start()
-            self.thread_created = True
+    def creat_guard_process(self):
+        # 先创建实例
+        guard_instance = Xz()
+        # 设置参数
+        guard_instance.set_parms(STOPSIGNAL=self.cooperation_mission, event=self.event)
+        # 启动循环
+        guard_instance.loop()
+
+    def Guard_process(self, *args):
+
+        # 启动线程
+        if self.cooperation_mission.get():
+            print(f"启动协助邀请线程")
+            Guard_process = Thread(target=self.creat_guard_process)
+            Guard_process.daemon = True
+            Guard_process.start()
+
         else:
-            try:
-                if auto_accept_invitation.is_alived():
-                    print(f"thread is not exited, stop it")
-            except NameError:
-                self.thread_created = False
+            self.event.set()
+            print(f"关闭协助邀请线程")
 
         pass
 

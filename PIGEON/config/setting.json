@@ -1,17 +1,17 @@
 {
-    "times": "300",
+    "times": "123",
     "tp_keep_level": true,
     "ui_delay": 0.55,
     "set_window_top": 1,
     "dg_xs": "1:4.7",
     "dg_rs": 70,
-    "tp_ticket_limit": 10,
+    "tp_ticket_limit": 15,
     "monster_limit": 500,
     "with_tp": true,
     "file_log": true,
     "cooperation_mission": true,
     "window_position": {
-        "x": 1787,
-        "y": 489
+        "x": 2209,
+        "y": 304
     }
 }

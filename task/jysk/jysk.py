@@ -64,7 +64,19 @@ class Jysk:
         self.target_type = int(self.target_type)
         self.target_level = [int(i) for i in self.target_level.split(",")]
         self.target_count = [int(i) for i in kwargs.get("target_count", "8,9").split(",")]
-        print(f"target_level: {self.target_level}, target_count: {self.target_count}")
+
+        # 模式化
+        if self.target_type == 1:
+            self.pattern = r"勾玉\s*\+([7-9])/h$"
+            self.switch_type_click_area = [386, 251, 491, 289]
+            self.target_img = SIX_GY
+        elif self.target_type == 2:
+            self.pattern = r"体力\s*\+(1[1-8])/h$"
+            self.switch_type_click_area = [389, 315, 489, 352]
+            self.target_img = SIX_DY
+        log.info(f"{self.target_type=}")
+        log.info(f"{self.target_level=}")
+        log.info(f"{self.target_count=}")
         pass
 
     def ward_main(self):
@@ -117,27 +129,21 @@ class Jysk:
         # 循环搜索并更换结界卡
         while True:
             try:
-                if self.target_type == 1:
-                    serch_area = self.image_rec.match_duo_img(SIX_GY, accuracy=0.5)
-                elif self.target_type == 2:
-                    serch_area = self.image_rec.match_duo_img(SIX_DY, accuracy=0.5)
-                print(f"serch_area: {len(serch_area)}")
+                serch_area = self.image_rec.match_duo_img(self.target_img, accuracy=0.5)
+                log.info(f"{len(serch_area)=}")
                 for rect in serch_area:
                     level = self.get_star_level(rect)
-                    print(f"get_star_level: {level}")
+                    log.info(f"{level=}")
                     if level in self.target_level:
                         # 获取数量识别ocr区域
                         count_area = [rect[0] + 113, rect[1], rect[2] + 140, rect[3] + 8]
-                        if self.target_type == 1:
-                            count_str = self.ocr.ocr_by_re(count_area, r"^勾玉\s*\+([7-9])/h$", threshold=0.8).group(1)
-                        elif self.target_type == 2:
-                            count_str = self.ocr.ocr_by_re(count_area, r"^体力\s*\+(1[1-8])/h$", threshold=0.8).group(1)
-                        print(f"get_count_str: {count_str}")
+                        count_str = self.ocr.ocr_by_re(count_area, self.pattern, threshold=0.8).group(1)
+                        log.info(f"{count_str=}")
                         if int(count_str) in self.target_count:
                             # 点击结界卡
                             self.click.area_click(rect)
                             # 点击确认按钮
-                            log.info(f"level: {level}, count: {count_str}")
+                            log.info(f"confirm this card")
                             self.click.area_click(ACTIVE_CARD)
                             sleep(2)
                             self.click.area_click(ACTIVE_CARD_CONFIRM)
@@ -147,14 +153,14 @@ class Jysk:
 
                 self.list_down()
             except Exception as e:
-                print(f"search_replace_sk error: {e}")
+                print(f"search_replace_sk error: {e=}")
 
     def list_down(self):
         """下拉列表"""
         self.click.click(436, 164)
         self.click.mouse_scroll(("down", 6), 436, 164)
         sleep(0.2)
-        print("list_down")
+        log.info("list_down")
 
     def get_star_level(self, rect):
         """获取星级"""
@@ -191,11 +197,8 @@ class Jysk:
             if type_str == "全部":
                 self.click.area_click(OCR_TYPE_A)
                 sleep(0.5)
-                if self.target_type == 1:
-                    self.click.area_click([386, 251, 491, 289])  # 选择太鼓卡池
-                elif self.target_type == 2:
-                    self.click.area_click([389, 315, 489, 352])  # 选择斗鱼卡池
-
+                self.click.area_click(self.switch_type_click_area)
+                log.info(f"切换卡池: {type_str}")
             elif type_str in ["太鼓", "斗鱼"]:
                 return
 
