@@ -79,11 +79,11 @@ class Xz:
     def full_of_card(self):
         log.info("结界卡溢出提醒：开始处理")
         # 检查是否勾选今日忽略
-        if self.match_img(CHECK_IGNORE_NOTION):
+        if self.eye.match_img(CHECK_IGNORE_NOTION):
             log.info("结界卡溢出提醒：已勾选今日忽略")
-            self.area_click(CANCEL_NOTION)
+            self.hand.area_click(CANCEL_NOTION)
         else:
-            self.area_click(CHECK_IGNORE_NOTION[1])
+            self.hand.area_click(CHECK_IGNORE_NOTION[1])
             sleep(0.5)
 
     def GHNPF(self):
