@@ -1,9 +1,10 @@
 from tool.Mytool.windows import Windows
 from ppocronnx.predict_system import TextSystem
-import cv2, re
+import re
 from PIGEON.log import log
 from time import sleep
 import numpy as np
+import cv2
 
 
 class pre_hand_img:

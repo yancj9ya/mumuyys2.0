@@ -24,3 +24,4 @@ OCR_TYPE = (382, 101, 481, 144)
 blank_seat_2 = ["task/jy/res/blank_seat_2.bmp", [1170, 79, 1201, 109], "blank_seat_2"]
 yc_page = ["task/jy/res/yc_page.bmp", [688, 22, 706, 114], "yc_page"]
 six_dy_img = ["task/jy/res/six_dy_img.bmp", [504, 137, 632, 605], "six_dy_img"]
+five_dy_img = ["task/jy/res/five_dy_img.bmp", [504, 137, 632, 605], "five_dy_img"]

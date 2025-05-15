@@ -46,12 +46,28 @@ class Jy(Click, ImageRec):
                     pass
 
     def set_parms(self, *args, **kwargs):
-        """set parameters for the program,but not used in this program"""
-        self.target_type, self.target_level = kwargs.get("target_level").split("@")
-        self.target_type = int(self.target_type)
-        self.target_level = [int(i) for i in self.target_level.split(",")]
-        self.target_count = [int(i) for i in kwargs.get("target_count", "59-76").split("-")]
-        print(f"target_level: {self.target_level}, target_count: {self.target_count}")
+        """set parameters for the program"""
+        # 优先级设置
+        default_priority_list = "151,143,79,128,67,59"
+        self.priority_list: str = kwargs.get("priority", default_priority_list)
+        self.priority = {int(value): index for index, value in enumerate(self.priority_list.split(","))}
+        # 设置类型
+        self.target_type = kwargs.get("target_type", "BOTH")
+
+        # 根据类型设置搜索的目标图像列表
+        match self.target_type:
+            case "TG":
+                self.target_img_list = [six_star_img, five_star_img]
+                self.key_wd = "勾玉"
+            case "DY":
+                self.target_img_list = [six_dy_img, five_dy_img]
+                self.key_wd = "体力"
+            case "BOTH":
+                self.target_img_list = [six_star_img, five_star_img, six_dy_img, five_dy_img]
+                self.key_wd = ["勾玉", "体力"]
+
+        log.insert("3.0", f"target_type: {self.key_wd}")
+        log.insert("4.0", f"priority_list: {self.priority_list}")
 
         pass
 
@@ -62,20 +78,29 @@ class Jy(Click, ImageRec):
         log.info(f"OCR result: {ocr_res[0]}")
 
         # 处理点击过快，导致太鼓变成斗鱼或其他的情况
-        keyword = "勾玉" if self.target_type == 1 else "体力"
-        if keyword not in ocr_res[0]:
-            return 0  # 返回0，最大不会被覆盖
+        # 判断左边文字的类型是否符合目标
+        match self.target_type:
+            case "TG":
+                if self.key_wd not in ocr_res[0]:
+                    return 0
+            case "DY":
+                if self.key_wd not in ocr_res[0]:
+                    return 0
+            case "BOTH":
+                if all(key_text not in ocr_res[0] for key_text in self.key_wd):
+                    return 0
 
+        # 如果OCR识别的置信度符合条件
         if ocr_res[1] > 0.6:
 
             # 清除字符串中的非数字部分，提取出结界卡的数量
             hand_res_str = re.sub(r"[^0-9]", "", ocr_res[0])
 
             # 如果结界卡是目标值，则返回结界卡数量
-            if min(self.target_count) <= int(hand_res_str) <= max(self.target_count):
+            if int(hand_res_str) in self.priority.keys():
                 return int(hand_res_str)
             else:
-                raise Exception("grt wrong number from OCR", ocr_res)
+                print(f"OCR number not in target pool: {hand_res_str=} {self.priority=} {self.priority.keys()=}")
         else:
             raise Exception("Failed to get right JJ number")
 
@@ -88,20 +113,36 @@ class Jy(Click, ImageRec):
 
     def get_target_pos(self):
         """get the position of target area"""
-        if self.target_type == 1:
-            six_star = self.match_duo_img(six_star_img, 0.8)
-            five_star = self.match_duo_img(five_star_img, 0.8)
-            log.info(f"Found 6-star: {len(six_star)}, 5-star: {len(five_star)}")
-            return six_star + five_star if six_star and five_star else six_star or five_star
-        elif self.target_type == 2:
-            six_dy = self.match_duo_img(six_dy_img, 0.8)
-            log.info(f"Found 6-dy: {len(six_dy)}")
-            return six_dy
+        # 返回的识别区域列表
+        rec_list = []
+        # 对每张图片进行识别
+        for target_img in self.target_img_list:
+            if rec_img_list := self.match_duo_img(target_img, 0.8):
+                rec_list.extend(rec_img_list)
+        return rec_list
+
+    def custom_max(self, a, b):
+        """
+        param a: int
+        param b: int
+        reture int
+        比较两个数按照给定的优先级，返回较大的那个数，如果优先级相同则返回b
+        """
+        # 数据检查
+        assert a in self.priority and b in self.priority, "error number not in priority list"
+
+        # 处理为0的情形
+        if a == 0:
+            return b
+        if b == 0:
+            return a
+
+        return a if self.priority[a] < self.priority[b] else b
 
     def re_serch(self):
         """get the max number of same and diff server JY list"""
-        temp_num_list = []
         sleep(1)
+        temp_re_num = 0
         rec_list = self.get_target_pos()
         try:
             for area in rec_list:
@@ -109,15 +150,16 @@ class Jy(Click, ImageRec):
                 self.area_click(area)
                 sleep(1)
                 temp_num = self.get_right_jj_num()
+                print(f"{temp_num=}")
                 if temp_num:
-                    if temp_num == max(self.target_count) or (hasattr(self, "finally_number") and temp_num == self.finally_number):
+                    if temp_num == max(self.priority.keys()) or (hasattr(self, "finally_number") and temp_num == self.finally_number):
                         self.get_in_to_jy()
                         self.finally_number = temp_num
                         self.next_time = "06:00:00"
                         return "success"
-                    temp_num_list.append(temp_num)
+                    temp_re_num = self.custom_max(temp_re_num, temp_num)
                     log.info(f"Found JJ number: {temp_num}")
-            return max(temp_num_list) if temp_num_list else None
+            return temp_re_num
         except Exception as e:
             log.error(f"Error in re_serch: {e}")
             return None
@@ -131,6 +173,7 @@ class Jy(Click, ImageRec):
         if not self.has_refreshed:
             sleep(0.5)
             self.slide((190, 191), (195, 560), move_time=1)  # 下拉刷新同区好友
+            sleep(0.5)
             self.area_click(diff_server_seat[1])
             sleep(1)
             self.slide((190, 191), (195, 560), move_time=1)  # 下拉刷新跨区好友
@@ -152,12 +195,9 @@ class Jy(Click, ImageRec):
             if serch_max_num := self.re_serch():
                 if isinstance(serch_max_num, int):
                     if area_type == same_server_seat:
-                        self.left_max = max(self.left_max, serch_max_num)
+                        self.left_max = self.custom_max(self.left_max, serch_max_num)
                     else:
-                        self.right_max = max(self.right_max, serch_max_num)
-
-                elif isinstance(serch_max_num, str):
-                    return
+                        self.right_max = self.custom_max(self.right_max, serch_max_num)
         sleep(0.5)
 
     def get_in_to_jy(self):
@@ -239,20 +279,20 @@ class Jy(Click, ImageRec):
                         return
                     else:
                         log.info(f"left_max: {self.left_max}, right_max: {self.right_max}")
-                        self.max_number = max(self.left_max, self.right_max)
+                        self.max_number = self.custom_max(self.left_max, self.right_max)
                         self.finally_number = self.max_number
                 else:
                     log.info(f"Max number: {self.max_number}, continue ")
-                    if self.left_max > self.right_max:
-                        log.info(f"left_max: {self.left_max} > right_max: {self.right_max}")
+                    if self.custom_max(self.left_max, self.right_max) == self.right_max:
+                        log.info(f"left_max < right_max , go to diff server")
                         self.area_click(diff_server_seat[1], double_click=True, double_click_time=0.2)
                         sleep(0.5)
-                        self.find_max_number(same_server_seat)
+                        self.find_max_number(diff_server_seat)
                     else:
-                        log.info(f"left_max: {self.left_max} < right_max: {self.right_max}")
+                        log.info(f"left_max > right_max , go to same server")
                         self.area_click(same_server_seat[1], double_click=True, double_click_time=0.2)
                         sleep(0.5)
-                        self.find_max_number(diff_server_seat)
+                        self.find_max_number(same_server_seat)
                 log.info(f"Max number: {self.max_number}, continue ")
 
             case "yc_page":

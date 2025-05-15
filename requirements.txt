@@ -28,6 +28,7 @@ opencv-python==4.10.0.84
 packaging==24.1
 pillow==10.4.0
 ppocr-onnx==0.0.3.9
+-e git+https://github.com/yancj9ya/mumuyys2.0.git@e5c89624fd43454a4a28ed53f6c955bdc49cb581#egg=project
 propcache==0.2.1
 protobuf==5.28.2
 psutil==6.1.0

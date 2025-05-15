@@ -12,7 +12,8 @@ import cv2
 from ctypes import windll
 from PIGEON.log import log
 from functools import cached_property
-from tool.Mytool.image_ver import ver  # type: ignore
+
+# from tool.Mytool.image_ver import ver  # type: ignore
 
 
 # from Mytool.nemu.mumuScreencap import MuMuScreenCap
@@ -39,7 +40,7 @@ FindWindowEx = win32gui.FindWindowEx
 IsWindow = win32gui.IsWindow
 
 
-class Windows(ver):
+class Windows:
     LOCK = False  # 主要是为了截图互斥，防止竞争设备上下文导致的错误
 
     # mumu_sc = MuMuScreenCap(
