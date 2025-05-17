@@ -323,12 +323,12 @@ class Dg(Click, ImageRec):
         pass
 
     def _save_award_img(self):
-
+        sleep(1)
         self.win.screenshot([218, 132, 1233, 617], save_img=True)
         log.info("结算界面：已经截图,返回准备界面")
         sleep(0.5)
         self.area_click([990, 462, 1125, 520])
-        sleep(1)
+
         return
 
     def run(self):

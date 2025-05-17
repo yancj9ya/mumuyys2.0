@@ -87,7 +87,7 @@ class PageNavigator:
                     log.info("暂停页面切换")
                     continue
                 case "RUNNING":
-                    log.info(f"正在寻找路径，目标页面：{target_page}")
+                    log.info(f"开始页面切换\n{target_page=}")
             try:
                 # 刷新当前页面
                 self.refresh_current_page()
@@ -105,7 +105,7 @@ class PageNavigator:
                             action = self.current_page.actions[action_id]
                             try:
                                 if self._execute_jump(action):
-                                    print(f"成功跳转到 {next_page.name}")
+                                    print(f"[成功跳转] {next_page.name}")
                                     success = True
                                     current_retry = 1  # 重置重试次数
                                     break
@@ -124,7 +124,7 @@ class PageNavigator:
                 else:
                     raise ValueError("不存在有效路径")
             except Exception as e:
-                log.info(f"第 {current_retry} 次尝试失败: {str(e)}")
+                log.error(f"[第 {current_retry} 次尝试失败]:\n{str(e)=}")
                 if current_retry == 3:
                     self._try_back()
                 current_retry += 1
@@ -184,7 +184,7 @@ class PageNavigator:
                         raise LookupError(f"仍处于原页面{current}，尝试重新执行跳转")  # 抛出异常触发重试机制
                     elif current == action.target.name:  # 页面跳转成功
                         """页面跳转成功"""
-                        log.info(f"跳转成功，当前页面：{current}")
+                        log.info(f"[跳转成功]\n{current=}")
                         return True
                     elif current in self.graph.keys():  # 跳到其他已知页面需要重新规划路径
                         return False
@@ -253,7 +253,7 @@ class PageNavigator:
         queue = deque([start_name])
 
         # 打印调试信息
-        log.info("\n[路径搜索] 寻找路径: {} -> {}".format(start_name.name, target.name))
+        log.info("[路径搜索]:\n {} -> {}".format(start_name.name, target.name))
         # print("当前导航图谱:", self._get_graph_debug_info())
 
         while queue:
@@ -284,13 +284,13 @@ class PageNavigator:
 
     def _reconstruct_path(self, visited, target):
         """回溯构建完整路径"""
-        print(f"[路径回溯] 回溯路径:{[f'{s.name}->{e.name if e else None}' for s,e in visited.items()]}")
+        print(f"[路径回溯] \n{[f'{s.name}->{e.name if e else None}' for s,e in visited.items()]}")
         path = []
         current = target
         while current is not None:
             path.append(current)
             current = visited[current]
-        log.info(f"[路径回溯] 最终路径:{'→'.join([p.name for p in path[::-1]])}")
+        log.info(f"[路径回溯] \n{'→'.join([p.name for p in path[::-1]])}")
         return path[::-1]
 
     def switch_to(self, target, task_switch):

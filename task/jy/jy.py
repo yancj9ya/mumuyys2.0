@@ -53,6 +53,8 @@ class Jy(Click, ImageRec):
         self.priority = {int(value): index for index, value in enumerate(self.priority_list.split(","))}
         # 设置类型
         self.target_type = kwargs.get("target_type", "BOTH")
+        # 目标池
+        self.target_pool = self.priority.keys()
 
         # 根据类型设置搜索的目标图像列表
         match self.target_type:
@@ -97,7 +99,7 @@ class Jy(Click, ImageRec):
             hand_res_str = re.sub(r"[^0-9]", "", ocr_res[0])
 
             # 如果结界卡是目标值，则返回结界卡数量
-            if int(hand_res_str) in self.priority.keys():
+            if int(hand_res_str) in self.target_pool:
                 return int(hand_res_str)
             else:
                 print(f"OCR number not in target pool: {hand_res_str=} {self.priority=} {self.priority.keys()=}")
@@ -129,7 +131,8 @@ class Jy(Click, ImageRec):
         比较两个数按照给定的优先级，返回较大的那个数，如果优先级相同则返回b
         """
         # 数据检查
-        assert a in self.priority and b in self.priority, "error number not in priority list"
+        if a not in self.target_pool and b not in self.target_pool:
+            return 0
 
         # 处理为0的情形
         if a == 0:
@@ -191,7 +194,7 @@ class Jy(Click, ImageRec):
         self.area_click(area_type[1], double_click=True, double_click_time=0.2)
         sleep(0.2)
         log.info(f"Finding max number in {area_type[-1]}...\n left_max: {self.left_max}, right_max: {self.right_max}")
-        for _ in range(5):
+        for _ in range(4):
             if serch_max_num := self.re_serch():
                 if isinstance(serch_max_num, int):
                     if area_type == same_server_seat:
@@ -285,12 +288,12 @@ class Jy(Click, ImageRec):
                     log.info(f"Max number: {self.max_number}, continue ")
                     if self.custom_max(self.left_max, self.right_max) == self.right_max:
                         log.info(f"left_max < right_max , go to diff server")
-                        self.area_click(diff_server_seat[1], double_click=True, double_click_time=0.2)
+                        self.area_click(same_server_seat[1], double_click=True, double_click_time=0.2)
                         sleep(0.5)
                         self.find_max_number(diff_server_seat)
                     else:
                         log.info(f"left_max > right_max , go to same server")
-                        self.area_click(same_server_seat[1], double_click=True, double_click_time=0.2)
+                        self.area_click(diff_server_seat[1], double_click=True, double_click_time=0.2)
                         sleep(0.5)
                         self.find_max_number(same_server_seat)
                 log.info(f"Max number: {self.max_number}, continue ")

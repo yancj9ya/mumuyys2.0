@@ -57,9 +57,9 @@
         "end_ui": "WARD",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-05-15 23:13:17",
+        "next_time": "after 2025-05-17 22:37:52",
         "target_type": "BOTH",
-        "priority": "151,134,76,118,67,59"
+        "priority": "151,143,134,76,118,67,59"
     },
     "结界上卡": {
         "task_id": "结界上卡",
@@ -67,7 +67,7 @@
         "end_ui": "COURTYARD_UF",
         "run_time": "right now",
         "repeat": "true",
-        "next_time": "after 2025-05-16 21:39:19",
+        "next_time": "after 2025-05-18 03:10:46",
         "target_level": "2@6",
         "target_count": "16,17"
     },

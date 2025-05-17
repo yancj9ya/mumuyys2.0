@@ -342,7 +342,7 @@ class TaskExecutor:
             return None
         finally:
             del task_instance
-            log.info(f"{parms['task_id']} task instance finnally exit.")
+            log.info(f"task {parms['task_id']} exit.")
 
     def _task_need_change_soul(self, parms):
         if parms.get("change_soul", "false") != "false":
@@ -355,28 +355,41 @@ class TaskExecutor:
 
 class ClientManager:
     def __init__(self):
-        self.client_ctrl = MyEvent("client_ctrl")
-        self.client = Client(self.client_ctrl)
+        self.client = Client()
 
-    def _is_client_started(self):
+    def is_game_ready(self):
         """
-        启动客户端
+        检查模拟器是否启动，游戏客户端是否启动
+        如果客户端未启动，则启动客户端和游戏
         """
+
+        # 先检测客户端是否启动
         if not self.client.is_app_started():
-            print("客户端未启动，正在启动客户端")
-            self.client_ctrl.start()  # 启动客户端线程
-            self.client.client_start()  # 启动客户端
-            # 等待客户端启动完成，避免任务执行时客户端还未启动完成
-            print("等待客户端启动完成")
-            while 1:
-                if self.client.verify_app_start_finish():
-                    break
-                if self.client.imgrec.win.is_windows_exist():  # self.client.imgrec.win.is_window_top() and
-                    self.client.imgrec.win.set_window_bottom()
-                    sleep(0.05)
+            log.info("客户端未启动，启动客户端")
+            self.client.start_client_and_game()  # 启动客户端
+
+            # 等待客户端启动完成
+            # 循环检查客户端启动的状态
+            while self.client.get_client_info().get("player_state", None) != "start_finished":
+                # 置底窗口
+                self.client.imgrec.win.set_window_bottom()
+                sleep(1)
+
+            else:
+                self.client.imgrec.win.set_window_bottom()
+                log.info("客户端启动完成")
+        sleep(1)
+        # 再检测游戏是否启动
+        if self.client.get_game_status() != "running":
+            # self.client.start_client_and_game(only_game=True)  # 启动游戏
+            self.client.imgrec.win.set_window_bottom()
         else:
-            print("客户端已启动，开始执行任务")
-            return  # 客户端已启动，不需要再启动客户端
+            return True
+        # 等待游戏启动完成
+        while not self.client.verify_app_and_game_start_finish():
+            sleep(1)
+        else:
+            log.info("游戏启动完成")
 
 
 class GUIInterface:
@@ -426,7 +439,7 @@ class Scheduler(TimeManager, TaskManager, TaskExecutor, ClientManager, GUIInterf
                     log.info(f"pop out {current_task.name} task.")
                     current_task.set_state("running")
                     # 执行任务之前检查客户端是否启动
-                    self._is_client_started()
+                    self.is_game_ready()
                     self.execute(current_task)
 
             elif self.task_ctrl.state == "STOP" and not self.ready_tasks:  # 无任务运行，同时ready_tasks为空,此时关闭客户端
